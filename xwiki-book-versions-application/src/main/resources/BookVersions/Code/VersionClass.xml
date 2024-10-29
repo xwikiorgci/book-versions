@@ -78,6 +78,50 @@
   <object>
     <name>BookVersions.Code.VersionClass</name>
     <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>2d538eb4-6a8e-4d56-a4e8-57618f9af096</guid>
+    <class>
+      <name>XWiki.ClassSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <cache>0</cache>
+        <classname/>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <hint/>
+        <idField/>
+        <multiSelect>0</multiSelect>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Sheet</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>30</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+      </sheet>
+    </class>
+    <property>
+      <sheet>VersionSheet</sheet>
+    </property>
+  </object>
+  <object>
+    <name>BookVersions.Code.VersionClass</name>
+    <number>0</number>
     <className>XWiki.DocumentSheetBinding</className>
     <guid>ce9db0b0-0868-475a-8a32-590b9e28301f</guid>
     <class>
