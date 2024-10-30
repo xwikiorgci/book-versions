@@ -46,118 +46,62 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <bookVersionReference>
-      <cache>0</cache>
-      <classname/>
+    <bookVersionName>
       <customDisplay/>
-      <defaultValue/>
       <disabled>0</disabled>
-      <displayType>input</displayType>
-      <freeText/>
       <hint/>
-      <idField/>
-      <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
-      <name>bookVersionReference</name>
+      <name>bookVersionName</name>
+      <number>2</number>
+      <picker>1</picker>
+      <prettyName>bookVersionName</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </bookVersionName>
+    <libraryVersionNames>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint/>
+      <name>libraryVersionNames</name>
       <number>3</number>
       <picker>1</picker>
-      <prettyName>bookVersionReference</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort/>
-      <sql/>
+      <prettyName>libraryVersionNames</prettyName>
+      <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
-    </bookVersionReference>
-    <libraryVersionReferences>
-      <cache>0</cache>
-      <classname/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </libraryVersionNames>
+    <masterName>
       <customDisplay/>
-      <defaultValue/>
       <disabled>0</disabled>
-      <displayType>input</displayType>
-      <freeText/>
       <hint/>
-      <idField/>
-      <largeStorage>0</largeStorage>
-      <multiSelect>1</multiSelect>
-      <name>libraryVersionReferences</name>
+      <name>masterName</name>
+      <number>1</number>
+      <picker>1</picker>
+      <prettyName>masterName</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </masterName>
+    <variantName>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <hint/>
+      <name>variantName</name>
       <number>4</number>
       <picker>1</picker>
-      <prettyName>libraryVersionReferences</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort/>
-      <sql/>
+      <prettyName>variantName</prettyName>
+      <size>30</size>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
-    </libraryVersionReferences>
-    <masterReference>
-      <cache>0</cache>
-      <classname/>
-      <customDisplay/>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayType>input</displayType>
-      <freeText/>
-      <hint/>
-      <idField/>
-      <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
-      <name>masterReference</name>
-      <number>3</number>
-      <picker>1</picker>
-      <prettyName>masterReference</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort/>
-      <sql/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
-    </masterReference>
-    <variantReference>
-      <cache>0</cache>
-      <classname/>
-      <customDisplay/>
-      <defaultValue/>
-      <disabled>0</disabled>
-      <displayType>input</displayType>
-      <freeText/>
-      <hint/>
-      <idField/>
-      <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
-      <name>variantReference</name>
-      <number>4</number>
-      <picker>1</picker>
-      <prettyName>variantReference</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators/>
-      <size>1</size>
-      <sort/>
-      <sql/>
-      <unmodifiable>0</unmodifiable>
-      <validationMessage/>
-      <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
-    </variantReference>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </variantName>
   </class>
   <object>
     <name>BookVersions.Code.PublishedBookClass</name>
