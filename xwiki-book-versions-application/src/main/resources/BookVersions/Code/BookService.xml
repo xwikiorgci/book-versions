@@ -111,6 +111,7 @@ import com.xpn.xwiki.XWikiException
 import com.xpn.xwiki.XWiki
 import com.xpn.xwiki.doc.XWikiDocument
 import com.xpn.xwiki.objects.BaseObject
+import org.slf4j.Logger
 import org.xwiki.model.EntityType
 import org.xwiki.model.reference.DocumentReference
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -163,6 +164,9 @@ public class BookVersionsScriptService implements ScriptService
     @Inject
     @Named('local')
     private EntityReferenceSerializer&lt;String&gt; localSerializer;
+
+    @Inject
+    private Logger logger;
 
     /**
      * Check if a page is a nested page of another one, recursively.
@@ -251,6 +255,13 @@ public class BookVersionsScriptService implements ScriptService
             String versionName = versionReference.getName().replaceAll('\\.', '\\.');
             DocumentReference precedingVersionRef = versionReference;
             while (!versionName.isEmpty() &amp;&amp; versionName != null) {
+                XWikiDocument versionDoc = xwiki.getDocument(precedingVersionRef,xcontext);
+                BaseObject versionObject = versionDoc.getXObject(VERSION_CLASS_REFERENCE);
+                if (versionObject == null) {
+                    logger.warn("Page ["+ versionDoc.getDocumentReference().toString() +"] doesn't have a [" +
+                        VERSION_CLASS_REFERENCE.toString() + "] object.")
+                    return null;
+                }
                 DocumentReference versionedContentRef = new DocumentReference(
                     new EntityReference(versionName, EntityType.DOCUMENT, pageReference.getParent()));
                 if (xwiki.exists(versionedContentRef,xcontext)) {
@@ -259,12 +270,6 @@ public class BookVersionsScriptService implements ScriptService
                 } else {
                     // Content does not exists for this version. Lets check if there is content in a version to be
                     // inherited
-                    XWikiDocument versionDoc = xwiki.getDocument(precedingVersionRef,xcontext);
-                    BaseObject versionObject = versionDoc.getXObject(VERSION_CLASS_REFERENCE);
-                    if (versionObject == null) {
-                        throw new XWikiException("Page ["+ versionDoc.getDocumentReference().toString() +
-                            "] doesn't have a [" + VERSION_CLASS_REFERENCE.toString() + "] object.", null)
-                    }
                     String precedingVersion = versionObject.getStringValue('precedingVersionReference');
                     if (precedingVersion.isEmpty()) {
                         // This is the first version in the tree, there's nothing to inherit from
@@ -273,8 +278,9 @@ public class BookVersionsScriptService implements ScriptService
                     precedingVersionRef = this.referenceResolver.resolve(precedingVersion, precedingVersionRef);
                     String precedingVersionName = precedingVersionRef.getName().replaceAll('\\.', '\\.');
                     if (precedingVersionName.equals(versionName)) {
-                        throw new XWikiException("Version page [" + precedingVersion +
-                            "] is referencing itself as a preceding version", null)
+                        logger.warn("Version page [" + precedingVersion + "] is referencing itself as a preceding " +
+                            "version")
+                        return null;
                     }
                     versionName = precedingVersionName;
                 }
