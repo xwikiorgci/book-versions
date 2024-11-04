@@ -20,37 +20,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.Translations" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.BookTemplate" locale="">
   <web>BookVersions.Code</web>
-  <name>Translations</name>
+  <name>BookTemplate</name>
   <language/>
-  <defaultLanguage>en</defaultLanguage>
+  <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>BookVersions.Code.WebHome</parent>
+  <parent>BookVersions.Code.BookClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Translations</title>
+  <title>Book Template</title>
   <comment/>
   <minorEdit>false</minorEdit>
-  <syntaxId>plain/1.0</syntaxId>
+  <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content># Class
-BookVersions.Code.VersionClass_precedingVersionReference=Preceding version reference
-
-# Creation templates
-BookVersions.template.newBook=Create a new book.
-BookVersions.template.description=Description
-BookVersions.template.title=Title
-</content>
+  <content/>
   <object>
-    <name>BookVersions.Code.Translations</name>
+    <name>BookVersions.Code.BookTemplate</name>
     <number>0</number>
-    <className>XWiki.TranslationDocumentClass</className>
-    <guid>5d815bf4-653e-49df-bb69-4c2efbf204ec</guid>
+    <className>BookVersions.Code.BookClass</className>
+    <guid>511ebf97-0070-4ea3-91a7-60841fb1a480</guid>
     <class>
-      <name>XWiki.TranslationDocumentClass</name>
+      <name>BookVersions.Code.BookClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -58,27 +51,23 @@ BookVersions.template.title=Title
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <scope>
-        <cache>0</cache>
+      <id>
+        <customDisplay/>
         <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText>forbidden</freeText>
-        <largeStorage>0</largeStorage>
-        <multiSelect>0</multiSelect>
-        <name>scope</name>
+        <hint/>
+        <name>id</name>
         <number>1</number>
-        <prettyName>Scope</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
+        <picker>1</picker>
+        <prettyName>id</prettyName>
+        <size>30</size>
         <unmodifiable>0</unmodifiable>
-        <values>GLOBAL|WIKI|USER|ON_DEMAND</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </scope>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </id>
     </class>
     <property>
-      <scope>WIKI</scope>
+      <id/>
     </property>
   </object>
 </xwikidoc>
