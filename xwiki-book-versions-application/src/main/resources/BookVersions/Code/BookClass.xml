@@ -60,6 +60,24 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </id>
+    <publishedBookRefs>
+      <contenttype>---</contenttype>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <editor>---</editor>
+      <hint/>
+      <name>publishedBookRefs</name>
+      <number>2</number>
+      <picker>1</picker>
+      <prettyName>publishedBookRefs</prettyName>
+      <restricted>0</restricted>
+      <rows>5</rows>
+      <size>40</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+    </publishedBookRefs>
   </class>
   <object>
     <name>BookVersions.Code.BookClass</name>
