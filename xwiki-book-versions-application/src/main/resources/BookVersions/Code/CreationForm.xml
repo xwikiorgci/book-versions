@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.creationForm" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.CreationForm" locale="">
   <web>BookVersions.Code</web>
   <name>creationForm</name>
   <language/>
@@ -49,7 +49,7 @@
     #set($subSpaceName = $pageType+'s')
     #set($targetSpaceRef = $services.model.createEntityReference($subSpaceName, 'SPACE', $services.model.resolveDocument($request.collectionRef).getParent()))
     #set($targetDocName = $services.model.createDocumentReference($validatedName, $targetSpaceRef))
-    #if(!$xwiki.exists($targetDocName) &amp;&amp; !$xwiki.exists($workflowtarget) &amp;&amp; $xwiki.hasAccessLevel('edit', $context.user, $targetDocName))
+    #if(!$xwiki.exists($targetDocName) &amp;&amp; !$xwiki.exists($workflowtarget) &amp;&amp; $xwiki.hasAccessLevel('edit', $xcontext.user, $targetDocName))
       #set ($queryString = $escapetool.url({
         'template': ${request.template},
         'title': ${validatedName},
