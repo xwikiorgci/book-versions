@@ -22,7 +22,7 @@
 
 <xwikidoc version="1.5" reference="BookVersions.Code.CreationForm" locale="">
   <web>BookVersions.Code</web>
-  <name>creationForm</name>
+  <name>CreationForm</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -42,9 +42,10 @@
 ##    docName: the name of the page to be created. If not provided, a form is displayed
 ##    collectionRef: the reference of the collection (book/library) where to create the page
 ##    template: the template to use for creating the new page. A space is created under collectionRef based on the name ("VersionTemplate" becomes "Versions")
+#set($pageType = '')
+#if("$!request.template" != '')#set($pageType = $services.model.resolveDocument($request.template).getName().replace('Template',''))#end
 #if("$!request.docName" != '' &amp;&amp; "$!request.collectionRef" != '' &amp;&amp; "$!request.template" != '')
   #set($validatedName = $services.modelvalidation.transformName($request.docName))
-  #set($pageType = $services.model.resolveDocument($request.template).getName().replace('Template',''))
   #if($request.docName.equals($validatedName))
     #set($subSpaceName = $pageType+'s')
     #set($targetSpaceRef = $services.model.createEntityReference($subSpaceName, 'SPACE', $services.model.resolveDocument($request.collectionRef).getParent()))
