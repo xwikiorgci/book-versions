@@ -52,7 +52,10 @@ BookVersions.creationForm.noTemplate=The field [template] is missing in the URL.
 BookVersions.creationForm.exists=The page [{0}] already exists, please select a new name.
 BookVersions.creationForm.noPermission=Your user has no permission to create [{0}].
 BookVersions.creationForm.docName=Enter the new {0} ID (different from the name, set later):
-BookVersions.creationForm.submit=Create</content>
+BookVersions.creationForm.submit=Create
+
+# Navigation menu
+BookVersions.navMenu.versionSelect=Version</content>
   <object>
     <name>BookVersions.Code.Translations</name>
     <number>0</number>

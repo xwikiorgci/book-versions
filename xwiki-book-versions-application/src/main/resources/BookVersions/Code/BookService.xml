@@ -213,7 +213,7 @@ public class BookVersionsScriptService implements ScriptService
     /**
      * Get the version references from a versioned collection (book or library)
      * @param collectionReference: the reference of the collection to get versions from
-     * @return a list of versions references declared in the versioned collection, ordered by version page title.
+     * @return a list of versions references declared in the versioned collection, ordered by descending date.
      * Returns an empty list if none are found.
      * @throws QueryException
      */
@@ -226,7 +226,7 @@ public class BookVersionsScriptService implements ScriptService
 
             // Query inspired from getDocumentReferences of DefaultModelBridge.java in xwiki-platform
             List&lt;DocumentReference&gt; result = this.queryManager.createQuery(", BaseObject as obj where doc.fullName = " +
-                "obj.name and obj.className = :versionClass and doc.space like :space escape '/'  order by doc.title", Query.HQL).
+                "obj.name and obj.className = :versionClass and doc.space like :space escape '/' order by doc.creationDate desc", Query.HQL).
                 bindValue("versionClass", localSerializer.serialize(VERSION_CLASS_REFERENCE)).
                 bindValue("space", spacePrefix).
                 execute();
