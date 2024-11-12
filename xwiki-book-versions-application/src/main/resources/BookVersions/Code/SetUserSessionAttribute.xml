@@ -38,10 +38,10 @@
   <hidden>true</hidden>
   <content>{{velocity}}
 #if($services.csrf.isTokenValid("$!request.form_token"))
-  #if("$!request.selectedVersion" != '' &amp;&amp; "$!request.bookRef" != '')
+  #if("$!request.selectedVersion" != '' &amp;&amp; "$!request.collectionRef" != '')
     #set($selectedVersionMap = $request.getSession().getAttribute('BookVersions.selectedVersion'))
     #if("$!selectedVersionMap" == '')#set($selectedVersionMap = {})#end
-    #set($drop = $selectedVersionMap.put($request.bookRef,$request.selectedVersion))
+    #set($drop = $selectedVersionMap.put($request.collectionRef,$request.selectedVersion))
     $request.getSession().setAttribute('BookVersions.selectedVersion',$selectedVersionMap)
   #end
 #end
