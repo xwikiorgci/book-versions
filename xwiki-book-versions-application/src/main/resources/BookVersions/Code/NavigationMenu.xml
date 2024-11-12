@@ -278,23 +278,16 @@
       <async_enabled>0</async_enabled>
     </property>
     <property>
-      <content>{{velocity}}
+      <content>{{include reference="BookVersions.Code.BookMacros" /}}
+
+{{velocity}}
 #set ($docRef = $doc.getDocumentReference())
 #set ($collectionRef = $services.bookversions.getVersionedCollectionReference($docRef))
 #if ("$!collectionRef" != '' &amp;&amp; $doc.getObject('BookVersions.Code.BookPageClass') != $null)
   ## We are either on a book's or a library's page
   #set ($discard = $xwiki.jsx.use('BookVersions.Code.NavigationMenu'))
   #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
-  #set($selectedVersionMap = $request.getSession().getAttribute('BookVersions.selectedVersion'))
-  #set($selectedVersion = $selectedVersionMap.get("$collectionRef"))
-  #if ("$!selectedVersion" == '')
-    ## No version selected yet, select the most recent one
-    #set($selectedVersion = $versions[0])
-    #if("$!selectedVersionMap" == '')#set($selectedVersionMap = {})#end
-    #set($drop = $selectedVersionMap.put($collectionRef,$selectedVersion))
-    $request.getSession().setAttribute('BookVersions.selectedVersion',$selectedVersionMap)
-  #end
-  #set($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef,$selectedVersion))
+  #getVersionedContentReference($collectionRef $docRef $versionedContentReference)
   #if ($docRef != $versionedContentReference)
     #set($redirectURL = $xwiki.getURL($versionedContentReference,'view',''))
     $response.sendRedirect($redirectURL)
