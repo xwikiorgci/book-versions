@@ -54,6 +54,11 @@ BookVersions.creationForm.noPermission=Your user has no permission to create [{0
 BookVersions.creationForm.docName=Enter the new {0} ID (different from the name, set later):
 BookVersions.creationForm.submit=Create
 
+# Page Creation form
+BookVersions.creationForm.newPage=New book page
+BookVersions.creationForm.pageTitle=Page title
+BookVersions.creationForm.create=Create
+
 # Navigation menu
 BookVersions.navMenu.versionSelect=Version</content>
   <object>

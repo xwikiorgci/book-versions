@@ -1,0 +1,374 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="BookVersions.Code.CreateBookPage" locale="">
+  <web>BookVersions.Code</web>
+  <name>CreateBookPage</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Book Page Creation Form</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>BookVersions.Code.CreateBookPage</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d97170aa-65db-42f3-8378-52e5da11603d</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>var XWiki = (function (XWiki) {
+
+XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
+  initialize : function($super, trigger) {
+    trigger.observe('click', this.showDialog.bindAsEventListener(this));
+    this.urlTemplate = trigger.up().next('input[type=hidden]').value;
+
+    this.input = new Element('input', {type: 'text', id: 'bookPageTitle'});
+    this.addButton = new Element('input', {class: 'btn btn-primary', value: "$services.localization.render('BookVersions.creationForm.create')"});
+    this.dList = new Element('dl');
+    this.dTerm = new Element('dt');
+    this.dDef = new Element('dd');
+    this.dLabel = new Element('label', {for: 'bookPageTitle'});
+    this.dLabel.insert("$services.localization.render('BookVersions.creationForm.pageTitle')");
+    this.dTerm.insert(this.dLabel);
+    this.dDef.insert(this.input);
+    this.dList.insert(this.dTerm);
+    this.dList.insert(this.dDef);
+
+    var container = new Element('div', {id: 'entryNamePopup', class: 'xform'});
+    container.insert(this.dList);
+    container.insert(this.addButton);
+
+    $super(container, {
+      show: {method: this.showDialog, keys: []},
+      add: {method: this._onAdd, keys: ['Enter']}
+    }, {
+      title: '$escapetool.javascript($services.localization.render('BookVersions.creationForm.newPage'))',
+      verticalPosition: 'top'
+    });
+  },
+  createDialog : function($super, event) {
+    this.addButton.observe('click', this._onAdd.bind(this));
+    $super(event);
+  },
+  showDialog : function($super, event) {
+    $super(event);
+    this.input.clear().focus();
+  },
+  _onAdd : function() {
+    if (this.input.value != '') {
+      // We use the global flag because we need to replace both the page name and its title.
+      fetch("$xwiki.getURL('BookVersions.Code.BookService')" + '?action=transformNameUsingSlug&amp;name=' + this.input.value, {
+        method: 'get'
+      })
+        .then(response =&gt; response.json())
+        .then(data =&gt; {
+          var transformedName = data.transformedName;
+          if(!transformedName &amp;&amp; transformedName != '') {
+            transformedName = this.input.value;
+          }
+          window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)) + '&amp;form_token=$!{services.csrf.getToken()}';
+        })
+      .catch(err =&gt; {
+        console.log(err);
+      });
+    } else {
+      this.input.focus();
+    }
+  }
+});
+
+return XWiki;
+}(XWiki || {}));
+
+
+(XWiki.domIsLoaded) || document.observe('xwiki:dom:loaded', function(){
+  var bookPageNamePopup = new XWiki.EntryNamePopup($('tmCreateBookPage').down('.addBookPage'));
+  bookPageNamePopup.options.title = "$services.localization.render('BookVersions.creationForm.newPage')"
+});
+</code>
+    </property>
+    <property>
+      <name></name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>BookVersions.Code.CreateBookPage</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>31048c90-c675-4349-8305-4478e1e72886</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <async_cached>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>async_cached</name>
+        <number>3</number>
+        <prettyName>Cached</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </async_cached>
+      <async_context>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>async_context</name>
+        <number>4</number>
+        <prettyName>Context elements</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>, </separator>
+        <separators>|, </separators>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <values>action=Action|doc.reference=Document|doc.revision|icon.theme=Icon theme|locale=Language|rendering.defaultsyntax=Default syntax|rendering.restricted=Restricted|rendering.targetsyntax=Target syntax|request.base=Request base URL|request.cookies|request.headers|request.parameters=Request parameters|request.remoteAddr|request.session|request.url=Request URL|request.wiki=Request wiki|sheet|user=User|wiki=Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </async_context>
+      <async_enabled>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>async_enabled</name>
+        <number>2</number>
+        <prettyName>Asynchronous rendering</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </async_enabled>
+      <content>
+        <disabled>0</disabled>
+        <editor>Text</editor>
+        <name>content</name>
+        <number>1</number>
+        <prettyName>Executed Content</prettyName>
+        <restricted>0</restricted>
+        <rows>25</rows>
+        <size>120</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>5</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>6</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>parameters</name>
+        <number>7</number>
+        <prettyName>Extension Parameters</prettyName>
+        <restricted>0</restricted>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>8</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <async_cached>0</async_cached>
+    </property>
+    <property>
+      <async_context/>
+    </property>
+    <property>
+      <async_enabled>0</async_enabled>
+    </property>
+    <property>
+      <content>{{velocity}}
+#if ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($doc) || $services.bookversions.isBookPage($doc)))
+  #set ($BOOK_CODE = 'BookVersions.Code')
+  #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookPage"))
+  ## Display the custom new page button
+  #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createSpaceReference('__entryName__', $doc.documentReference.parent)))
+  #set ($params = {
+    'template': "${BOOK_CODE}.BookPageTemplate",
+    'title': '__entryName__',
+    'parent': $services.model.serialize($doc.documentReference, 'local')
+  })
+  #set ($newBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
+
+  {{html clean="false"}}
+    &lt;div class="btn-group" id="tmCreateBookPage"&gt;
+      &lt;a href="#AddNewBookPage" role="button" title="$services.localization.render('BookVersions.creationForm.newPage')" class="btn btn-primary addBookPage"&gt;
+        &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
+        &lt;span class="btn-label"&gt;$services.localization.render('BookVersions.creationForm.newPage')&lt;/span&gt;
+      &lt;/a&gt;
+    &lt;/div&gt;
+    &lt;input type="hidden" value="$escapetool.xml($newBookPageEditURL)"/&gt;
+  {{/html}}
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.xwiki.plaftorm.menu.content</extensionPointId>
+    </property>
+    <property>
+      <name>bookversions.createbookpage</name>
+    </property>
+    <property>
+      <parameters></parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+</xwikidoc>
