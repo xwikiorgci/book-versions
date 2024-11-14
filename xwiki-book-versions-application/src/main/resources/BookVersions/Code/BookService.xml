@@ -36,7 +36,17 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content/>
+  <content>{{velocity}}
+  #if( $request.action == 'transformNameUsingSlug' &amp;&amp; "$!request.name" != '')
+    #set ($transformedName = "$!services.bookversions.transformNameUsingSlugValidation($!request.name)")
+    #if ($transformedName == '')
+      set ($transformedName = "$!request.name")
+    #end
+    #jsonResponse({
+      'transformedName' : "$escapetool.json($transformedName)"
+    })
+  #end
+{{/velocity}}</content>
   <object>
     <name>BookVersions.Code.BookService</name>
     <number>0</number>
@@ -129,6 +139,7 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.script.service.ScriptServiceManager;
 
 @Component
 @Named("bookversions")
@@ -136,6 +147,10 @@ import org.xwiki.script.service.ScriptService;
 public class BookVersionsScriptService implements ScriptService
 {
     private static final String MAIN_WIKI_NAME = "xwiki";
+
+    private static final String SLUGVALIDATION_HINT = "SlugEntityNameValidation";
+
+    private static final String BOOK_PAGE_PROP_UNVERSIONED = "unversioned";
 
     private static final EntityReference BOOKVERSIONS_CODE_REFERENCE = new EntityReference("Code", EntityType.SPACE,
         new EntityReference("BookVersions", org.xwiki.model.EntityType.SPACE));
@@ -164,6 +179,9 @@ public class BookVersionsScriptService implements ScriptService
     @Inject
     @Named('local')
     private EntityReferenceSerializer&lt;String&gt; localSerializer;
+
+    @Inject
+    private ScriptServiceManager scriptServiceManager;
 
     @Inject
     private Logger logger;
@@ -289,6 +307,94 @@ public class BookVersionsScriptService implements ScriptService
         return null;
     }
 
+    /**
+     * Check if the given referenced document is a book page.
+     *
+     * @param documentReference The reference of the document
+     * @throws XWikiException
+     */
+    boolean isBook(DocumentReference documentReference) throws XWikiException
+    {
+        XWikiContext xcontext = this.xcontextProvider.get();
+        XWiki xwiki = xcontext.getWiki();
+        XWikiDocument bookDocument = xwiki.getDocument(documentReference, xcontext);
+
+        return isBook(bookDocument);
+    }
+
+    /**
+     * Check if the given document is a book page.
+     *
+     * @param document The XWiki document
+     * @throws XWikiException
+     */
+    boolean isBook(XWikiDocument document) throws XWikiException
+    {
+        return getObjectFromDocument(document, BOOK_CLASS_REFERENCE) != null;
+    }
+
+
+    /**
+     * Check if the given referenced document is a book page.
+     *
+     * @param documentReference The reference of the document
+     * @throws XWikiException
+     */
+    boolean isBookPage(DocumentReference documentReference) throws XWikiException
+    {
+        XWikiContext xcontext = this.xcontextProvider.get();
+        XWiki xwiki = xcontext.getWiki();
+        XWikiDocument bookPageDocument = xwiki.getDocument(documentReference, xcontext);
+
+        return isBookPage(bookPageDocument);
+    }
+
+    /**
+     * Check if the given document is a book page.
+     *
+     * @param document The XWiki document
+     * @throws XWikiException
+     */
+    boolean isBookPage(XWikiDocument document) throws XWikiException
+    {
+        return getObjectFromDocument(document, BOOK_PAGE_CLASS_REFERENCE) != null;
+    }
+
+    /*
+     * Check if the given document is a versioned book page.
+     *
+     * @param document The XWiki document
+     * @throws XWikiException
+     */
+    boolean isVersionedBookPage(XWikiDocument document) throws XWikiException
+    {
+        BaseObject obj = getObjectFromDocument(document, BOOK_PAGE_CLASS_REFERENCE);
+        if(obj != null) {
+            return obj.getIntValue(BOOK_PAGE_PROP_UNVERSIONED) != 1;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the object of the given type, in the given document.
+     *
+     * @param document The XWiki document
+     */
+    private BaseObject getObjectFromDocument(XWikiDocument document, EntityReference classReference)
+    {
+        return document.getXObject(classReference);
+    }
+
+    /**
+     * Transform the given name by using the slug name validation.
+     *
+     * @param name The name to be transformed
+     */
+    String transformNameUsingSlugValidation(String name)
+    {
+        return this.scriptServiceManager.get("modelvalidation").transformName(name, SLUGVALIDATION_HINT);
+    }
 }</script_content>
     </property>
     <property>
