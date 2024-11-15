@@ -45,6 +45,8 @@
       <groupId>org.xwiki.contrib</groupId>
       <artifactId>scriptcomponent</artifactId>
       <version>${scriptcomponent.version}</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.contrib</groupId>
