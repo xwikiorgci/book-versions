@@ -21,7 +21,6 @@
 package org.xwiki.contrib.bookversions;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.model.reference.DocumentReference;
 
 import com.xpn.xwiki.XWikiException;
 
@@ -34,13 +33,6 @@ import com.xpn.xwiki.XWikiException;
 @Role
 public interface Page
 {
-    /**
-     * Get the the reference of the book page.
-     * 
-     * @return the reference of the book page.
-     */
-    DocumentReference getDocumentReference();
-
     /**
      * Check if the current book page is defined (has the required object).
      * 

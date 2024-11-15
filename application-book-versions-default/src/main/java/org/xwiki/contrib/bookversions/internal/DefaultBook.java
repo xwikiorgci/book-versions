@@ -20,17 +20,8 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-
-import org.slf4j.Logger;
 import org.xwiki.contrib.bookversions.Book;
-import org.xwiki.model.reference.DocumentReference;
-
-import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Book.
@@ -40,62 +31,21 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 public class DefaultBook implements Book
 {
-    private DocumentReference documentReference;
-
     private XWikiDocument document;
-
-    private BaseObject object;
-
-    @Inject
-    private Provider<XWikiContext> contextProvider;
-
-    @Inject
-    private Logger logger;
 
     /**
      * Constructor.
      * 
-     * @param documentReference The reference of the book
+     * @param document The document storing the object.
      */
-    public DefaultBook(DocumentReference documentReference)
+    public DefaultBook(XWikiDocument document)
     {
-        this.documentReference = documentReference;
-        setMetadata();
-    }
-
-    @Override
-    public DocumentReference getDocumentReference()
-    {
-        return this.documentReference;
+        this.document = document;
     }
 
     @Override
     public boolean isDefined()
     {
-        return this.object != null;
-    }
-
-    /**
-     * Setting book metadata.
-     */
-    private void setMetadata()
-    {
-        XWikiContext xcontext = getXWikiContext();
-        try {
-            this.document = xcontext.getWiki().getDocument(this.documentReference, xcontext);
-            this.object = this.document.getXObject(BookVersionsConstants.BOOK_CLASS_REFERENCE);
-        } catch (XWikiException e) {
-            logger.error("Could not handle the page metadata from reference [{}]", this.documentReference);
-        }
-    }
-
-    /**
-     * Get the XWiki context.
-     *
-     * @return the xwiki context.
-     */
-    protected XWikiContext getXWikiContext()
-    {
-        return contextProvider.get();
+        return this.document.getXObject(BookVersionsConstants.BOOK_CLASS_REFERENCE) != null;
     }
 }

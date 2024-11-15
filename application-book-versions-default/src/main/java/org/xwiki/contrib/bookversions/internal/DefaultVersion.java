@@ -20,39 +20,33 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
+import org.xwiki.contrib.bookversions.Version;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+
 /**
  * Book Version.
  *
  * @version $Id$
  * @since 0.1
  */
-public class DefaultVersion
+public class DefaultVersion implements Version
 {
-    private String id;
+    private XWikiDocument document;
 
     /**
-     * Default constructor.
+     * Constructor.
+     * 
+     * @param document The document storing the object.
      */
-    public DefaultVersion()
+    public DefaultVersion(XWikiDocument document)
     {
-
+        this.document = document;
     }
 
-    /**
-     * @return the identifier of the version.
-     */
-    public String getId()
+    @Override
+    public boolean isDefined()
     {
-        return id;
-    }
-
-    /**
-     * @param id the identifier of the version.
-     * @return the current instance.
-     */
-    public DefaultVersion setId(String id)
-    {
-        this.id = id;
-        return this;
+        return this.document.getXObject(BookVersionsConstants.VERSION_CLASS_REFERENCE) != null;
     }
 }

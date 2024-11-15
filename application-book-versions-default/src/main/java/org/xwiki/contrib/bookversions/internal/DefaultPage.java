@@ -20,14 +20,7 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-
-import org.slf4j.Logger;
 import org.xwiki.contrib.bookversions.Page;
-import org.xwiki.model.reference.DocumentReference;
-
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -40,68 +33,28 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 public class DefaultPage implements Page
 {
-    private DocumentReference documentReference;
-
     private XWikiDocument document;
 
-    private BaseObject object;
-
-    @Inject
-    private Provider<XWikiContext> contextProvider;
-
-    @Inject
-    private Logger logger;
-
     /**
-     * Default constructor.
+     * Constructor.
      * 
-     * @param documentReference The reference of the book page
+     * @param document The document storing the object.
      */
-    public DefaultPage(DocumentReference documentReference)
+    public DefaultPage(XWikiDocument document)
     {
-        this.documentReference = documentReference;
-        setMetadata();
-    }
-
-    @Override
-    public DocumentReference getDocumentReference()
-    {
-        return this.documentReference;
+        this.document = document;
     }
 
     @Override
     public boolean isDefined()
     {
-        return this.object != null;
+        return this.document.getXObject(BookVersionsConstants.BOOK_PAGE_CLASS_REFERENCE) != null;
     }
 
     @Override
     public boolean isVersioned() throws XWikiException
     {
-        return this.object != null && this.object.getIntValue(BookVersionsConstants.BOOK_PAGE_PROP_UNVERSIONED) != 1;
-    }
-
-    /**
-     * Setting page metadata.
-     */
-    private void setMetadata()
-    {
-        XWikiContext xcontext = getXWikiContext();
-        try {
-            this.document = xcontext.getWiki().getDocument(this.documentReference, xcontext);
-            this.object = this.document.getXObject(BookVersionsConstants.BOOK_PAGE_CLASS_REFERENCE);
-        } catch (XWikiException e) {
-            logger.error("Could not handle the page metadata from reference [{}]", this.documentReference);
-        }
-    }
-
-    /**
-     * Get the XWiki context.
-     *
-     * @return the xwiki context.
-     */
-    protected XWikiContext getXWikiContext()
-    {
-        return contextProvider.get();
+        BaseObject pageObject = this.document.getXObject(BookVersionsConstants.BOOK_PAGE_CLASS_REFERENCE);
+        return pageObject != null && pageObject.getIntValue(BookVersionsConstants.BOOK_PAGE_PROP_UNVERSIONED) != 1;
     }
 }

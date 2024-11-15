@@ -69,5 +69,6 @@
     <module>application-book-versions-api</module>
     <module>application-book-versions-default</module>
     <module>application-book-versions-ui</module>
+    <module>application-book-versions-xip</module>
   </modules>
 </project>

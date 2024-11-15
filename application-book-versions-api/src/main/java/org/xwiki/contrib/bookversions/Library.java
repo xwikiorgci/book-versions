@@ -21,7 +21,6 @@
 package org.xwiki.contrib.bookversions;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.model.reference.DocumentReference;
 
 /**
  * Book Library.
@@ -33,10 +32,9 @@ import org.xwiki.model.reference.DocumentReference;
 public interface Library
 {
     /**
-     * Get the the reference of the book.
+     * Check if the current library is defined (has the required object).
      * 
-     * @return the reference of the book.
+     * @return true if the current library is defined.
      */
-
-    DocumentReference getDocumentReference();
+    boolean isDefined();
 }

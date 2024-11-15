@@ -22,8 +22,6 @@ package org.xwiki.contrib.bookversions;
 
 import org.xwiki.component.annotation.Role;
 
-import com.xpn.xwiki.doc.XWikiDocument;
-
 /**
  * Book Variant.
  *
@@ -34,10 +32,9 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public interface Variant
 {
     /**
-     * Get the the reference of the book.
+     * Check if the current variant is defined (has the required object).
      * 
-     * @return the reference of the book.
+     * @return true if the current variant is defined.
      */
-
-    XWikiDocument getDocumentReference();
+    boolean isDefined();
 }

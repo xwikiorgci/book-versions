@@ -81,19 +81,26 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Override
     public boolean isBook(DocumentReference documentReference) throws XWikiException
     {
-        return new DefaultBook(documentReference).isDefined();
+        XWikiContext xcontext = this.contextProvider.get();
+        XWiki xwiki = xcontext.getWiki();
+
+        return new DefaultBook(xwiki.getDocument(documentReference, xcontext)).isDefined();
     }
 
     @Override
     public boolean isPage(DocumentReference documentReference) throws XWikiException
     {
-        return new DefaultPage(documentReference).isDefined();
+        XWikiContext xcontext = this.contextProvider.get();
+        XWiki xwiki = xcontext.getWiki();
+        return new DefaultPage(xwiki.getDocument(documentReference, xcontext)).isDefined();
     }
 
     @Override
     public boolean isVersionedPage(DocumentReference documentReference) throws XWikiException
     {
-        return new DefaultPage(documentReference).isVersioned();
+        XWikiContext xcontext = this.contextProvider.get();
+        XWiki xwiki = xcontext.getWiki();
+        return new DefaultPage(xwiki.getDocument(documentReference, xcontext)).isVersioned();
     }
 
     @Override

@@ -21,7 +21,6 @@
 package org.xwiki.contrib.bookversions;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.model.reference.DocumentReference;
 
 /**
  * Book.
@@ -32,13 +31,6 @@ import org.xwiki.model.reference.DocumentReference;
 @Role
 public interface Book
 {
-    /**
-     * Get the the reference of the book.
-     * 
-     * @return the reference of the book.
-     */
-    DocumentReference getDocumentReference();
-
     /**
      * Check if the current book is defined (has the required object).
      * 

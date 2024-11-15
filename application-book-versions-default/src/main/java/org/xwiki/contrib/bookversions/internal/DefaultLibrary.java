@@ -21,7 +21,7 @@
 package org.xwiki.contrib.bookversions.internal;
 
 import org.xwiki.contrib.bookversions.Library;
-import org.xwiki.model.reference.DocumentReference;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Book Library.
@@ -31,21 +31,21 @@ import org.xwiki.model.reference.DocumentReference;
  */
 public class DefaultLibrary implements Library
 {
-    private DocumentReference documentReference;
+    private XWikiDocument document;
 
     /**
-     * Default constructor.
+     * Constructor.
      * 
-     * @param documentReference The reference of the library
+     * @param document The document storing the object.
      */
-    public DefaultLibrary(DocumentReference documentReference)
+    public DefaultLibrary(XWikiDocument document)
     {
-        this.documentReference = documentReference;
+        this.document = document;
     }
 
     @Override
-    public DocumentReference getDocumentReference()
+    public boolean isDefined()
     {
-        return this.documentReference;
+        return this.document.getXObject(BookVersionsConstants.LIBRARY_CLASS_REFERENCE) != null;
     }
 }

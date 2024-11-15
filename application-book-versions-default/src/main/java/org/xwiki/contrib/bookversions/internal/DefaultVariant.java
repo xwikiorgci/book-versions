@@ -20,39 +20,33 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
+import org.xwiki.contrib.bookversions.Variant;
+
+import com.xpn.xwiki.doc.XWikiDocument;
+
 /**
  * Book Variant.
  *
  * @version $Id$
  * @since 0.1
  */
-public class DefaultVariant
+public class DefaultVariant implements Variant
 {
-    private String id;
+    private XWikiDocument document;
 
     /**
-     * Default constructor.
+     * Constructor.
+     * 
+     * @param document The document storing the object.
      */
-    public DefaultVariant()
+    public DefaultVariant(XWikiDocument document)
     {
-
+        this.document = document;
     }
 
-    /**
-     * @return the identifier of the variant.
-     */
-    public String getId()
+    @Override
+    public boolean isDefined()
     {
-        return id;
-    }
-
-    /**
-     * @param id the identifier of the variant.
-     * @return the current instance.
-     */
-    public DefaultVariant setId(String id)
-    {
-        this.id = id;
-        return this;
+        return this.document.getXObject(BookVersionsConstants.LIBRARY_CLASS_REFERENCE) != null;
     }
 }

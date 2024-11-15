@@ -54,6 +54,12 @@ public interface BookVersionsConstants
      */
     EntityReference VERSION_CLASS_REFERENCE =
         new EntityReference("VersionClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+    
+    /**
+     * The reference of the variant class.
+     */
+    EntityReference VARIANT_CLASS_REFERENCE =
+        new EntityReference("VariantClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
      * The reference of the book page class.
