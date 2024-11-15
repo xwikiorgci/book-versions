@@ -198,7 +198,7 @@ return XWiki;
 </code>
     </property>
     <property>
-      <name></name>
+      <name/>
     </property>
     <property>
       <parse>1</parse>
@@ -365,7 +365,7 @@ return XWiki;
       <name>bookversions.createbookpage</name>
     </property>
     <property>
-      <parameters></parameters>
+      <parameters/>
     </property>
     <property>
       <scope>wiki</scope>
