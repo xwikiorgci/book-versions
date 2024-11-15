@@ -142,7 +142,7 @@ import org.xwiki.script.service.ScriptService;
 import org.xwiki.script.service.ScriptServiceManager;
 
 @Component
-@Named("bookversions")
+@Named("wikibookversions")
 @Singleton
 public class BookVersionsScriptService implements ScriptService
 {

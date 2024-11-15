@@ -28,7 +28,7 @@
     <version>15.10.11</version>
   </parent>
   <groupId>org.xwiki.contrib</groupId>
-  <artifactId>xwiki-book-versions</artifactId>
+  <artifactId>application-book-versions</artifactId>
   <name>Book Versions Application</name>
   <description>Application for managing and publishing documentation (a collection of pages) that is versioned (with inheritance of content or not), described by a status, that can be conditioned by variants, and using libraries of keywords/rich content dynamically filled in.</description>
  <packaging>pom</packaging>
@@ -66,6 +66,8 @@
     <tag>HEAD</tag>
   </scm>
   <modules>
-    <module>xwiki-book-versions-application</module>
+    <module>application-book-versions-api</module>
+    <module>application-book-versions-default</module>
+    <module>application-book-versions-ui</module>
   </modules>
 </project>
