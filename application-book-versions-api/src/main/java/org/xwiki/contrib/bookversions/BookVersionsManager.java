@@ -27,6 +27,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.QueryException;
 
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Book versions manager.
@@ -47,6 +48,16 @@ public interface BookVersionsManager
     boolean isBook(DocumentReference documentReference) throws XWikiException;
 
     /**
+     * Check if the given reference is a versioned book (has at least one version).
+     * 
+     * @param documentReference The document reference.
+     * @return true if the given reference is versioned book.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    boolean isVersionedBook(DocumentReference documentReference) throws XWikiException, QueryException;
+
+    /**
      * Check if the given reference is a book page.
      * 
      * @param documentReference The document reference.
@@ -56,6 +67,15 @@ public interface BookVersionsManager
     boolean isPage(DocumentReference documentReference) throws XWikiException;
 
     /**
+     * Check if the given document is a book page.
+     * 
+     * @param document The XWiki document.
+     * @return True, if the given reference is a book page.
+     * @throws XWikiException In case the system can't provide an answer.
+     */
+    boolean isPage(XWikiDocument document) throws XWikiException;
+
+    /**
      * Check if the given reference is a versioned book page.
      * 
      * @param documentReference The document reference.
@@ -63,6 +83,42 @@ public interface BookVersionsManager
      * @throws XWikiException In case the system can't provide an answer.
      */
     boolean isVersionedPage(DocumentReference documentReference) throws XWikiException;
+
+    /**
+     * Check if the given document is a versioned book page.
+     * 
+     * @param document The XWiki document.
+     * @return True, if the given document is a versioned book page.
+     * @throws XWikiException In case the system can't provide an answer.
+     */
+    boolean isVersionedPage(XWikiDocument document) throws XWikiException;
+
+    /**
+     * Check if the given reference is a version.
+     * 
+     * @param documentReference The document reference.
+     * @return True, if the given reference is a version.
+     * @throws XWikiException In case the system can't provide an answer.
+     */
+    boolean isVersion(DocumentReference documentReference) throws XWikiException;
+
+    /**
+     * Check if the given reference is a variant.
+     * 
+     * @param documentReference The document reference.
+     * @return True, if the given reference is a variant.
+     * @throws XWikiException In case the system can't provide an answer.
+     */
+    boolean isVariant(DocumentReference documentReference) throws XWikiException;
+
+    /**
+     * Check if the given reference is a library.
+     * 
+     * @param documentReference The document reference.
+     * @return True, if the given reference is a library.
+     * @throws XWikiException In case the system can't provide an answer.
+     */
+    boolean isLibrary(DocumentReference documentReference) throws XWikiException;
 
     /**
      * Transform the given name by using the slug name validation.
@@ -86,8 +142,11 @@ public interface BookVersionsManager
      * 
      * @param pageReference the page from which to take the collection reference
      * @return the versioned collection reference, or null if the page is not part of a collection
+     * @throws XWikiException
+     * @throws QueryException
      */
-    DocumentReference getVersionedCollectionReference(DocumentReference pageReference) throws QueryException;
+    DocumentReference getVersionedCollectionReference(DocumentReference pageReference)
+        throws XWikiException, QueryException;
 
     /**
      * Get the version references from a versioned collection (book or library.
@@ -96,8 +155,10 @@ public interface BookVersionsManager
      * @return a list of versions references declared in the versioned collection, ordered by descending date. Returns
      *         an empty list if none are found.
      * @throws QueryException
+     * @throws XWikiException
      */
-    List<DocumentReference> getCollectionVersions(DocumentReference collectionReference) throws QueryException;
+    List<DocumentReference> getCollectionVersions(DocumentReference collectionReference)
+        throws QueryException, XWikiException;
 
     /**
      * Get the reference of a versioned page content. This does not check existence or page class.
