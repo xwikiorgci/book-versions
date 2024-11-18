@@ -54,7 +54,7 @@ public interface BookVersionsConstants
      */
     EntityReference VERSION_CLASS_REFERENCE =
         new EntityReference("VersionClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
-    
+
     /**
      * The reference of the variant class.
      */
@@ -64,16 +64,46 @@ public interface BookVersionsConstants
     /**
      * The reference of the book page class.
      */
-    EntityReference BOOK_PAGE_CLASS_REFERENCE =
+    EntityReference BOOKPAGE_CLASS_REFERENCE =
         new EntityReference("BookPageClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
      * The unversioned property of a book page.
      */
-    String BOOK_PAGE_PROP_UNVERSIONED = "unversioned";
+    String BOOKPAGE_PROP_UNVERSIONED = "unversioned";
+
+    /**
+     * The status property of a book page.
+     */
+    String BOOKPAGE_PROP_STATUS = "status";
+
+    /**
+     * The status property of a book page.
+     */
+    String BOOKPAGE_PROP_STATUS_DRAFT = "draft";
+
+    /**
+     * The status property of a book page.
+     */
+    String BOOKPAGE_PROP_STATUS_REVIEW = "review";
+
+    /**
+     * The status property of a book page.
+     */
+    String BOOKPAGE_PROP_STATUS_COMPLETE = "complete";
 
     /**
      * The slug validator hint.
      */
     String SLUGVALIDATION_HINT = "SlugEntityNameValidation";
+
+    /**
+     * The selected version that is stored in the session.
+     */
+    String SESSION_SELECTEDVERSION = "BookVersions.selectedVersion";
+
+    /**
+     * The selected version that is stored in the session.
+     */
+    String VERSION_PROP_PRECEDINGVERSION = "precedingVersionReference";
 }

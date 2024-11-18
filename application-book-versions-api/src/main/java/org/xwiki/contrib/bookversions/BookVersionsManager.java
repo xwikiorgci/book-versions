@@ -129,70 +129,98 @@ public interface BookVersionsManager
     String transformUsingSlugValidation(String name);
 
     /**
+     * Get the selected version that is stored in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @return the selected version.
+     */
+    String getSelectedVersion(DocumentReference documentReference);
+
+    /**
+     * Set the selected version in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @param version the version to be stored for the given collection.
+     */
+    void setSelectedVersion(DocumentReference documentReference, String version);
+
+    /**
      * Check if a page is a nested page of another one, recursively.
      * 
-     * @param spaceReference the reference of the supposed space
+     * @param documentReference the reference of the supposed space
      * @param nestedReference the reference of the supposed nested page
      * @return true if the space contains the nested space in one of its sub-spaces.
      */
-    boolean isAParent(DocumentReference spaceReference, DocumentReference nestedReference);
+    boolean isAParent(DocumentReference documentReference, DocumentReference nestedReference);
 
     /**
      * Get the versioned collection (book or library) reference of a given page.
      * 
-     * @param pageReference the page from which to take the collection reference
+     * @param documentReference the page from which to take the collection reference
      * @return the versioned collection reference, or null if the page is not part of a collection
      * @throws XWikiException
      * @throws QueryException
      */
-    DocumentReference getVersionedCollectionReference(DocumentReference pageReference)
+    DocumentReference getVersionedCollectionReference(DocumentReference documentReference)
         throws XWikiException, QueryException;
 
     /**
      * Get the version references from a versioned collection (book or library.
      * 
-     * @param collectionReference the reference of the collection to get versions from
+     * @param documentReference the reference of the collection to get versions from
      * @return a list of versions references declared in the versioned collection, ordered by descending date. Returns
      *         an empty list if none are found.
      * @throws QueryException
      * @throws XWikiException
      */
-    List<DocumentReference> getCollectionVersions(DocumentReference collectionReference)
+    List<String> getCollectionVersions(DocumentReference documentReference)
         throws QueryException, XWikiException;
 
     /**
      * Get the reference of a versioned page content. This does not check existence or page class.
      * 
-     * @param pageReference the reference of the (versioned content) page
+     * @param documentReference the reference of the (versioned content) page
+     * @return the reference of the versioned page content
+     * @throws XWikiException
+     * @throws QueryException
+     */
+    DocumentReference getVersionedContentReference(DocumentReference documentReference)
+        throws XWikiException, QueryException;
+
+    /**
+     * Get the reference of a versioned page content. This does not check existence or page class.
+     * 
+     * @param documentReference the reference of the (versioned content) page
      * @param versionReference the reference of the version page
      * @return the reference of the versioned page content
      */
-    DocumentReference getVersionedContentReference(DocumentReference pageReference, DocumentReference versionReference);
+    DocumentReference getVersionedContentReference(DocumentReference documentReference,
+        DocumentReference versionReference);
 
     /**
      * Get the reference of the version of the content to be displayed, be it the required version, or inherited one.
      * 
-     * @param pageReference the reference of the page to get the content from
+     * @param documentReference the reference of the page to get the content from
      * @param versionReference the reference of the version from which to get the content from, or inherit
      * @return the reference of the version of the content to be displayed. Null if there's no versioned content for the
      *         page, neither to inherit.
      * @throws QueryException
      * @throws XWikiException
      */
-    DocumentReference getInheritedContentVersionReference(DocumentReference pageReference,
+    DocumentReference getInheritedContentVersionReference(DocumentReference documentReference,
         DocumentReference versionReference) throws QueryException, XWikiException;
 
     /**
      * Get the reference of the content to be displayed, be it corresponding to the required version, or inherited from
      * another version.
      * 
-     * @param pageReference the reference of the page to get the content from
+     * @param documentReference the reference of the page to get the content from
      * @param versionReference the reference of the version from which to get the content from, or inherit
      * @return the reference of the content to be displayed. Null if there's no versioned content for the page, neither
      *         to inherit.
      * @throws QueryException
      * @throws XWikiException
      */
-    DocumentReference getInheritedContentReference(DocumentReference pageReference, DocumentReference versionReference)
-        throws QueryException, XWikiException;
+    DocumentReference getInheritedContentReference(DocumentReference documentReference,
+        DocumentReference versionReference) throws QueryException, XWikiException;
 }

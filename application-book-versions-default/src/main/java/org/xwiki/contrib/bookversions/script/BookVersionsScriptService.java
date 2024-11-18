@@ -116,6 +116,28 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the selected version that is stored in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @return the selected version.
+     */
+    public String getSelectedVersion(DocumentReference documentReference)
+    {
+        return bookVersionsManagerProvider.get().getSelectedVersion(documentReference);
+    }
+
+    /**
+     * Set the selected version in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @param version the version to be stored for the given collection.
+     */
+    public void setSelectedVersion(DocumentReference documentReference, String version)
+    {
+        bookVersionsManagerProvider.get().setSelectedVersion(documentReference, version);
+    }
+
+    /**
      * Check if a page is a nested page of another one, recursively.
      * 
      * @param spaceReference the reference of the supposed space
@@ -149,10 +171,24 @@ public class BookVersionsScriptService implements ScriptService
      * @throws QueryException
      * @throws XWikiException
      */
-    public List<DocumentReference> getCollectionVersions(DocumentReference collectionReference)
+    public List<String> getCollectionVersions(DocumentReference collectionReference)
         throws QueryException, XWikiException
     {
         return bookVersionsManagerProvider.get().getCollectionVersions(collectionReference);
+    }
+
+    /**
+     * Get the reference of a versioned page content. This does not check existence or page class.
+     * 
+     * @param documentReference the reference of the (versioned content) page
+     * @return the reference of the versioned page content
+     * @throws XWikiException
+     * @throws QueryException
+     */
+    public DocumentReference getVersionedContentReference(DocumentReference documentReference)
+        throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getVersionedContentReference(documentReference);
     }
 
     /**

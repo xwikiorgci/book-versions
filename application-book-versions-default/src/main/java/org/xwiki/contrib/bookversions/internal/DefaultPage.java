@@ -35,6 +35,14 @@ public class DefaultPage implements Page
 {
     private XWikiDocument document;
 
+    private BaseObject object;
+
+    private String status;
+
+    private boolean defined;
+
+    private boolean unversioned;
+
     /**
      * Constructor.
      * 
@@ -43,18 +51,52 @@ public class DefaultPage implements Page
     public DefaultPage(XWikiDocument document)
     {
         this.document = document;
+        this.object = document.getXObject(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE);
+        this.defined = this.object != null;
+        this.status = this.defined ? this.object.getStringValue(BookVersionsConstants.BOOKPAGE_PROP_STATUS) : null;
+        this.unversioned =
+            this.defined ? this.object.getIntValue(BookVersionsConstants.BOOKPAGE_PROP_UNVERSIONED) == 1 : false;
+    }
+
+    @Override
+    public XWikiDocument getDocument()
+    {
+        return this.document;
     }
 
     @Override
     public boolean isDefined()
     {
-        return this.document.getXObject(BookVersionsConstants.BOOK_PAGE_CLASS_REFERENCE) != null;
+        return this.defined;
+    }
+
+    @Override
+    public String getStatus()
+    {
+        return this.status;
     }
 
     @Override
     public boolean isVersioned() throws XWikiException
     {
-        BaseObject pageObject = this.document.getXObject(BookVersionsConstants.BOOK_PAGE_CLASS_REFERENCE);
-        return pageObject != null && pageObject.getIntValue(BookVersionsConstants.BOOK_PAGE_PROP_UNVERSIONED) != 1;
+        return isDefined() && !unversioned;
+    }
+
+    @Override
+    public boolean isDraft()
+    {
+        return this.status != null && this.status == BookVersionsConstants.BOOKPAGE_PROP_STATUS_DRAFT;
+    }
+
+    @Override
+    public boolean isInReview()
+    {
+        return this.status != null && this.status == BookVersionsConstants.BOOKPAGE_PROP_STATUS_REVIEW;
+    }
+
+    @Override
+    public boolean isComplete()
+    {
+        return this.status != null && this.status == BookVersionsConstants.BOOKPAGE_PROP_STATUS_COMPLETE;
     }
 }
