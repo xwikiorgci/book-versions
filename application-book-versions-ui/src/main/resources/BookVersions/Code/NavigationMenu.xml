@@ -131,14 +131,7 @@
     const collectionRef = $('#collectionRef');
     const setAttributeURL = $('#setAttributeURL');
     versionSelect.on("change", function() {
-      const queryString='?form_token='+formToken.val()+'&amp;selectedVersion='+versionSelect.val()+'&amp;collectionRef='+collectionRef.val();
-      fetch(setAttributeURL.val()+queryString, {
-        method: 'get'
-      }).then(response =&gt; {
-        window.location.reload();
-      }).catch(err =&gt; {
-        console.log(err);
-      });
+      window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction);
     })
   })</code>
     </property>
@@ -283,26 +276,23 @@
 {{velocity}}
 #set ($docRef = $doc.getDocumentReference())
 #set ($collectionRef = $services.bookversions.getVersionedCollectionReference($docRef))
-#if ("$!collectionRef" != '' &amp;&amp; $doc.getObject('BookVersions.Code.BookPageClass') != $null)
+#if ("$!collectionRef" != '' &amp;&amp; $services.bookversions.isVersionedPage($docRef) || (!$services.bookversions.isBook($docRef) &amp;&amp; !$services.bookversions.isPage($docRef) &amp;&amp; !$services.bookversions.isVersion($docRef) &amp;&amp; !$services.bookversions.isVariant($docRef)))
   ## We are either on a book's or a library's page
   #set ($discard = $xwiki.jsx.use('BookVersions.Code.NavigationMenu'))
   #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
-  #getVersionedContentReference($collectionRef $docRef $versionedContentReference)
-  #if ($docRef != $versionedContentReference)
-    #set($redirectURL = $xwiki.getURL($versionedContentReference,'view',''))
-    $response.sendRedirect($redirectURL)
+  #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef))
+  #if ($docRef != $versionedContentReference &amp;&amp; "$!request.selectedVersion" != '')
+    $services.bookversions.setSelectedVersion($request.collectionRef, $request.selectedVersion)
   #end
-  #set($setAttributeURL = $xwiki.getURL($services.model.createDocumentReference($xcontext.getDatabase(),['BookVersions','Code'],'SetUserSessionAttribute'),'view',''))
 
   {{html}}
   &lt;form class='xformInline' id='changeArchiveStatus'&gt;
     &lt;input type="hidden" id="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
-    &lt;input type="hidden" id="collectionRef" value="$escapetool.url("$services.bookversions.getVersionedCollectionReference($doc.getDocumentReference())")"/&gt;
-    &lt;input type="hidden" id="setAttributeURL" value="$setAttributeURL"/&gt;
     &lt;label for="collectionVersion"&gt;$services.localization.render("BookVersions.navMenu.versionSelect")&lt;/label&gt;
     &lt;select name='collectionVersion' id='collectionVersion'&gt;
       #foreach($version in $versions)
-        &lt;option value="$escapetool.url($version)" #if($version.equals($selectedVersion))selected#end&gt;$xwiki.getDocument($version).getTitle()&lt;/option&gt;
+        #set($versionedContentReference = $services.model.serialize($services.bookversions.getInheritedContentVersionReference($docRef, $version), 'local'))
+        &lt;option value="$escapetool.url($versionedContentReference)" #if($version.equals($selectedVersion))selected#end&gt;$xwiki.getDocument($version).getTitle()&lt;/option&gt;
       #end
     &lt;/select&gt;
   &lt;/form&gt;
