@@ -274,31 +274,55 @@
       <content>{{include reference="BookVersions.Code.BookMacros" /}}
 
 {{velocity}}
-#set ($docRef = $doc.getDocumentReference())
-#set ($collectionRef = $services.bookversions.getVersionedCollectionReference($docRef))
-#if ("$!collectionRef" != '' &amp;&amp; $services.bookversions.isVersionedPage($docRef) || (!$services.bookversions.isBook($docRef) &amp;&amp; !$services.bookversions.isPage($docRef) &amp;&amp; !$services.bookversions.isVersion($docRef) &amp;&amp; !$services.bookversions.isVariant($docRef)))
-  ## We are either on a book's or a library's page
-  #set ($discard = $xwiki.jsx.use('BookVersions.Code.NavigationMenu'))
-  #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
-  #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef))
-  #if ($docRef != $versionedContentReference &amp;&amp; "$!request.selectedVersion" != '')
-    $services.bookversions.setSelectedVersion($request.collectionRef, $request.selectedVersion)
-  #end
-
-  {{html}}
-  &lt;form class='xformInline' id='changeArchiveStatus'&gt;
-    &lt;input type="hidden" id="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
-    &lt;label for="collectionVersion"&gt;$services.localization.render("BookVersions.navMenu.versionSelect")&lt;/label&gt;
-    &lt;select name='collectionVersion' id='collectionVersion'&gt;
-      #foreach($version in $versions)
-        #set($versionedContentReference = $services.model.serialize($services.bookversions.getInheritedContentVersionReference($docRef, $version), 'local'))
-        &lt;option value="$escapetool.url($versionedContentReference)" #if($version.equals($selectedVersion))selected#end&gt;$xwiki.getDocument($version).getTitle()&lt;/option&gt;
+  ## Current document reference
+  #set ($docRef = $doc.getDocumentReference())
+  ## Collection (Book / Library) reference
+  #set ($collectionRef = $services.bookversions.getVersionedCollectionReference($docRef))
+  ## Check if the book page is versioned
+  #set ($isVersionedPage = $services.bookversions.isVersionedPage($docRef))
+  ## Check if the current document is of type versioned content (has the associated object)
+  #set ($isVersionedContent = $services.bookversions.isVersionedContent($docRef))
+  ## Get the version stored in the session
+  #set ($selectedVersion = $services.bookversions.getSelectedVersion($docRef))
+  ## TODO : add a check for library docs
+  #if ("$!collectionRef" != '' &amp;&amp; ($isVersionedPage || $isVersionedContent))
+    #set ($discard = $xwiki.jsx.use('BookVersions.Code.NavigationMenu'))
+    ## Get the list of versions defined for the current collection
+    #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
+    ## Get the reference of the versioned content doc, for the selected version
+    #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef, $selectedVersion))
+    ## In case this is a versioned page and the versioned content for this page exists
+    #if ($isVersionedPage &amp;&amp; $versionedContentReference &amp;&amp; $docRef != $versionedContentReference)
+      ## Update the selected version for the current collection and redirect to the corresponding versioned content doc
+      #set ($discard = $services.bookversions.setSelectedVersion($collectionRef, $services.model.serialize($versionedContentReference, 'local')))
+      $response.sendRedirect($xwiki.getURL($versionedContentReference, $xcontext.action))
+    #else
+      ## This is a versioned content document, so update the selected version in the session
+      #set ($versionReference = $services.bookversions.getVersionReference($collectionRef, $doc.name))
+      #if ($versionReference)
+        $services.bookversions.setSelectedVersion($collectionRef, $services.model.serialize($versionReference, 'local'))
       #end
-    &lt;/select&gt;
-  &lt;/form&gt;
-  {{/html}}
+    #end
 
-#end
+    {{html}}
+      &lt;form class='xformInline' id='changeArchiveStatus'&gt;
+        &lt;input type="hidden" id="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
+        &lt;label for="collectionVersion"&gt;$services.localization.render("BookVersions.navMenu.versionSelect")&lt;/label&gt;
+        &lt;select name='collectionVersion' id='collectionVersion'&gt;
+          #foreach($version in $versions)
+            #if ($version)
+              #set ($versionedContentReference = $services.model.serialize($services.bookversions.getInheritedContentVersionReference($docRef, $version), 'local'))
+              #if ($versionedContentReference)
+                #set ($versionDocument = $xwiki.getDocument($version))
+                #set ($isSelected = $versionDocument.name.equals($doc.name))
+                &lt;option value="$escapetool.url($versionedContentReference)" #if($isSelected)selected#end&gt;$versionDocument.displayTitle ($isSelected)&lt;/option&gt;
+              #end
+            #end
+          #end
+        &lt;/select&gt;
+      &lt;/form&gt;
+    {{/html}}
+  #end
 {{/velocity}}</content>
     </property>
     <property>

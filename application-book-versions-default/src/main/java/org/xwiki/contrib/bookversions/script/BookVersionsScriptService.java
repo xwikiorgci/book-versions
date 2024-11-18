@@ -31,6 +31,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
 
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 import org.xwiki.contrib.bookversions.BookVersionsManager;
 import org.xwiki.model.reference.DocumentReference;
@@ -68,16 +69,15 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
-     * Check if the given reference is a versioned book (has at least one version).
+     * Check if the given document is a book.
      * 
-     * @param documentReference The document reference.
-     * @return true if the given reference is versioned book.
-     * @throws QueryException
-     * @throws XWikiException
+     * @param document The document.
+     * @return True, if the given document is a book.
+     * @throws XWikiException In case the system can't provide an answer.
      */
-    boolean isVersionedBook(DocumentReference documentReference) throws XWikiException, QueryException
+    public boolean isBook(XWikiDocument document) throws XWikiException
     {
-        return bookVersionsManagerProvider.get().isVersionedBook(documentReference);
+        return bookVersionsManagerProvider.get().isBook(document);
     }
 
     /**
@@ -105,6 +105,30 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Check if the given reference is a versioned content document.
+     * 
+     * @param documentReference The document reference.
+     * @return true if the given reference is a versioned content document.
+     * @throws XWikiException
+     */
+    public boolean isVersionedContent(DocumentReference documentReference) throws XWikiException
+    {
+        return bookVersionsManagerProvider.get().isVersionedContent(documentReference);
+    }
+
+    /**
+     * Check if the given document is a versioned content one.
+     * 
+     * @param document The XWiki document.
+     * @return true if the given document is a versioned content one.
+     * @throws XWikiException
+     */
+    public boolean isVersionedContent(XWikiDocument document) throws XWikiException
+    {
+        return bookVersionsManagerProvider.get().isVersionedContent(document);
+    }
+
+    /**
      * Transform the given name by using the slug name validation.
      *
      * @param name The name to be transformed.
@@ -120,8 +144,10 @@ public class BookVersionsScriptService implements ScriptService
      * 
      * @param documentReference the document reference.
      * @return the selected version.
+     * @throws QueryException
+     * @throws XWikiException
      */
-    public String getSelectedVersion(DocumentReference documentReference)
+    public String getSelectedVersion(DocumentReference documentReference) throws XWikiException, QueryException
     {
         return bookVersionsManagerProvider.get().getSelectedVersion(documentReference);
     }
@@ -163,7 +189,21 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
-     * Get the version references from a versioned collection (book or library.
+     * Get the reference of a given version id, in the given referenced collection.
+     * 
+     * @param collectionReference The reference of the collection (book / library).
+     * @param version The version id.
+     * @return the reference of a given version id, in the given referenced collection.
+     * @throws XWikiException
+     */
+    public DocumentReference getVersionReference(DocumentReference collectionReference, String version)
+        throws XWikiException
+    {
+        return this.bookVersionsManagerProvider.get().getVersionReference(collectionReference, version);
+    }
+
+    /**
+     * Get the version references from a versioned collection (book or library).
      * 
      * @param collectionReference the reference of the collection to get versions from
      * @return a list of versions references declared in the versioned collection, ordered by descending date. Returns

@@ -20,8 +20,7 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
-import org.xwiki.contrib.bookversions.Page;
-import com.xpn.xwiki.XWikiException;
+import org.xwiki.contrib.bookversions.VersionedContent;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -31,28 +30,28 @@ import com.xpn.xwiki.objects.BaseObject;
  * @version $Id$
  * @since 0.1
  */
-public class DefaultPage implements Page
+public class DefaultVersionedContent implements VersionedContent
 {
     private XWikiDocument document;
 
     private BaseObject object;
 
-    private boolean defined;
+    private String status;
 
-    private boolean unversioned;
+    private boolean defined;
 
     /**
      * Constructor.
      * 
      * @param document The document storing the object.
      */
-    public DefaultPage(XWikiDocument document)
+    public DefaultVersionedContent(XWikiDocument document)
     {
         this.document = document;
-        this.object = document.getXObject(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE);
+        this.object = document.getXObject(BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE);
         this.defined = this.object != null;
-        this.unversioned =
-            this.defined ? this.object.getIntValue(BookVersionsConstants.BOOKPAGE_PROP_UNVERSIONED) == 1 : false;
+        this.status =
+            this.defined ? this.object.getStringValue(BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS) : null;
     }
 
     @Override
@@ -68,8 +67,26 @@ public class DefaultPage implements Page
     }
 
     @Override
-    public boolean isVersioned() throws XWikiException
+    public String getStatus()
     {
-        return isDefined() && !unversioned;
+        return this.status;
+    }
+
+    @Override
+    public boolean isDraft()
+    {
+        return this.status != null && this.status == BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS_DRAFT;
+    }
+
+    @Override
+    public boolean isInReview()
+    {
+        return this.status != null && this.status == BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS_REVIEW;
+    }
+
+    @Override
+    public boolean isComplete()
+    {
+        return this.status != null && this.status == BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS_COMPLETE;
     }
 }

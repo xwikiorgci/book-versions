@@ -68,6 +68,12 @@ public interface BookVersionsConstants
         new EntityReference("BookPageClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
+     * The reference of the book page class.
+     */
+    EntityReference BOOKVERSIONEDCONTENT_CLASS_REFERENCE =
+        new EntityReference("BookVersionedContentClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
      * The unversioned property of a book page.
      */
     String BOOKPAGE_PROP_UNVERSIONED = "unversioned";
@@ -75,22 +81,22 @@ public interface BookVersionsConstants
     /**
      * The status property of a book page.
      */
-    String BOOKPAGE_PROP_STATUS = "status";
+    String BOOKVERSIONEDCONTENT_PROP_STATUS = "status";
 
     /**
      * The status property of a book page.
      */
-    String BOOKPAGE_PROP_STATUS_DRAFT = "draft";
+    String BOOKVERSIONEDCONTENT_PROP_STATUS_DRAFT = "draft";
 
     /**
      * The status property of a book page.
      */
-    String BOOKPAGE_PROP_STATUS_REVIEW = "review";
+    String BOOKVERSIONEDCONTENT_PROP_STATUS_REVIEW = "review";
 
     /**
      * The status property of a book page.
      */
-    String BOOKPAGE_PROP_STATUS_COMPLETE = "complete";
+    String BOOKVERSIONEDCONTENT_PROP_STATUS_COMPLETE = "complete";
 
     /**
      * The slug validator hint.
@@ -106,4 +112,9 @@ public interface BookVersionsConstants
      * The selected version that is stored in the session.
      */
     String VERSION_PROP_PRECEDINGVERSION = "precedingVersionReference";
+
+    /**
+     * The location of version definitions, in a book / library.
+     */
+    String VERSIONS_LOCATION = "Versions";
 }

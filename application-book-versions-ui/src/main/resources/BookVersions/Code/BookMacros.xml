@@ -43,16 +43,12 @@
 ## return: where to store the result: the reference of the content to be displayed. Empty if nothing found
 #macro (getVersionedContentReference $collectionRef $pageRef $return)
   #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
-  #set ($selectedVersionMap = $request.getSession().getAttribute('BookVersions.selectedVersion'))
-  #set ($selectedVersion = $selectedVersionMap.get("$collectionRef"))
+  #set ($selectedVersion = $services.bookversions.getSelectedVersion($collectionRef))
   #if ("$!selectedVersion" == '')
     ## No version selected yet, select the most recent one and save it
-    #set ($selectedVersion = $versions[0])
-    #if ("$!selectedVersionMap" == '')#set($selectedVersionMap = {})#end
-    #set ($drop = $selectedVersionMap.put($collectionRef,$selectedVersion))
-    #set( $drop = $request.getSession().setAttribute('BookVersions.selectedVersion',$selectedVersionMap))
+    $services.bookversions.setSelectedVersion($collectionRef, $versions[0])
   #end
-  #set($macro.versionedContentReference = $services.bookversions.getVersionedContentReference($pageRef,$selectedVersion))
+  #set($macro.versionedContentReference = $services.bookversions.getVersionedContentReference($pageRef, $selectedVersion))
   #set ($return = $NULL)
   #setVariable("$return" $macro.versionedContentReference)
 #end

@@ -48,14 +48,13 @@ public interface BookVersionsManager
     boolean isBook(DocumentReference documentReference) throws XWikiException;
 
     /**
-     * Check if the given reference is a versioned book (has at least one version).
+     * Check if the given document is a book.
      * 
-     * @param documentReference The document reference.
-     * @return true if the given reference is versioned book.
-     * @throws QueryException
-     * @throws XWikiException
+     * @param document The document.
+     * @return True, if the given document is a book.
+     * @throws XWikiException In case the system can't provide an answer.
      */
-    boolean isVersionedBook(DocumentReference documentReference) throws XWikiException, QueryException;
+    boolean isBook(XWikiDocument document) throws XWikiException;
 
     /**
      * Check if the given reference is a book page.
@@ -94,6 +93,24 @@ public interface BookVersionsManager
     boolean isVersionedPage(XWikiDocument document) throws XWikiException;
 
     /**
+     * Check if the given reference is a versioned content document.
+     * 
+     * @param documentReference The document reference.
+     * @return true if the given reference is a versioned content document.
+     * @throws XWikiException
+     */
+    boolean isVersionedContent(DocumentReference documentReference) throws XWikiException;
+
+    /**
+     * Check if the given document is a versioned content one.
+     * 
+     * @param document The XWiki document.
+     * @return true if the given document is a versioned content one.
+     * @throws XWikiException
+     */
+    boolean isVersionedContent(XWikiDocument document) throws XWikiException;
+
+    /**
      * Check if the given reference is a version.
      * 
      * @param documentReference The document reference.
@@ -101,6 +118,15 @@ public interface BookVersionsManager
      * @throws XWikiException In case the system can't provide an answer.
      */
     boolean isVersion(DocumentReference documentReference) throws XWikiException;
+
+    /**
+     * Check if the given document is a version.
+     * 
+     * @param document The document.
+     * @return True, if the given document is a version.
+     * @throws XWikiException In case the system can't provide an answer.
+     */
+    boolean isVersion(XWikiDocument document) throws XWikiException;
 
     /**
      * Check if the given reference is a variant.
@@ -133,8 +159,10 @@ public interface BookVersionsManager
      * 
      * @param documentReference the document reference.
      * @return the selected version.
+     * @throws QueryException
+     * @throws XWikiException
      */
-    String getSelectedVersion(DocumentReference documentReference);
+    String getSelectedVersion(DocumentReference documentReference) throws XWikiException, QueryException;
 
     /**
      * Set the selected version in the session for the given collection (book / library).
@@ -163,6 +191,16 @@ public interface BookVersionsManager
      */
     DocumentReference getVersionedCollectionReference(DocumentReference documentReference)
         throws XWikiException, QueryException;
+
+    /**
+     * Get the reference of a given version id, in the given referenced collection.
+     * 
+     * @param collectionReference The reference of the collection (book / library).
+     * @param version The version id.
+     * @return the reference of a given version id, in the given referenced collection.
+     * @throws XWikiException
+     */
+    DocumentReference getVersionReference(DocumentReference collectionReference, String version) throws XWikiException;
 
     /**
      * Get the version references from a versioned collection (book or library.

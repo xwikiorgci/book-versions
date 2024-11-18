@@ -22,17 +22,16 @@ package org.xwiki.contrib.bookversions;
 
 import org.xwiki.component.annotation.Role;
 
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Book Page.
+ * Versioned content.
  *
  * @version $Id$
  * @since 0.1
  */
 @Role
-public interface Page
+public interface VersionedContent
 {
     /**
      * Get the document storing the definition of the page.
@@ -42,17 +41,37 @@ public interface Page
     XWikiDocument getDocument();
 
     /**
-     * Check if the current book page is defined (has the required object).
+     * Check if the current versioned content is defined (has the required object).
      * 
-     * @return true if the current book page is defined.
+     * @return true if the current versioned content is defined.
      */
     boolean isDefined();
 
     /**
-     * Check if the page is versioned.
+     * Get the status of the versioned content.
      * 
-     * @return the identifier of the variant.
-     * @throws XWikiException In case the system can't provide an answer.
+     * @return the status of the versioned content.
      */
-    boolean isVersioned() throws XWikiException;
+    String getStatus();
+
+    /**
+     * Check if the current versioned content is a draft.
+     * 
+     * @return true if the current versioned content is a draft.
+     */
+    boolean isDraft();
+
+    /**
+     * Check if the current versioned content is in review.
+     * 
+     * @return true if the current versioned content is in review.
+     */
+    boolean isInReview();
+
+    /**
+     * Check if the current versioned content is complete.
+     * 
+     * @return true if the current versioned content is complete.
+     */
+    boolean isComplete();
 }

@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.BookPageClass" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.BookVersionedContentClass" locale="">
   <web>BookVersions.Code</web>
-  <name>BookPageClass</name>
+  <name>BookVersionedContentClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,14 +31,14 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Book Page Class</title>
+  <title>Book Versioned Content Class</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>BookVersions.Code.BookPageClass</name>
+    <name>BookVersions.Code.BookVersionedContentClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -46,24 +46,34 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <unversioned>
+    <status>
+      <cache>0</cache>
       <customDisplay/>
       <defaultValue/>
       <disabled>0</disabled>
-      <displayFormType>select</displayFormType>
-      <displayType/>
+      <displayType>select</displayType>
+      <freeText/>
       <hint/>
-      <name>unversioned</name>
-      <number>2</number>
-      <prettyName>unversioned</prettyName>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>status</name>
+      <number>1</number>
+      <picker>1</picker>
+      <prettyName>status</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-    </unversioned>
+      <values>draft|review|complete</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </status>
   </class>
   <object>
-    <name>BookVersions.Code.BookPageClass</name>
+    <name>BookVersions.Code.BookVersionedContentClass</name>
     <number>0</number>
     <className>XWiki.DocumentSheetBinding</className>
     <guid>b66ebd53-6f35-4b43-af1e-d609d551b89a</guid>
