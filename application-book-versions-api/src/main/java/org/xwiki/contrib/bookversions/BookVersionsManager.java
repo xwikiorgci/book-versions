@@ -173,7 +173,31 @@ public interface BookVersionsManager
      * @throws QueryException
      * @throws XWikiException
      */
-    List<String> getCollectionVersions(DocumentReference documentReference)
+    List<String> getCollectionVersions(DocumentReference documentReference) throws QueryException, XWikiException;
+
+    /**
+     * Get the reference of the page content corresponding to the given version. No inheritance is used for this
+     * computation.
+     * 
+     * @param documentReference The page reference.
+     * @param version The version id.
+     * @return the reference of the page content corresponding to the given version.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    DocumentReference getVersionedContentReference(DocumentReference documentReference, String version)
+        throws QueryException, XWikiException;
+
+    /**
+     * Check if the page has content corresponding to the given version.
+     * 
+     * @param documentReference The page reference.
+     * @param version The version id.
+     * @return true if the page has content corresponding to the given version.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    boolean hasContentForVersion(DocumentReference documentReference, String version)
         throws QueryException, XWikiException;
 
     /**
@@ -184,7 +208,7 @@ public interface BookVersionsManager
      * @throws XWikiException
      * @throws QueryException
      */
-    DocumentReference getVersionedContentReference(DocumentReference documentReference)
+    DocumentReference getInheritedVersionedContentReference(DocumentReference documentReference)
         throws XWikiException, QueryException;
 
     /**

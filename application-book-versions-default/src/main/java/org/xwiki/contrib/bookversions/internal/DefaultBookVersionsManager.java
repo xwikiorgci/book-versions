@@ -264,6 +264,93 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         return escapedName;
     }
 
+    @Override
+    public List<String> getCollectionVersions(DocumentReference collectionReference)
+        throws QueryException, XWikiException
+    {
+        if (collectionReference != null) {
+            DocumentReference versionedCollectionReference = getVersionedCollectionReference(collectionReference);
+
+            if (versionedCollectionReference != null) {
+
+                SpaceReference collectionSpace = versionedCollectionReference.getLastSpaceReference();
+                String collectionSpaceSerialized = localSerializer.serialize(collectionSpace);
+                String spacePrefix = collectionSpaceSerialized.replaceAll("([%_/])", "/$1").concat(".%");
+
+                logger.debug("[getCollectionVersions] collectionSpaceSerialized : [{}]", collectionSpaceSerialized);
+                logger.debug("[getCollectionVersions] spacePrefix : [{}]", spacePrefix);
+
+                // Query inspired from getDocumentReferences of DefaultModelBridge.java in xwiki-platform
+                List<String> result = this.queryManagerProvider.get()
+                    .createQuery(", BaseObject as obj where doc.fullName = obj.name and obj.className = :versionClass "
+                        + "and doc.space like :space escape '/' order by doc.creationDate desc", Query.HQL)
+                    .bindValue("versionClass", localSerializer.serialize(BookVersionsConstants.VERSION_CLASS_REFERENCE))
+                    .bindValue("space", spacePrefix).execute();
+
+                logger.debug("[getCollectionVersions] result : [{}]", result);
+
+                return result;
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public DocumentReference getVersionedContentReference(DocumentReference pageReference,
+        DocumentReference versionReference)
+    {
+        String versionName = getEscapedName(versionReference);
+
+        logger.debug("[getVersionedContentReference] versionName : [{}]", versionName);
+
+        return new DocumentReference(new EntityReference(versionName, EntityType.DOCUMENT, pageReference.getParent()));
+    }
+
+    @Override
+    public DocumentReference getVersionedContentReference(DocumentReference documentReference, String version)
+        throws QueryException, XWikiException
+    {
+        if (!version.isBlank()) {
+            DocumentReference versionDocumentReference =
+                referenceResolver.resolve(version).setWikiReference(this.getXWikiContext().getWikiReference());
+            return this.getVersionedContentReference(documentReference, versionDocumentReference);
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean hasContentForVersion(DocumentReference documentReference, String version)
+        throws QueryException, XWikiException
+    {
+        if (version.isBlank() || documentReference == null) {
+            return false;
+        }
+        XWikiContext xcontext = this.getXWikiContext();
+        DocumentReference pageReference = documentReference;
+
+        // If the reference is not a page, go to its parent, assuming that the current ref is a versioned content page.
+        if (!isPage(documentReference)) {
+
+            SpaceReference parentSpaceReference = getSpaceReference(documentReference);
+            if (parentSpaceReference != null
+                && parentSpaceReference.equals(documentReference.getLastSpaceReference())) {
+                parentSpaceReference = getSpaceReference(parentSpaceReference.getParent());
+            }
+            pageReference =
+                new DocumentReference(this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE, parentSpaceReference);
+
+            // The parent is not a page either.
+            if (!isPage(pageReference)) {
+                return false;
+            }
+        }
+
+        DocumentReference versionedContentReference = this.getVersionedContentReference(pageReference, version);
+        return versionedContentReference != null && xcontext.getWiki().exists(versionedContentReference, xcontext);
+    }
+
     /**
      * Search for the parent storing the collection type (book or library).
      */
@@ -323,39 +410,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
-    public List<String> getCollectionVersions(DocumentReference collectionReference)
-        throws QueryException, XWikiException
-    {
-        if (collectionReference != null) {
-            DocumentReference versionedCollectionReference = getVersionedCollectionReference(collectionReference);
-
-            if (versionedCollectionReference != null) {
-
-                SpaceReference collectionSpace = versionedCollectionReference.getLastSpaceReference();
-                String collectionSpaceSerialized = localSerializer.serialize(collectionSpace);
-                String spacePrefix = collectionSpaceSerialized.replaceAll("([%_/])", "/$1").concat(".%");
-
-                logger.debug("[getCollectionVersions] collectionSpaceSerialized : [{}]", collectionSpaceSerialized);
-                logger.debug("[getCollectionVersions] spacePrefix : [{}]", spacePrefix);
-
-                // Query inspired from getDocumentReferences of DefaultModelBridge.java in xwiki-platform
-                List<String> result = this.queryManagerProvider.get()
-                    .createQuery(", BaseObject as obj where doc.fullName = obj.name and obj.className = :versionClass "
-                        + "and doc.space like :space escape '/' order by doc.creationDate desc", Query.HQL)
-                    .bindValue("versionClass", localSerializer.serialize(BookVersionsConstants.VERSION_CLASS_REFERENCE))
-                    .bindValue("space", spacePrefix).execute();
-
-                logger.debug("[getCollectionVersions] result : [{}]", result);
-
-                return result;
-            }
-        }
-
-        return Collections.emptyList();
-    }
-
-    @Override
-    public DocumentReference getVersionedContentReference(DocumentReference documentReference)
+    public DocumentReference getInheritedVersionedContentReference(DocumentReference documentReference)
         throws XWikiException, QueryException
     {
         if (this.isVersionedPage(documentReference)) {
@@ -383,17 +438,6 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
 
         return documentReference;
-    }
-
-    @Override
-    public DocumentReference getVersionedContentReference(DocumentReference pageReference,
-        DocumentReference versionReference)
-    {
-        String versionName = getEscapedName(versionReference);
-
-        logger.debug("[getVersionedContentReference] versionName : [{}]", versionName);
-
-        return new DocumentReference(new EntityReference(versionName, EntityType.DOCUMENT, pageReference.getParent()));
     }
 
     @Override

@@ -178,6 +178,37 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the reference of the page content corresponding to the given version. No inheritance is used for this
+     * computation.
+     * 
+     * @param documentReference The page reference.
+     * @param version The version id.
+     * @return the reference of the page content corresponding to the given version.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    public DocumentReference getVersionedContentReference(DocumentReference documentReference, String version)
+        throws QueryException, XWikiException
+    {
+        return bookVersionsManagerProvider.get().getVersionedContentReference(documentReference, version);
+    }
+
+    /**
+     * Check if the page has content corresponding to the given version.
+     * 
+     * @param documentReference The page reference.
+     * @param version The version id.
+     * @return true if the page has content corresponding to the given version.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    public boolean hasContentForVersion(DocumentReference documentReference, String version)
+        throws QueryException, XWikiException
+    {
+        return bookVersionsManagerProvider.get().hasContentForVersion(documentReference, version);
+    }
+
+    /**
      * Get the reference of a versioned page content. This does not check existence or page class.
      * 
      * @param documentReference the reference of the (versioned content) page
@@ -185,10 +216,10 @@ public class BookVersionsScriptService implements ScriptService
      * @throws XWikiException
      * @throws QueryException
      */
-    public DocumentReference getVersionedContentReference(DocumentReference documentReference)
+    public DocumentReference getInheritedVersionedContentReference(DocumentReference documentReference)
         throws XWikiException, QueryException
     {
-        return bookVersionsManagerProvider.get().getVersionedContentReference(documentReference);
+        return bookVersionsManagerProvider.get().getInheritedVersionedContentReference(documentReference);
     }
 
     /**
