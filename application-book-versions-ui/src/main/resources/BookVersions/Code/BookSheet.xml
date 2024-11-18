@@ -36,7 +36,9 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
+  <content>{{include reference="BookVersions.Code.BookNavAdaptivePanelSetter"/}}
+
+{{velocity}}
 #set ($object = $doc.getObject('BookVersions.Code.BookClass'))
 #if (!$object)
   #stop
@@ -78,5 +80,7 @@
   &lt;/dl&gt;
 &lt;/div&gt;
 {{/html}}
+
+#ensureBookNavigationPanel()
 {{/velocity}}</content>
 </xwikidoc>
