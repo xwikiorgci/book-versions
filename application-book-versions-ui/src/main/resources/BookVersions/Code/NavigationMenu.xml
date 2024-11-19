@@ -315,7 +315,7 @@
               #if ($versionedContentReference)
                 #set ($versionDocument = $xwiki.getDocument($version))
                 #set ($isSelected = $versionDocument.name.equals($doc.name))
-                &lt;option value="$versionedContentReference" #if($isSelected)selected#end&gt;$versionDocument.displayTitle ($isSelected)&lt;/option&gt;
+                &lt;option value="$versionedContentReference" #if($isSelected)selected#end&gt;$versionDocument.displayTitle&lt;/option&gt;
               #end
             #end
           #end
