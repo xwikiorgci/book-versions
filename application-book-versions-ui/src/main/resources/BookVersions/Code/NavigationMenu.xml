@@ -282,13 +282,17 @@
   #set ($isVersionedPage = $services.bookversions.isVersionedPage($docRef))
   ## Check if the current document is of type versioned content (has the associated object)
   #set ($isVersionedContent = $services.bookversions.isVersionedContent($docRef))
-  ## Get the version stored in the session
-  #set ($selectedVersion = $services.bookversions.getSelectedVersion($docRef))
   ## TODO : add a check for library docs
   #if ("$!collectionRef" != '' &amp;&amp; ($isVersionedPage || $isVersionedContent))
     #set ($discard = $xwiki.jsx.use('BookVersions.Code.NavigationMenu'))
     ## Get the list of versions defined for the current collection
     #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
+    ## Get the version stored in the session
+    #set ($selectedVersion = $services.bookversions.getSelectedVersion($docRef))
+    #if ($versions.size &gt; 0 &amp;&amp; !$selectedVersion)
+      ## No version selected yet (first visit in the book for this user session). Display the most recent one
+      #set ($selectedVersion = $versions.get(0))
+    #end
     ## Get the reference of the versioned content doc, for the selected version
     #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef, $selectedVersion))
     ## In case this is a versioned page and the versioned content for this page exists
