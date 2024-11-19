@@ -37,17 +37,8 @@
     <xwiki.issueManagement.system>jira</xwiki.issueManagement.system>
     <xwiki.issueManagement.url>https://jira.xwiki.org/projects/BVERSION/</xwiki.issueManagement.url>
     <xwiki.issueManagement.jira.id>BVERSION</xwiki.issueManagement.jira.id>
-    <scriptcomponent.version>1.1.1</scriptcomponent.version>
   </properties>
   <dependencies>
-    <!-- Needed for the book versions service -->
-    <dependency>
-      <groupId>org.xwiki.contrib</groupId>
-      <artifactId>scriptcomponent</artifactId>
-      <version>${scriptcomponent.version}</version>
-      <type>jar</type>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.xwiki.contrib</groupId>
       <artifactId>application-book-versions-default</artifactId>
