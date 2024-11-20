@@ -271,9 +271,7 @@
       <async_enabled>0</async_enabled>
     </property>
     <property>
-      <content>{{include reference="BookVersions.Code.BookMacros" /}}
-
-{{velocity}}
+      <content>{{velocity}}
   ## Current document reference
   #set ($docRef = $doc.getDocumentReference())
   ## Collection (Book / Library) reference
@@ -289,7 +287,7 @@
     #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
     ## Get the version stored in the session
     #set ($selectedVersion = $services.bookversions.getSelectedVersion($docRef))
-    #if ($versions.size &gt; 0 &amp;&amp; !$selectedVersion)
+    #if ($versions.size() &gt; 0 &amp;&amp; !$selectedVersion)
       ## No version selected yet (first visit in the book for this user session). Display the most recent one
       #set ($selectedVersion = $versions.get(0))
     #end
