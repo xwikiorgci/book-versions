@@ -140,6 +140,19 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public boolean isPossibleVersionedContentReference(DocumentReference collectionReference,
+        DocumentReference documentReference) throws XWikiException
+    {
+        if (collectionReference != null && documentReference != null) {
+            DocumentReference versionRef = getVersionReference(collectionReference, documentReference.getName());
+            if (versionRef != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean isVersion(DocumentReference documentReference) throws XWikiException
     {
         XWikiContext xcontext = this.getXWikiContext();

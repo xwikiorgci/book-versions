@@ -111,6 +111,19 @@ public interface BookVersionsManager
     boolean isVersionedContent(XWikiDocument document) throws XWikiException;
 
     /**
+     * Check if the given reference is a possible versioned content reference in its collection (not checking if it
+     * exists).
+     *
+     * @param collectionReference The collection reference.
+     * @param documentReference The document reference.
+     * @return true if the given reference is a possible versioned content reference in its collection.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    boolean isPossibleVersionedContentReference(DocumentReference collectionReference,
+        DocumentReference documentReference) throws XWikiException;
+
+    /**
      * Check if the given reference is a version.
      * 
      * @param documentReference The document reference.

@@ -129,6 +129,22 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Check if the given reference is a possible versioned content reference in its collection (not checking if it
+     * exists).
+     *
+     * @param collectionReference The collection reference.
+     * @param documentReference The document reference.
+     * @return true if the given reference is a possible versioned content reference in its collection.
+     * @throws XWikiException
+     */
+    public boolean isPossibleVersionedContentReference(DocumentReference collectionReference,
+        DocumentReference documentReference) throws XWikiException
+    {
+        return bookVersionsManagerProvider.get().isPossibleVersionedContentReference(collectionReference,
+            documentReference);
+    }
+
+    /**
      * Transform the given name by using the slug name validation.
      *
      * @param name The name to be transformed.
