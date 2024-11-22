@@ -60,7 +60,9 @@ BookVersions.creationForm.pageTitle=Page title
 BookVersions.creationForm.create=Create
 
 # Navigation menu
-BookVersions.navMenu.versionSelect=Version</content>
+BookVersions.navMenu.versionSelect=Version
+BookVersions.navMenu.versioned=Content from version [{0}].
+BookVersions.navMenu.inherited=Content inherited from version [{0}].</content>
   <object>
     <name>BookVersions.Code.Translations</name>
     <number>0</number>

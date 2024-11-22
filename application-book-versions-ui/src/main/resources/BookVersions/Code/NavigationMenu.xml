@@ -295,27 +295,27 @@
         collectionRef [$collectionRef], isVersionedPage [$isVersionedPage], isVersionedContent [$isVersionedContent], isUnexistingContent [$isUnexistingContent]"))
   #if ("$!collectionRef" != '' &amp;&amp; $versions.size() &gt; 0 &amp;&amp; ($isVersionedPage || $isVersionedContent || $isUnexistingContent))
     ## Document is in an initialized collection, and is a page
-    #set($discard = $debuglogger.debug("Document is in an initialized collection, and is a page"))
+    #set($discard = $debuglogger.debug('Document is in an initialized collection, and is a page'))
     #if (!$selectedVersion)
       ## No version selected yet (first visit in the book for this user session). Display the most recent one
       #set ($selectedVersion = $versions.get(0))
       #set($discard = $debuglogger.debug("No selected version yet. Set the most recent [$selectedVersion]"))
       $services.bookversions.setSelectedVersion($collectionRef, $selectedVersion)
-      $request.getSession().setAttribute('BookVersions.versionInheritedRedirFlag',true)
+      #set($discard = $request.getSession().setAttribute('BookVersions.versionInheritedRedirFlag',true))
       ## Get the reference of the versioned content doc, for the selected version
       #set ($versionedContentReference = $services.bookversions.getInheritedContentReference($docRef, $selectedVersion))
       #set($discard = $debuglogger.debug("Redirect to corresponding content [$versionedContentReference]"))
       $response.sendRedirect($xwiki.getURL($versionedContentReference, $xcontext.action))
     #elseif ($isUnexistingContent)
       ## Content doesn't exist
-      #set($discard = $debuglogger.debug("Content does not exist yet"))
+      #set($discard = $debuglogger.debug('Content does not exist yet'))
       ## For non existing page, docRef provides WebHome even if a terminal page was required, then parent name is taken to get the expected version name
       #set ($contentRef = $services.model.resolveDocument($services.model.serialize($docRef.getParent(),'local')))
       #set ($versionRef = $services.bookversions.getVersionReference($collectionRef,$contentRef.getName()))
       ## Set the selected version
       #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($contentRef, $versionRef))
       $services.bookversions.setSelectedVersion($collectionRef, $services.model.serialize($versionedContentReference,'local'))
-      $request.getSession().setAttribute('BookVersions.versionInheritedRedirFlag',true)
+      #set($discard = $request.getSession().setAttribute('BookVersions.versionInheritedRedirFlag',true))
       ## Redirect to existing content
       #set ($inheritedVersionedContentReference = $services.bookversions.getInheritedContentReference($contentRef, $versionRef))
       #if ($inheritedVersionedContentReference)
@@ -329,38 +329,45 @@
       $response.sendRedirect($xwiki.getURL($inheritedVersionedContentReference, $xcontext.action))
     #elseif ($isVersionedPage &amp;&amp; !$isVersionedContent)
       ## Top page (versioned page but not content)
-      #set($discard = $debuglogger.debug("Page is a top page (versioned page but not content)"))
+      #set($discard = $debuglogger.debug('Page is a top page (versioned page but not content)'))
       #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef, $selectedVersion))
       #set($discard = $debuglogger.debug("Redirect to version content selected: $versionedContentReference"))
       $response.sendRedirect($xwiki.getURL($versionedContentReference, $xcontext.action))
     #else
       ## Content page to be displayed
-      #set($discard = $debuglogger.debug("Content page to be displayed"))
+      #set($discard = $debuglogger.debug('Content page to be displayed'))
       #set ($discard = $xwiki.jsx.use('BookVersions.Code.NavigationMenu'))
       #if ($inheritedRedirFlag)
         ## Page reached through inheritance, selectedVersion stays untouched
-        #set($discard = $debuglogger.debug("Page reached through inheritance, selectedVersion stays untouched"))
-        $request.getSession().setAttribute('BookVersions.versionInheritedRedirFlag',false)
+        #set($discard = $debuglogger.debug('Page reached through inheritance, selectedVersion stays untouched'))
+        #set($discard = $request.getSession().setAttribute('BookVersions.versionInheritedRedirFlag',false))
       #else
         ## Set selectedVersion from current page
-        #set($discard = $debuglogger.debug("Set selectedVersion from current page"))
+        #set($discard = $debuglogger.debug('Set selectedVersion from current page'))
         #set ($selectedVersion = $services.model.serialize($docRef, 'local'))
         $services.bookversions.setSelectedVersion($collectionRef, $selectedVersion)
       #end
       #set ($selectedVersionName = $services.model.resolveDocument($selectedVersion).getName())
+      ## Set the display message
+      #set ($currentDocName = $docRef.getName())
+      #if($selectedVersionName.equals($currentDocName))
+        #set($stateMessageKey = 'BookVersions.navMenu.versioned')
+      #else
+        #set($stateMessageKey = 'BookVersions.navMenu.inherited')
+      #end
+      ## Get the current displayed page version
+      #set ($versionTitle = $xwiki.getDocument($services.bookversions.getVersionReference($collectionRef,$docRef.getName())).displayTitle)
 
       {{html}}
       &lt;form class='xformInline' id='changeArchiveStatus'&gt;
         &lt;input type="hidden" id="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
-        &lt;label for="collectionVersion"&gt;$services.localization.render("BookVersions.navMenu.versionSelect")&lt;/label&gt;
+        &lt;label for="collectionVersion"&gt;$services.localization.render('BookVersions.navMenu.versionSelect')&lt;/label&gt;
         &lt;select name='collectionVersion' id='collectionVersion'&gt;
           #foreach($version in $versions)
             #if ($version)
-              ##set ($versionedContentReference = $services.model.serialize($services.bookversions.getInheritedContentVersionReference($docRef, $version), 'local'))
               #set ($versionDocument = $xwiki.getDocument($version))
               #set ($versionedContentReference = $services.model.serialize($services.bookversions.getVersionedContentReference($docRef, $versionDocument.getDocumentReference()), 'local'))
               #if ($versionedContentReference)
-                ##set ($versionDocument = $xwiki.getDocument($version))
                 #set ($isSelected = $versionDocument.getDocumentReference().getName().equals($selectedVersionName))
                 &lt;option value="$versionedContentReference" #if($isSelected)selected#end&gt;$versionDocument.displayTitle&lt;/option&gt;
               #end
@@ -368,6 +375,7 @@
           #end
         &lt;/select&gt;
       &lt;/form&gt;
+      &lt;p class='noitems'&gt;$services.localization.render($stateMessageKey, [$versionTitle])&lt;/p&gt;
       {{/html}}
     #end
   #end
