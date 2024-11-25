@@ -59,10 +59,32 @@ BookVersions.creationForm.newPage=New book page
 BookVersions.creationForm.pageTitle=Page title
 BookVersions.creationForm.create=Create
 
+# Version Creation form
+BookVersions.creationForm.newVersion=New version
+
+# Variant Creation form
+BookVersions.creationForm.newVariant=New variant
+
+# Library Creation form
+BookVersions.creationForm.newLibrary=New library
+
 # Navigation menu
 BookVersions.navMenu.versionSelect=Version
 BookVersions.navMenu.versioned=Content from version [{0}].
-BookVersions.navMenu.inherited=Content inherited from version [{0}].</content>
+BookVersions.navMenu.inherited=Content inherited from version [{0}].
+
+# Administration menu
+BookVersions.adminMenu.manage=Manage
+BookVersions.adminMenu.manageVersions=Versions
+BookVersions.adminMenu.manageVariants=Variants
+BookVersions.adminMenu.manageLibraries=Libraries
+BookVersions.adminMenu.publishLable=Publishing
+BookVersions.adminMenu.publish=Publish current version
+
+# Admin live data values
+BookVersions.adminLD.version=Version
+BookVersions.adminLD.variant=Variant
+BookVersions.adminLD.library=Librarie</content>
   <object>
     <name>BookVersions.Code.Translations</name>
     <number>0</number>

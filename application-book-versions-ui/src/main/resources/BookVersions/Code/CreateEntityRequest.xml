@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.BookPageTemplate" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.CreateEntityRequest" locale="">
   <web>BookVersions.Code</web>
-  <name>BookPageTemplate</name>
+  <name>CreateEntityRequest</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,44 +31,20 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Book Page Template</title>
+  <title>CreateEntityRequest</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content/>
-  <object>
-    <name>BookVersions.Code.BookPageTemplate</name>
-    <number>0</number>
-    <className>BookVersions.Code.BookPageClass</className>
-    <guid>84969af5-29b6-4733-a2ed-8965699d88b3</guid>
-    <class>
-      <name>BookVersions.Code.BookPageClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <unversioned>
-        <customDisplay/>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType/>
-        <hint/>
-        <name>unversioned</name>
-        <number>2</number>
-        <prettyName>unversioned</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </unversioned>
-    </class>
-    <property>
-      <unversioned/>
-    </property>
-  </object>
+  <content>{{velocity}}
+  #if ("$!request.action" == 'transformNameUsingSlug' &amp;&amp; "$!request.name" != '')
+    #set ($transformedName = "$!services.bookversions.transformUsingSlugNameValidation($!request.name)")
+    #if ("$!transformedName" == '')
+      #set ($transformedName = "$!request.name")
+    #end
+    #jsonResponse({
+      'transformedName' : "$escapetool.json($transformedName)"
+    })
+  #end
+{{/velocity}}</content>
 </xwikidoc>

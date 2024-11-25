@@ -64,15 +64,11 @@
       &lt;/label&gt;
     &lt;/dt&gt;
     &lt;dd&gt;{{include reference="BookVersions.Code.TitleDisplay"/}}&lt;/dd&gt;
-    &lt;dt&gt;
-      &lt;label&gt;
-        $!escapetool.xml($services.localization.render('BookVersions.template.description'))
-      &lt;/label&gt;
-    &lt;/dt&gt;
-    &lt;dd&gt;{{include reference="BookVersions.Code.ContentDisplay"/}}&lt;/dd&gt;
   #foreach ($property in $xclass.properties)
     &lt;dt #if (!$editing &amp;&amp; $hasEdit)
+        #if ($property.name != 'description')
         class="editableProperty"
+        #end
         #set ($xobjectPropertyReference = $xobject.getPropertyReference($property.name))
         data-property="$escapetool.xml($services.model.serialize($xobjectPropertyReference))"
         data-property-type="object"#end&gt;

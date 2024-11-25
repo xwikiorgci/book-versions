@@ -81,6 +81,34 @@
 &lt;/div&gt;
 {{/html}}
 
+## Ensure navigation panel is set on either the left or the right side
 #ensureBookNavigationPanel()
+
+## Ensure Versions, Variants and Libraries WebHome pages exist in the current book space
+#set ($currentSpace = $doc.space)
+#set ($versionsFullName = $escapetool.xml("${currentSpace}.Versions.WebHome"))
+#set ($variantsFullName = $escapetool.xml("${currentSpace}.Variants.WebHome"))
+#set ($librariesFullName = $escapetool.xml("${currentSpace}.Libraries.WebHome"))
+
+## Create Versions WebHome if it doesn't exist
+#if (!$xwiki.exists($versionsFullName))
+    #set ($versionsDoc = $xwiki.getDocument($versionsFullName))
+    #set ($discard = $versionsDoc.setContent('{{admin-interface type="Versions" /}}'))
+    #set ($discard = $versionsDoc.save())
+#end
+
+## Create Variants WebHome if it doesn't exist
+#if (!$xwiki.exists($variantsFullName))
+    #set ($variantsDoc = $xwiki.getDocument($variantsFullName))
+    #set ($discard = $variantsDoc.setContent('{{admin-interface type="Variants" /}}'))
+    #set ($discard = $variantsDoc.save())
+#end
+
+## Create Libraries WebHome if it doesn't exist
+#if (!$xwiki.exists($librariesFullName))
+    #set ($librariesDoc = $xwiki.getDocument($librariesFullName))
+    #set ($discard = $librariesDoc.setContent('{{admin-interface type="Libraries" /}}'))
+    #set ($discard = $librariesDoc.save())
+#end
 {{/velocity}}</content>
 </xwikidoc>
