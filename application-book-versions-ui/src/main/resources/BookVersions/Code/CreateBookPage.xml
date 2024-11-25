@@ -130,19 +130,37 @@
 XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
   initialize : function($super, trigger) {
     trigger.observe('click', this.showDialog.bindAsEventListener(this));
-    this.urlTemplate = trigger.up().next('input[type=hidden]').value;
+    this.urlVersionedTemplate = $('versionedBooKPageURL').value;
+    this.urlUnversionedTemplate = $('unversionedBooKPageURL').value;
 
-    this.input = new Element('input', {type: 'text', id: 'bookPageTitle'});
+    this.titleInput = new Element('input', {type: 'text', id: 'bookPageTitle'});
+    this.unversionedInput = new Element('input', {type: 'checkbox', id: 'bookPageUnversioned'});
     this.addButton = new Element('input', {class: 'btn btn-primary', value: "$services.localization.render('BookVersions.creationForm.create')"});
     this.dList = new Element('dl');
-    this.dTerm = new Element('dt');
-    this.dDef = new Element('dd');
-    this.dLabel = new Element('label', {for: 'bookPageTitle'});
-    this.dLabel.insert("$services.localization.render('BookVersions.creationForm.pageTitle')");
-    this.dTerm.insert(this.dLabel);
-    this.dDef.insert(this.input);
-    this.dList.insert(this.dTerm);
-    this.dList.insert(this.dDef);
+
+    this.dTitleTerm = new Element('dt');
+    this.dTitleDef = new Element('dd');
+    this.dTitleLabel = new Element('label', {for: 'bookPageTitle'});
+    this.dTitleLabel.insert("$services.localization.render('BookVersions.creationForm.pageTitle')");
+    this.dTitleHint = new Element('span', {class: 'xHint'});
+    this.dTitleHint.insert("$services.localization.render('BookVersions.creationForm.pageTitle.hint')");
+    this.dTitleTerm.insert(this.dTitleLabel);
+    this.dTitleTerm.insert(this.dTitleHint);
+    this.dTitleDef.insert(this.titleInput);
+    this.dList.insert(this.dTitleTerm);
+    this.dList.insert(this.dTitleDef);
+
+    this.dUnversionedTerm = new Element('dt');
+    this.dUnversionedDef = new Element('dd');
+    this.dUnversionedLabel = new Element('label', {for: 'bookPageUnversioned'});
+    this.dUnversionedLabel.insert("$services.localization.render('BookVersions.creationForm.pageUnversioned')");
+    this.dUnversionedHint = new Element('span', {class: 'xHint'});
+    this.dUnversionedHint.insert("$services.localization.render('BookVersions.creationForm.pageUnversioned.hint')");
+    this.dUnversionedTerm.insert(this.dUnversionedLabel);
+    this.dUnversionedTerm.insert(this.dUnversionedHint);
+    this.dUnversionedDef.insert(this.unversionedInput);
+    this.dList.insert(this.dUnversionedTerm);
+    this.dList.insert(this.dUnversionedDef);
 
     var container = new Element('div', {id: 'entryNamePopup', class: 'xform'});
     container.insert(this.dList);
@@ -162,27 +180,28 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
   },
   showDialog : function($super, event) {
     $super(event);
-    this.input.clear().focus();
+    this.titleInput.clear().focus();
   },
   _onAdd : function() {
-    if (this.input.value != '') {
+    if (this.titleInput.value != '') {
       // We use the global flag because we need to replace both the page name and its title.
-      fetch("$xwiki.getURL('BookVersions.Code.BookService')" + '?action=transformNameUsingSlug&amp;name=' + this.input.value, {
+      fetch("$xwiki.getURL('BookVersions.Code.CreateBookPage')" + '?action=transformNameUsingSlug&amp;name=' + this.titleInput.value, {
         method: 'get'
       })
         .then(response =&gt; response.json())
         .then(data =&gt; {
           var transformedName = data.transformedName;
           if(!transformedName &amp;&amp; transformedName != '') {
-            transformedName = this.input.value;
+            transformedName = this.titleInput.value;
           }
+          this.urlTemplate = $('bookPageUnversioned').checked ? this.urlUnversionedTemplate : this.urlVersionedTemplate;
           window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)) + '&amp;form_token=$!{services.csrf.getToken()}';
         })
       .catch(err =&gt; {
         console.log(err);
       });
     } else {
-      this.input.focus();
+      this.titleInput.focus();
     }
   }
 });
@@ -333,29 +352,47 @@ return XWiki;
       <async_enabled>0</async_enabled>
     </property>
     <property>
-      <content>{{velocity}}
-#if ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($doc) || $services.bookversions.isBookPage($doc)))
-  #set ($BOOK_CODE = 'BookVersions.Code')
-  #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookPage"))
-  ## Display the custom new page button
-  #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createSpaceReference('__entryName__', $doc.documentReference.parent)))
-  #set ($params = {
-    'template': "${BOOK_CODE}.BookPageTemplate",
-    'title': '__entryName__',
-    'parent': $services.model.serialize($doc.documentReference, 'local')
-  })
-  #set ($newBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
+      <content>{{include reference="BookVersions.Code.BookMacros" /}}
 
-  {{html clean="false"}}
-    &lt;div class="btn-group" id="tmCreateBookPage"&gt;
-      &lt;a href="#AddNewBookPage" role="button" title="$services.localization.render('BookVersions.creationForm.newPage')" class="btn btn-primary addBookPage"&gt;
-        &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
-        &lt;span class="btn-label"&gt;$services.localization.render('BookVersions.creationForm.newPage')&lt;/span&gt;
-      &lt;/a&gt;
-    &lt;/div&gt;
-    &lt;input type="hidden" value="$escapetool.xml($newBookPageEditURL)"/&gt;
-  {{/html}}
-#end
+  {{velocity}}
+  ##
+  ## TO DO :
+  ## Add a listener that would create the first version page, if the book page is new
+  #set ($docRef = $doc.documentReference)
+  #if ("$!request.action" == 'transformNameUsingSlug' &amp;&amp; "$!request.name" != '')
+    #set ($transformedName = "$!services.bookversions.transformNameUsingSlugValidation($!request.name)")
+    #if ("$!transformedName" == '')
+      #set ($transformedName = "$!request.name")
+    #end
+    #jsonResponse({
+      'transformedName' : "$escapetool.json($transformedName)"
+    })
+  #elseif ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($docRef) || $services.bookversions.isPage($docRef)))
+    #set ($BOOK_CODE = 'BookVersions.Code')
+    #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookPage"))
+    ## Display the custom new page button
+    #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createSpaceReference('__entryName__', $docRef.parent)))
+    #set ($params = {
+      'title': '__entryName__',
+      'parent': $services.model.serialize($docRef.parent, 'local')
+    })
+    #set ($discard = $params.put('template', "${BOOK_CODE}.BookPageTemplate"))
+    #set ($newVersionedBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
+    #set ($discard = $params.put('template', "${BOOK_CODE}.BookPageUnversionedTemplate"))
+    #set ($newUnversioendBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
+
+    {{html clean="false"}}
+      &lt;div class="btn-group" id="tmCreateBookPage"&gt;
+        &lt;a href="#AddNewBookPage" role="button" title="$services.localization.render('BookVersions.creationForm.newPage')" class="btn btn-primary addBookPage"&gt;
+          &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
+          &lt;span class="btn-label"&gt;$services.localization.render('BookVersions.creationForm.newPage')&lt;/span&gt;
+        &lt;/a&gt;
+      &lt;/div&gt;
+      &lt;input type="hidden" id="versionedBooKPageURL" name="versionedBooKPageURL" value="$escapetool.xml($newVersionedBookPageEditURL)"/&gt;
+      &lt;input type="hidden" id="unversionedBooKPageURL" name="unversionedBooKPageURL" value="$escapetool.xml($newUnversioendBookPageEditURL)"/&gt;
+      &lt;input type="hidden" id="bookSourceReference" name="sourceReference" value="$escapetool.xml($docRef)"/&gt;
+    {{/html}}
+  #end
 {{/velocity}}</content>
     </property>
     <property>
