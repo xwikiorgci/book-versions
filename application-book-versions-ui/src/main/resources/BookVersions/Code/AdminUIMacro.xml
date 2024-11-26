@@ -271,9 +271,9 @@
 #set ($createFormTranslation = $services.localization.render("BookVersions.creationForm.new${typeSingular}"))
 #if ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view')
   #set ($BOOK_CODE = 'BookVersions.Code')
-  #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource", {'minify' : false, 'language': $context.language, 'type': $type, 'typeSingular': $typeSingular}))
+  #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource"))
   ## Display the custom new page button
-  #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createSpaceReference('__entryName__', $doc.documentReference.parent)))
+  #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createDocumentReference('__entryName__', $doc.documentReference.parent)))
   #set ($params = {
     'template': "${BOOK_CODE}.${typeSingular}Template",
     'title': '__entryName__',
@@ -282,13 +282,13 @@
   #set ($newBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
 
   {{html clean="false"}}
-    &lt;div class="btn-group" id="tmCreate${typeSingular}"&gt;
-      &lt;a href="#AddNew${typeSingular}" type='button' role="button" title="$createFormTranslation" class="btn btn-primary add${typeSingular}"&gt;
+    &lt;div class="btn-group" id="tmCreateResource"&gt;
+      &lt;a href="#AddNew" type='button' role="button" title="$createFormTranslation" class="btn btn-primary addResource"&gt;
         &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
         &lt;span class="btn-label"&gt;$createFormTranslation&lt;/span&gt;
       &lt;/a&gt;
     &lt;/div&gt;
-    &lt;input type="hidden" value="$escapetool.xml($newBookPageEditURL)"/&gt;
+    &lt;input type="hidden" id="PageURL" name="PageURL" value="$escapetool.xml($newBookPageEditURL)"/&gt;
   {{/html}}
 #end
 
