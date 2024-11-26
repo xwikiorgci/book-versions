@@ -21,8 +21,6 @@
 package org.xwiki.contrib.bookversions.listeners;
 
 import java.util.List;
-import java.util.Locale;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -32,9 +30,13 @@ import org.slf4j.Logger;
 import org.xwiki.bridge.event.DocumentCreatingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.bookversions.BookVersionsManager;
+import org.xwiki.contrib.bookversions.internal.BookVersionsConstants;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.event.AbstractLocalEventListener;
 import org.xwiki.observation.event.Event;
+import org.xwiki.query.QueryException;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -59,6 +61,9 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
     private Provider<BookVersionsManager> bookVersionsManagerProvider;
 
     @Inject
+    private Provider<XWikiContext> xcontextProvider;
+
+    @Inject
     private Logger logger;
 
     /**
@@ -72,23 +77,31 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
     @Override
     public void processLocalEvent(Event event, Object source, Object data)
     {
+        XWikiContext xcontext = xcontextProvider.get();
+
         XWikiDocument updatedXDoc = (XWikiDocument) source;
         updatedXDoc.getOriginalDocument();
         BookVersionsManager bookVersionsManager = bookVersionsManagerProvider.get();
 
         try {
             if (bookVersionsManager.isPage(updatedXDoc) && bookVersionsManager.isVersionedPage(updatedXDoc)) {
-                String pageContent = updatedXDoc.getContent();
-                Locale language = updatedXDoc.getLocale();
+                // Transfer the document's content in a new child page storing its versioned content.
+                DocumentReference versionDocumentReference =
+                    bookVersionsManager.getVersionedContentReference(updatedXDoc);
 
-                // If the new created document is a book page, then transfer its content in a new child page
-                // dedicated to the active version (selected / inherited / latest);
+                if (versionDocumentReference != null) {
+                    XWikiDocument versionedContentDocument =
+                        xcontext.getWiki().getDocument(versionDocumentReference, xcontext);
+                    versionedContentDocument.newXObject(BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE,
+                        xcontext);
+                    versionedContentDocument.setContent(updatedXDoc.getContent());
+                    updatedXDoc.setContent("");
 
+                    xcontext.getWiki().saveDocument(versionedContentDocument, xcontext);
+                }
             }
-        } catch (XWikiException e) {
+        } catch (XWikiException | QueryException e) {
             logger.error("Could not handle the event listener.", e);
         }
-
     }
-
 }

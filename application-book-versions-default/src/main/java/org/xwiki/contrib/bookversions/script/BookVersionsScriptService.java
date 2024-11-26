@@ -205,6 +205,17 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the name of the referenced version.
+     * 
+     * @param versionReference The version reference.
+     * @return the name of the referenced version.
+     */
+    public String getVersionName(DocumentReference versionReference)
+    {
+        return this.bookVersionsManagerProvider.get().getVersionName(versionReference);
+    }
+
+    /**
      * Get the reference of a given version id, in the given referenced collection.
      * 
      * @param collectionReference The reference of the collection (book / library).

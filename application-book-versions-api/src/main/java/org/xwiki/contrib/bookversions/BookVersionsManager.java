@@ -206,6 +206,14 @@ public interface BookVersionsManager
         throws XWikiException, QueryException;
 
     /**
+     * Get the name of the referenced version.
+     * 
+     * @param versionReference The version reference.
+     * @return the name of the referenced version.
+     */
+    String getVersionName(DocumentReference versionReference);
+
+    /**
      * Get the reference of a given version id, in the given referenced collection.
      * 
      * @param collectionReference The reference of the collection (book / library).
@@ -250,6 +258,27 @@ public interface BookVersionsManager
      */
     boolean hasContentForVersion(DocumentReference documentReference, String version)
         throws QueryException, XWikiException;
+
+    /**
+     * Get versioned content reference. The method is used at page content creation.
+     * 
+     * @param documentReference the reference of the book page
+     * @return the versioned content reference
+     * @throws XWikiException
+     * @throws QueryException
+     */
+    DocumentReference getVersionedContentReference(DocumentReference documentReference)
+        throws XWikiException, QueryException;
+
+    /**
+     * Get versioned content reference for the given document.
+     * 
+     * @param document The XWiki document
+     * @return the versioned content reference
+     * @throws XWikiException
+     * @throws QueryException
+     */
+    DocumentReference getVersionedContentReference(XWikiDocument document) throws XWikiException, QueryException;
 
     /**
      * Get the reference of a versioned page content. This does not check existence or page class.

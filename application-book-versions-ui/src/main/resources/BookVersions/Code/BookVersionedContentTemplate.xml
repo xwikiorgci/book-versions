@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.BookPageUnversionedTemplate" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.BookVersionedContentTemplate" locale="">
   <web>BookVersions.Code</web>
-  <name>BookPageUnversionedTemplate</name>
+  <name>BookVersionedContentTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,19 +31,19 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Book Page Unversioned Template</title>
+  <title>Book Versioned Content Template</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>BookVersions.Code.BookPageUnversionedTemplate</name>
+    <name>BookVersions.Code.BookVersionedContentTemplate</name>
     <number>0</number>
-    <className>BookVersions.Code.BookPageClass</className>
-    <guid>7f999855-1b44-466f-b80b-e461b9677565</guid>
+    <className>BookVersions.Code.BookVersionedContentClass</className>
+    <guid>edcf960c-c5a7-43c5-a60b-56816232281b</guid>
     <class>
-      <name>BookVersions.Code.BookPageClass</name>
+      <name>BookVersions.Code.BookVersionedContentClass</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -51,24 +51,34 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <unversioned>
+      <status>
+        <cache>0</cache>
         <customDisplay/>
         <defaultValue/>
         <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType/>
+        <displayType>select</displayType>
+        <freeText/>
         <hint/>
-        <name>unversioned</name>
-        <number>2</number>
-        <prettyName>unversioned</prettyName>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>status</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>status</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <sort/>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </unversioned>
+        <values>draft|review|complete</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </status>
     </class>
     <property>
-      <unversioned>1</unversioned>
+      <status/>
     </property>
   </object>
 </xwikidoc>
