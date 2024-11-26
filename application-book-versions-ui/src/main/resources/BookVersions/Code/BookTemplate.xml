@@ -90,8 +90,5 @@
     <property>
       <publishedBookRefs/>
     </property>
-    <property>
-      <publishedBooks>[]</publishedBooks>
-    </property>
   </object>
 </xwikidoc>
