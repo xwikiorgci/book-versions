@@ -271,7 +271,7 @@
 #set ($createFormTranslation = $services.localization.render("BookVersions.creationForm.new${typeSingular}"))
 #if ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view')
   #set ($BOOK_CODE = 'BookVersions.Code')
-  #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource"))
+  #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource",{'minify' : false, 'language': $context.language, 'type': $type, 'typeSingular': $typeSingular}))
   ## Display the custom new page button
   #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createDocumentReference('__entryName__', $doc.documentReference.parent)))
   #set ($params = {

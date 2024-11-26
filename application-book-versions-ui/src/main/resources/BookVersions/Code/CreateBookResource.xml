@@ -156,7 +156,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
       show: {method: this.showDialog, keys: []},
       add: {method: this._onAdd, keys: ['Enter']}
     }, {
-      title: '$escapetool.javascript($services.localization.render('BookVersions.creationForm.newPage'))',
+      title: '$escapetool.javascript($services.localization.render('BookVersions.creationForm.new'+$request.typeSingular))',
       verticalPosition: 'top'
     });
   },
@@ -196,7 +196,7 @@ return XWiki;
 
 (XWiki.domIsLoaded) || document.observe('xwiki:dom:loaded', function(){
   var bookPageNamePopup = new XWiki.EntryNamePopup($('tmCreateResource').down('.addResource'));
-  bookPageNamePopup.options.title = "$services.localization.render('BookVersions.creationForm.newPage')"
+  bookPageNamePopup.options.title = "$services.localization.render('BookVersions.creationForm.new'+$request.typeSingular)"
 });
 </code>
     </property>
