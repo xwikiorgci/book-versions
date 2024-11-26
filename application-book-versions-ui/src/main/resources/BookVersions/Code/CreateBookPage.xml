@@ -354,7 +354,7 @@ return XWiki;
     <property>
       <content>{{include reference="BookVersions.Code.BookMacros" /}}
 
-  {{velocity}}
+{{velocity}}
   ##
   ## TO DO :
   ## Add a listener that would create the first version page, if the book page is new
@@ -402,7 +402,7 @@ return XWiki;
       <name>bookversions.createbookpage</name>
     </property>
     <property>
-      <parameters/>
+      <parameters>order=1000</parameters>
     </property>
     <property>
       <scope>wiki</scope>
