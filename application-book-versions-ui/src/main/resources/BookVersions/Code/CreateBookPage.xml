@@ -355,9 +355,6 @@ return XWiki;
       <content>{{include reference="BookVersions.Code.BookMacros" /}}
 
 {{velocity}}
-  ##
-  ## TO DO :
-  ## Add a listener that would create the first version page, if the book page is new
   #set ($docRef = $doc.documentReference)
   #if ("$!request.action" == 'transformNameUsingSlug' &amp;&amp; "$!request.name" != '')
     #set ($transformedName = "$!services.bookversions.transformUsingSlugValidation($!request.name)")
