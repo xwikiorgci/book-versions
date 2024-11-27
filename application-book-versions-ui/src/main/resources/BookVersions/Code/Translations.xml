@@ -75,7 +75,7 @@ BookVersions.creationForm.newLibrary=New library
 BookVersions.navMenu.versionSelect=Version
 BookVersions.navMenu.versioned=Content from version [{0}].
 BookVersions.navMenu.inherited=Content inherited from version [{0}].
-BookVersions.navMenu.warning.noversionWithLink=The page is versioned, but it doesn''t have content for version {0}. You can create the content for this version by clicking on this &lt;a href="{1}"&gt;link&lt;/a&gt;.
+BookVersions.navMenu.createVersionWithLink=Create content for version {0}
 BookVersions.navMenu.warning.noversion=The page is versioned, but it doesn''t have content for version {0} or its preceding versions.
 
 # Administration menu
