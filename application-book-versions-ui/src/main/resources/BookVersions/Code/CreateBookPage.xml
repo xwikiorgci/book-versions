@@ -356,6 +356,7 @@ return XWiki;
 
 {{velocity}}
   #set ($docRef = $doc.documentReference)
+  #set ($isVersionedContent = $services.bookversions.isVersionedContent($docRef))
   #if ("$!request.action" == 'transformNameUsingSlug' &amp;&amp; "$!request.name" != '')
     #set ($transformedName = "$!services.bookversions.transformUsingSlugValidation($!request.name)")
     #if ("$!transformedName" == '')
@@ -364,14 +365,18 @@ return XWiki;
     #jsonResponse({
       'transformedName' : "$escapetool.json($transformedName)"
     })
-  #elseif ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($docRef) || $services.bookversions.isPage($docRef)))
+  #elseif ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($docRef) || $services.bookversions.isPage($docRef) || $isVersionedContent))
     #set ($BOOK_CODE = 'BookVersions.Code')
     #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookPage"))
     ## Display the custom new page button
-    #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createSpaceReference('__entryName__', $docRef.parent)))
+    #set ($parentReference = $docRef.parent)
+    #if ($isVersionedContent &amp;&amp; $docRef.parent &amp;&amp; $docRef.parent.parent)
+      #set ($parentReference = $docRef.parent)
+    #end
+    #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createSpaceReference('__entryName__', $parentReference)))
     #set ($params = {
       'title': '__entryName__',
-      'parent': $services.model.serialize($docRef.parent, 'local')
+      'parent': $services.model.serialize($parentReference, 'local')
     })
     #set ($discard = $params.put('template', "${BOOK_CODE}.BookPageTemplate"))
     #set ($newVersionedBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
