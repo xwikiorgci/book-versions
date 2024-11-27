@@ -55,7 +55,7 @@ BookVersions.creationForm.docName=Enter the new {0} ID (different from the name,
 BookVersions.creationForm.submit=Create
 
 # Page Creation form
-BookVersions.creationForm.newPage=New book page
+BookVersions.creationForm.newPage=New page
 BookVersions.creationForm.pageTitle=Page title
 BookVersions.creationForm.pageTitle.hint=The title of the page.
 BookVersions.creationForm.pageUnversioned=Unversioned content
