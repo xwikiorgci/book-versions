@@ -79,6 +79,7 @@ BookVersions.navMenu.warning.noversionWithLink=The page is versioned, but it doe
 BookVersions.navMenu.warning.noversion=The page is versioned, but it doesn''t have content for version {0} or its preceding versions.
 
 # Administration menu
+BookVersions.adminMenu.title=Versions
 BookVersions.adminMenu.manage=Manage
 BookVersions.adminMenu.manageVersions=Versions
 BookVersions.adminMenu.manageVariants=Variants
