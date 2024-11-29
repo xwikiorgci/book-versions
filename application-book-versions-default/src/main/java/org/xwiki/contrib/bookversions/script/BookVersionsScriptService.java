@@ -334,4 +334,33 @@ public class BookVersionsScriptService implements ScriptService
     {
         return bookVersionsManagerProvider.get().getInheritedContentReference(pageReference, versionReference);
     }
+
+    /**
+     * Set a library configuration to a book if it doesn't exit yet. The last version of the library is set as default.
+     * @param bookReference the reference of the book
+     * @param libraryReference the reference of the library to add
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    public void setLibrary(DocumentReference bookReference, DocumentReference libraryReference)
+        throws QueryException, XWikiException
+    {
+        bookVersionsManagerProvider.get().setLibrary(bookReference, libraryReference);
+    }
+
+    /**
+     * Set a library configuration to a book if it doesn't exit yet.
+     * @param bookReference the reference of the book
+     * @param libraryReference the reference of the library to add
+     * @param libraryVersionReference the reference of the version of the library to add
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    public void setLibrary(DocumentReference bookReference, DocumentReference libraryReference,
+        DocumentReference libraryVersionReference)
+        throws QueryException, XWikiException
+    {
+        bookVersionsManagerProvider.get().setLibrary(bookReference, libraryReference,
+            libraryVersionReference);
+    }
 }

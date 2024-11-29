@@ -68,10 +68,16 @@ public interface BookVersionsConstants
         new EntityReference("BookPageClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
-     * The reference of the book page class.
+     * The reference of the book versioned content class.
      */
     EntityReference BOOKVERSIONEDCONTENT_CLASS_REFERENCE =
         new EntityReference("BookVersionedContentClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
+     * The reference of the library reference class.
+     */
+    EntityReference BOOKLIBRARYREFERENCE_CLASS_REFERENCE =
+        new EntityReference("LibraryReferenceClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
      * The unversioned property of a book page.
@@ -112,6 +118,16 @@ public interface BookVersionsConstants
      * The selected version that is stored in the session.
      */
     String VERSION_PROP_PRECEDINGVERSION = "precedingVersionReference";
+
+    /**
+     * The library reference of a book library reference.
+     */
+    String BOOKLIBRARYREFERENCE_PROP_LIBRARY = "libraryReference";
+
+    /**
+     * The library version reference of a book library reference.
+     */
+    String BOOKLIBRARYREFERENCE_PROP_LIBRARYVERSION = "libraryVersionReference";
 
     /**
      * The location of version definitions, in a book / library.

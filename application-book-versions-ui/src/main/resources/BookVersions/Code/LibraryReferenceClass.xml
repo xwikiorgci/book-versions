@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.Library Reference Class" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.LibraryReferenceClass" locale="">
   <web>BookVersions.Code</web>
-  <name>Library Reference Class</name>
+  <name>LibraryReferenceClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>BookVersions.Code.Library Reference Class</name>
+    <name>BookVersions.Code.LibraryReferenceClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -104,7 +104,7 @@
     </libraryVersionReference>
   </class>
   <object>
-    <name>BookVersions.Code.Library Reference Class</name>
+    <name>BookVersions.Code.LibraryReferenceClass</name>
     <number>0</number>
     <className>XWiki.DocumentSheetBinding</className>
     <guid>554671c1-8cda-4769-b874-530f381bfc6e</guid>

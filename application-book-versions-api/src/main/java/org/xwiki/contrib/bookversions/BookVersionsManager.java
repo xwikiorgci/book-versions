@@ -160,6 +160,28 @@ public interface BookVersionsManager
     boolean isLibrary(DocumentReference documentReference) throws XWikiException;
 
     /**
+     * Check if the given library version belongs to the qiven library.
+     * @param libraryReference The library reference
+     * @param libraryVersionReference The library version reference
+     * @return True if the library version belongs to the library
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    boolean isFromLibrary(DocumentReference libraryReference, DocumentReference libraryVersionReference)
+        throws QueryException, XWikiException;
+
+    /**
+     * Check if the given library version belongs to the qiven library.
+     * @param library The library document
+     * @param libraryVersion The library version document
+     * @return True if the library version belongs to the library
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    boolean isFromLibrary(XWikiDocument library, XWikiDocument libraryVersion)
+        throws QueryException, XWikiException;
+
+    /**
      * Transform the given name by using the slug name validation.
      *
      * @param name The name to be transformed.
@@ -327,4 +349,25 @@ public interface BookVersionsManager
      */
     DocumentReference getInheritedContentReference(DocumentReference documentReference,
         DocumentReference versionReference) throws QueryException, XWikiException;
+
+    /**
+     * Set a library configuration to a book if it doesn't exit yet. The last version of the library is set as default.
+     * @param bookReference the reference of the book
+     * @param libraryReference the reference of the library to add
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    void setLibrary(DocumentReference bookReference, DocumentReference libraryReference)
+        throws QueryException, XWikiException;
+
+    /**
+     * Set a library configuration to a book if it doesn't exit yet.
+     * @param bookReference the reference of the book
+     * @param libraryReference the reference of the library to add
+     * @param libraryVersionReference the reference of the version of the library to add
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    void setLibrary(DocumentReference bookReference, DocumentReference libraryReference,
+        DocumentReference libraryVersionReference) throws QueryException, XWikiException;
 }

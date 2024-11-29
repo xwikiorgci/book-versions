@@ -193,6 +193,25 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public boolean isFromLibrary(DocumentReference libraryReference, DocumentReference libraryVersionReference)
+        throws QueryException, XWikiException
+    {
+        for (String versionStringRef : getCollectionVersions(libraryReference)) {
+            if (libraryVersionReference.equals(referenceResolver.resolve(versionStringRef, libraryVersionReference))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isFromLibrary(XWikiDocument library, XWikiDocument libraryVersion)
+        throws QueryException, XWikiException
+    {
+        return isFromLibrary(library.getDocumentReference(), libraryVersion.getDocumentReference());
+    }
+
+    @Override
     public String transformUsingSlugValidation(String name)
     {
         EntityNameValidation modelValidationScriptService = this.slugEntityNameValidationProvider.get();
@@ -620,6 +639,67 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
         return entityReference != null && spaceEntityReference != null ? spaceEntityReference instanceof SpaceReference
             ? (SpaceReference) spaceEntityReference : new SpaceReference(spaceEntityReference) : null;
+    }
+
+    @Override
+    public void setLibrary(DocumentReference bookReference, DocumentReference libraryReference)
+        throws QueryException, XWikiException
+    {
+        setLibrary(bookReference, libraryReference,
+            referenceResolver.resolve(getCollectionVersions(libraryReference).get(0),libraryReference));
+    }
+
+    @Override
+    public void setLibrary(DocumentReference bookReference, DocumentReference libraryReference,
+        DocumentReference libraryVersionReference)
+        throws QueryException, XWikiException
+    {
+        if (isBook(bookReference) && isLibrary(libraryReference) && isFromLibrary(libraryReference, libraryVersionReference)) {
+            List<String> versionsLocalRef = getCollectionVersions(bookReference);
+            for (String versionLocalRef : versionsLocalRef) {
+                DocumentReference versionRef = referenceResolver.resolve(versionLocalRef);
+                setVersionLibrary(versionRef, libraryReference, libraryVersionReference);
+            }
+        }
+    }
+
+    private void setVersionLibrary(DocumentReference versionReference, DocumentReference libraryReference,
+        DocumentReference libraryVersionReference)
+        throws XWikiException
+    {
+        XWikiContext xcontext = getXWikiContext();
+        XWiki xwiki = xcontext.getWiki();
+
+        XWikiDocument versionDoc = xwiki.getDocument(versionReference, xcontext).clone();
+        List<BaseObject> libRefObjects = versionDoc.getXObjects(BookVersionsConstants.BOOKLIBRARYREFERENCE_CLASS_REFERENCE);
+        boolean createObject = true;
+        for (BaseObject libRefObject : libRefObjects) {
+            if (libRefObject != null) {
+                if (libraryReference.equals(referenceResolver.resolve(libRefObject.getStringValue(BookVersionsConstants.BOOKLIBRARYREFERENCE_PROP_LIBRARY),
+                    libraryReference))) {
+                    if (libraryVersionReference.equals(referenceResolver.resolve(libRefObject.getStringValue(
+                        BookVersionsConstants.BOOKLIBRARYREFERENCE_PROP_LIBRARYVERSION), libraryVersionReference)))
+                    {
+                        // The version library is already set with the proper value, nothing to do
+                        return;
+                    } else {
+                        // The library configuration object already exists but without the proper value
+                        libRefObject.set(BookVersionsConstants.BOOKLIBRARYREFERENCE_PROP_LIBRARYVERSION,
+                            libraryVersionReference, xcontext);
+                        createObject = false;
+                    }
+                }
+            }
+        }
+        if (createObject) {
+            // No object already existing for the library configuration, add one
+            BaseObject newObject = versionDoc.newXObject(BookVersionsConstants.BOOKLIBRARYREFERENCE_CLASS_REFERENCE,
+                xcontext);
+            newObject.set(BookVersionsConstants.BOOKLIBRARYREFERENCE_PROP_LIBRARY, libraryReference, xcontext);
+            newObject.set(BookVersionsConstants.BOOKLIBRARYREFERENCE_PROP_LIBRARYVERSION,libraryVersionReference, xcontext);
+        }
+        xwiki.saveDocument(versionDoc, "Setting version configuration for library ["+libraryReference.getParent().toString()+
+                "]: ["+libraryVersionReference.toString()+"]." , xcontext);
     }
 
     /**
