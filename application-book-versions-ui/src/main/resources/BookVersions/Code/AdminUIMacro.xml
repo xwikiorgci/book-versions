@@ -411,13 +411,6 @@ document.addEventListener('DOMContentLoaded', function() {
   {{/html}}
 #end
 
-#set ($documentsContent = {})
-#set ($query = "select doc.fullName, doc.content from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'BookVersions.Code.${typeClass}' and doc.space = :space")
-#set ($variants = $services.query.xwql($query).bindValue("space", $doc.space).execute())
-#foreach($result in $variants)
-  #set($discard = $documentsContent.put($result[0], $result[1]))
-#end
-
 {{liveData
   id="bookVersions"
   properties="${LDproperties}"
@@ -483,32 +476,33 @@ document.addEventListener('DOMContentLoaded', function() {
 }}{{/liveData}}
 
 
-
-
-#set ($discard = $xwiki.jsx.use('BookVersions.Code.AdminUIMacro'))
-{{html}}
-$services.localization.render("BookVersions.variants.showPagesForVariant") &lt;select id="variants" size="1"&gt;
-#foreach($result in $variants)
-  #set($discard = $documentsContent.put($result[0], $result[1]))
-  &lt;option value="$result[0]" label="$result[1]"&gt;$result[1]&lt;/option&gt;
-#end
-&lt;/select&gt;
-{{/html}}
-
-#set ($queryLinkedPages = "where doc.object(BookVersions.Code.VariantsListClass).variantsList like :variant")
-#set ($resultsLinkedPages = $services.query.xwql($queryLinkedPages).bindValue('variant',"%${request.variant}%").execute())
-#if ("$!{request.variant}" != "")
-
-  {{box}}
-  === Pages linked with selected variant ===
-  #if ($resultsLinkedPages.size() == 0 )
-    $services.localization.render("BookVersions.variants.noLinkedPage")
+#if ($type == "Variants")
+  #set ($query = "select doc.fullName, doc.content from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'BookVersions.Code.${typeClass}' and doc.space = :space")
+  #set ($variants = $services.query.xwql($query).bindValue("space", $doc.space).execute())
+  #set ($discard = $xwiki.jsx.use('BookVersions.Code.AdminUIMacro'))
+  {{html}}
+  $services.localization.render("BookVersions.variants.showPagesForVariant") &lt;select id="variants" size="1"&gt;
+  #foreach($result in $variants)
+    &lt;option value="$result[0]" label="$result[1]"&gt;$result[1]&lt;/option&gt;
   #end
-  #foreach($result in $resultsLinkedPages)
-  * [[$xwiki.getDocument($result).title&gt;&gt;$result]]
-  #end
+  &lt;/select&gt;
+  {{/html}}
 
-    {{/box}}
+  #set ($queryLinkedPages = "where doc.object(BookVersions.Code.VariantsListClass).variantsList like :variant")
+  #set ($resultsLinkedPages = $services.query.xwql($queryLinkedPages).bindValue('variant',"%${request.variant}%").execute())
+  #if ("$!{request.variant}" != "")
+
+    {{box}}
+    === Pages linked with selected variant ===
+    #if ($resultsLinkedPages.size() == 0 )
+      $services.localization.render("BookVersions.variants.noLinkedPage")
+    #end
+    #foreach($result in $resultsLinkedPages)
+    * [[$xwiki.getDocument($result).title&gt;&gt;$result]]
+    #end
+
+      {{/box}}
+  #end
 #end
 {{/velocity}}</code>
     </property>
