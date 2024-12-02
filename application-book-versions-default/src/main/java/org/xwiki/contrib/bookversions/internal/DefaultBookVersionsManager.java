@@ -45,12 +45,13 @@ import org.xwiki.model.validation.EntityNameValidation;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.web.XWikiRequest;
+
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.web.XWikiRequest;
 
 /**
  * Default implementation of {@link BookVersionsManager}.
@@ -271,6 +272,57 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public String getSelectedVariant(DocumentReference documentReference) throws XWikiException, QueryException
+    {
+        if (documentReference == null) {
+            return null;
+        }
+
+        Map<String, String> variantsMap = new HashMap<String, String>();
+        XWikiRequest request = getXWikiContext().getRequest();
+        HttpSession session = request.getSession();
+        if (session != null) {
+            variantsMap = (Map<String, String>) session.getAttribute(BookVersionsConstants.SESSION_SELECTEDVARIANT);
+
+            if (variantsMap != null) {
+                Iterator<?> it = variantsMap.entrySet().iterator();
+                DocumentReference versionedCollectionReference = getVersionedCollectionReference(documentReference);
+
+                while (it.hasNext()) {
+                    Map.Entry<String, String> collectionVariant = (Map.Entry<String, String>) it.next();
+                    String collectionReference = collectionVariant.getKey();
+                    if (!collectionReference.isBlank()
+                        && collectionReference.equals(localSerializer.serialize(versionedCollectionReference))) {
+                        return collectionVariant.getValue();
+                    }
+
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void setSelectedVariant(DocumentReference documentReference, String variant)
+    {
+        if (documentReference == null) {
+            return;
+        }
+
+        Map<String, String> variantsMap = new HashMap<String, String>();
+        XWikiRequest request = getXWikiContext().getRequest();
+        HttpSession session = request.getSession();
+        if (session != null) {
+            Object sessionAttribute = session.getAttribute(BookVersionsConstants.SESSION_SELECTEDVARIANT);
+            variantsMap = sessionAttribute != null ? (Map<String, String>) sessionAttribute : variantsMap;
+            String collectionReferenceSerialized = localSerializer.serialize(documentReference);
+            variantsMap.put(collectionReferenceSerialized, variant);
+            session.setAttribute(BookVersionsConstants.SESSION_SELECTEDVARIANT, variantsMap);
+        }
+    }
+
+    @Override
     public boolean isAParent(DocumentReference spaceReference, DocumentReference nestedReference)
     {
         if (spaceReference != null && nestedReference != null) {
@@ -337,6 +389,28 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public DocumentReference getVariantReference(DocumentReference collectionReference, String variant)
+        throws XWikiException
+    {
+        // Search first for the terminal document : Book.Versions.MyVersion
+        SpaceReference variantParentSpaceReference =
+            new SpaceReference(new EntityReference(BookVersionsConstants.VARIANTS_LOCATION, EntityType.SPACE,
+                collectionReference.getParent()));
+        DocumentReference variantDocumentReference =
+            new DocumentReference(new EntityReference(variant, EntityType.DOCUMENT, variantParentSpaceReference));
+
+        // Search for the non-terminal document : Book.Versions.MyVersion.WebHome
+        if (!this.isVariant(variantDocumentReference)) {
+            SpaceReference versionNonTerminalParentSpaceReference =
+                new SpaceReference(new EntityReference(variant, EntityType.SPACE, variantParentSpaceReference));
+            variantDocumentReference =
+                new DocumentReference(new EntityReference(this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE,
+                    EntityType.DOCUMENT, versionNonTerminalParentSpaceReference));
+        }
+        return this.isVariant(variantDocumentReference) ? variantDocumentReference : null;
+    }
+
+    @Override
     public List<String> getCollectionVersions(DocumentReference collectionReference)
         throws QueryException, XWikiException
     {
@@ -357,6 +431,38 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     .createQuery(", BaseObject as obj where doc.fullName = obj.name and obj.className = :versionClass "
                         + "and doc.space like :space escape '/' order by doc.creationDate desc", Query.HQL)
                     .bindValue("versionClass", localSerializer.serialize(BookVersionsConstants.VERSION_CLASS_REFERENCE))
+                    .bindValue("space", spacePrefix).execute();
+
+                logger.debug("[getCollectionVersions] result : [{}]", result);
+
+                return result;
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getCollectionVariants(DocumentReference collectionReference)
+        throws QueryException, XWikiException
+    {
+        if (collectionReference != null) {
+            DocumentReference versionedCollectionReference = getVersionedCollectionReference(collectionReference);
+
+            if (versionedCollectionReference != null) {
+
+                SpaceReference collectionSpace = versionedCollectionReference.getLastSpaceReference();
+                String collectionSpaceSerialized = localSerializer.serialize(collectionSpace);
+                String spacePrefix = collectionSpaceSerialized.replaceAll("([%_/])", "/$1").concat(".%");
+
+                logger.debug("[getCollectionVersions] collectionSpaceSerialized : [{}]", collectionSpaceSerialized);
+                logger.debug("[getCollectionVersions] spacePrefix : [{}]", spacePrefix);
+
+                // Query inspired from getDocumentReferences of DefaultModelBridge.java in xwiki-platform
+                List<String> result = this.queryManagerProvider.get()
+                    .createQuery(", BaseObject as obj where doc.fullName = obj.name and obj.className = :variantClass "
+                        + "and doc.space like :space escape '/' order by doc.creationDate desc", Query.HQL)
+                    .bindValue("variantClass", localSerializer.serialize(BookVersionsConstants.VARIANT_CLASS_REFERENCE))
                     .bindValue("space", spacePrefix).execute();
 
                 logger.debug("[getCollectionVersions] result : [{}]", result);
@@ -458,6 +564,17 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
 
         return versionName;
+    }
+
+    @Override
+    public String getVariantName(DocumentReference variantReference)
+    {
+        String variantName = getEscapedName(variantReference);
+        if (variantName != null && variantName.equals(this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE)) {
+            variantName = getEscapedName(variantReference.getLastSpaceReference().getName());
+        }
+
+        return variantName;
     }
 
     @Override

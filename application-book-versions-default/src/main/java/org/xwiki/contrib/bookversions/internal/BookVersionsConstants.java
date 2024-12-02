@@ -115,6 +115,11 @@ public interface BookVersionsConstants
     String SESSION_SELECTEDVERSION = "BookVersions.selectedVersion";
 
     /**
+     * The selected variant that is stored in the session.
+     */
+    String SESSION_SELECTEDVARIANT = "BookVersions.selectedVariant";
+
+    /**
      * The selected version that is stored in the session.
      */
     String VERSION_PROP_PRECEDINGVERSION = "precedingVersionReference";
@@ -133,4 +138,9 @@ public interface BookVersionsConstants
      * The location of version definitions, in a book / library.
      */
     String VERSIONS_LOCATION = "Versions";
+
+    /**
+     * The location of variant definitions, in a book / library.
+     */
+    String VARIANTS_LOCATION = "Variants";
 }

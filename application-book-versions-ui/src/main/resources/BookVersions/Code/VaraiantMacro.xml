@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.AdminUIMacro" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.VaraiantMacro" locale="">
   <web>BookVersions.Code</web>
-  <name>AdminUIMacro</name>
+  <name>VaraiantMacro</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -31,136 +31,17 @@
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>AdminUIMacro</title>
+  <title>VaraiantMacro</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>BookVersions.Code.AdminUIMacro</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>c80b37e4-72aa-46b2-8fe9-e0ab619194f8</guid>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <defaultValue>long</defaultValue>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText>forbidden</freeText>
-        <largeStorage>0</largeStorage>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <contenttype>PureText</contenttype>
-        <disabled>0</disabled>
-        <editor>PureText</editor>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <restricted>0</restricted>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText>forbidden</freeText>
-        <largeStorage>0</largeStorage>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>/**
- * Handles variant selection change and maintains selected state
- */
-document.addEventListener('DOMContentLoaded', function() {
-  const variantSelect = document.getElementById('variants');
-  
-  // Set initial selection based on URL parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const currentVariant = urlParams.get('variant');
-  if (currentVariant) {
-    variantSelect.value = currentVariant;
-  }
-  
-  // Handle selection change
-  variantSelect.addEventListener('change', function() {
-    const selectedVariant = this.value;
-    const currentPath = window.location.pathname;
-    window.location.href = `${currentPath}?variant=${encodeURIComponent(selectedVariant)}`;
-  });
-});</code>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse/>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>BookVersions.Code.AdminUIMacro</name>
+    <name>BookVersions.Code.VaraiantMacro</name>
     <number>0</number>
     <className>XWiki.WikiMacroClass</className>
-    <guid>224a1525-40ed-4b46-ba31-568cc3e02a2e</guid>
+    <guid>1d623e9f-7d78-4233-8d84-d6e31fa40327</guid>
     <class>
       <name>XWiki.WikiMacroClass</name>
       <customClass/>
@@ -372,144 +253,17 @@ document.addEventListener('DOMContentLoaded', function() {
     </property>
     <property>
       <code>{{velocity}}
-#set ($type = $wikimacro.parameters.type)
-#set ($typeSingular = "")
-#if ($type == "Variants")
-    #set ($typeSingular = "Variant")
-    #set ($typeClass = "VariantClass")
-    #set ($LDproperties = "doc.location,doc.title,doc.creationDate,_actions")
-#elseif ($type == "Versions")
-    #set ($typeSingular = "Version")
-    #set ($typeClass = "VersionClass")
-    #set ($LDproperties = "doc.location,doc.title,description,doc.creationDate,precedingVersionReference,_actions")
-#elseif ($type == "Libraries")
-    #set ($typeSingular = "Library")
-    #set ($typeClass = "LibraryClass")
-    #set ($LDproperties = "doc.location,doc.title,doc.creationDate,_actions")
-#end
-#set ($createFormTranslation = $services.localization.render("BookVersions.creationForm.new${typeSingular}"))
-#if ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view')
-  #set ($BOOK_CODE = 'BookVersions.Code')
-  #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource",{'minify' : false, 'language': $context.language, 'type': $type, 'typeSingular': $typeSingular}))
-  ## Display the custom new page button
-  #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createDocumentReference('__entryName__', $doc.documentReference.parent)))
-  #set ($params = {
-    'template': "${BOOK_CODE}.${typeSingular}Template",
-    'title': '__entryName__',
-    'parent': $services.model.serialize($doc.documentReference, 'local')
-  })
-  #set ($newBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
-
-  {{html clean="false"}}
-    &lt;div class="btn-group" id="tmCreateResource"&gt;
-      &lt;a href="#AddNew" type='button' role="button" title="$createFormTranslation" class="btn btn-primary addResource"&gt;
-        &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
-        &lt;span class="btn-label"&gt;$createFormTranslation&lt;/span&gt;
-      &lt;/a&gt;
-    &lt;/div&gt;
-    &lt;input type="hidden" id="PageURL" name="PageURL" value="$escapetool.xml($newBookPageEditURL)"/&gt;
-  {{/html}}
-#end
-
-#set ($documentsContent = {})
-#set ($query = "select doc.fullName, doc.content from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'BookVersions.Code.${typeClass}' and doc.space = :space")
-#set ($variants = $services.query.xwql($query).bindValue("space", $doc.space).execute())
-#foreach($result in $variants)
-  #set($discard = $documentsContent.put($result[0], $result[1]))
-#end
-
-{{liveData
-  id="bookVersions"
-  properties="${LDproperties}"
-  source="liveTable"
-  sourceParameters="className=BookVersions.Code.${typeClass}&amp;translationPrefix=platform.index."
-  sort="doc.creationDate:desc"
-  filters="doc.location=$doc.space"
-}}{
-  "meta": {
-    "propertyDescriptors": [
-      {
-        "id": "doc.location",
-        "visible": false
-      },
-      {
-        "id": "doc.title",
-        "name": "Title"
-      },
-      {
-        "id": "description",
-        "name": "Description",
-        "displayer": {
-          "id": "html"
-        }
-      },
-      {
-        "id": "doc.creationDate",
-        "name": "Created On"
-      },
-      {
-        "id": "precedingVersionReference",
-        "name": "Previous Version"
-      },
-      {
-        "id": "_actions",
-        "name": "Actions",
-        "sortable": false,
-        "filterable": false,
-        "displayer": {
-          "id": "actions",
-          "actions": ["delete"]
-        }
-      }
-    ],
-    "actions": [
-      {
-        "id": "delete",
-        "name": "Delete",
-        "icon": "cross",
-        "async": {
-          "httpMethod": "POST",
-          "loadingMessage": "Deleting...",
-          "successMessage": "Document deleted",
-          "failureMessage": "Failed to delete document",
-          "body": "form_token=${services.csrf.token}&amp;confirm=1&amp;async=true",
-          "headers": {
-            "Content-Type": "application/x-www-form-urlencoded"
-          }
-        }
-      }
-    ]
-  }
-}}{{/liveData}}
-
-
-
-
-#set ($discard = $xwiki.jsx.use('BookVersions.Code.AdminUIMacro'))
-{{html}}
-$services.localization.render("BookVersions.variants.showPagesForVariant") &lt;select id="variants" size="1"&gt;
-#foreach($result in $variants)
-  #set($discard = $documentsContent.put($result[0], $result[1]))
-  &lt;option value="$result[0]" label="$result[1]"&gt;$result[1]&lt;/option&gt;
-#end
-&lt;/select&gt;
-{{/html}}
-
-#set ($queryLinkedPages = "where doc.object(BookVersions.Code.VariantsListClass).variantsList like :variant")
-#set ($resultsLinkedPages = $services.query.xwql($queryLinkedPages).bindValue('variant',"%${request.variant}%").execute())
-#if ("$!{request.variant}" != "")
-
-  {{box}}
-  === Pages linked with selected variant ===
-  #if ($resultsLinkedPages.size() == 0 )
-    $services.localization.render("BookVersions.variants.noLinkedPage")
+  ## Current document reference
+  #set ($docRef = $doc.getDocumentReference())
+  ## Collection Book reference
+  #set ($collectionRef = $services.bookversions.getVersionedCollectionReference($docRef))
+  ## Get the current selected variant
+  #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
+  ## Display content only if the seleceted variant is the one set as parameter
+  #set ($variantLocalRef = $services.model.serialize($wikimacro.parameters.variantpage, 'local'))
+  #if ($selectedVariant == $variantLocalRef)
+    $wikimacro.content
   #end
-  #foreach($result in $resultsLinkedPages)
-  * [[$xwiki.getDocument($result).title&gt;&gt;$result]]
-  #end
-
-    {{/box}}
-#end
 {{/velocity}}</code>
     </property>
     <property>
@@ -519,7 +273,7 @@ $services.localization.render("BookVersions.variants.showPagesForVariant") &lt;s
       <contentJavaType/>
     </property>
     <property>
-      <contentType>No content</contentType>
+      <contentType>Optional</contentType>
     </property>
     <property>
       <defaultCategories/>
@@ -528,10 +282,10 @@ $services.localization.render("BookVersions.variants.showPagesForVariant") &lt;s
       <description/>
     </property>
     <property>
-      <id>admin-interface</id>
+      <id>variant</id>
     </property>
     <property>
-      <name>Administration UI template</name>
+      <name>Variant</name>
     </property>
     <property>
       <priority/>
@@ -540,14 +294,14 @@ $services.localization.render("BookVersions.variants.showPagesForVariant") &lt;s
       <supportsInlineMode>1</supportsInlineMode>
     </property>
     <property>
-      <visibility>Global</visibility>
+      <visibility>Current Wiki</visibility>
     </property>
   </object>
   <object>
-    <name>BookVersions.Code.AdminUIMacro</name>
+    <name>BookVersions.Code.VaraiantMacro</name>
     <number>0</number>
     <className>XWiki.WikiMacroParameterClass</className>
-    <guid>6428b797-c49f-473e-b49c-14dd886593ef</guid>
+    <guid>2ed54460-63cf-4869-90be-577303ac2579</guid>
     <class>
       <name>XWiki.WikiMacroParameterClass</name>
       <customClass/>
@@ -621,18 +375,16 @@ $services.localization.render("BookVersions.variants.showPagesForVariant") &lt;s
       <defaultValue/>
     </property>
     <property>
-      <description>The type of UI to be inserted into the template.
-
-Available options: Versions, Variants and Libraries</description>
+      <description/>
     </property>
     <property>
       <mandatory>1</mandatory>
     </property>
     <property>
-      <name>type</name>
+      <name>variantPage</name>
     </property>
     <property>
-      <type/>
+      <type>org.xwiki.model.reference.DocumentReference</type>
     </property>
   </object>
 </xwikidoc>

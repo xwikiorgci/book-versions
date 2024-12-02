@@ -1,0 +1,463 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="BookVersions.Code.VariantsNavigationMenu" locale="">
+  <web>BookVersions.Code</web>
+  <name>VariantsNavigationMenu</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>Variants Navigation menu</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>BookVersions.Code.VariantsNavigationMenu</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>db7cbdcc-432f-469b-8981-4778ae881dff</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>require(['jquery', 'xwiki-selectize'], function($) {
+  const variantSelect = $('#collectionVariant');
+  const form = $('#changeVariantStatus');
+  const selectedVariantInput = $('#selectedVariantInput');
+  const linkToVariant = $('#linkToVariant');
+  const unlinkFromVariant = $('#unlinkFromVariant');
+
+  // Handle variant select change
+  variantSelect.on("change", function() {
+    const selectedVariant = $(this).val();
+    selectedVariantInput.val(selectedVariant);
+    form.submit();
+  });
+
+  // Create a reusable function to handle POST and redirect
+  function handleVariantAction(action) {
+    // Get the current variant value from the hidden input
+    const currentVariant = selectedVariantInput.val();
+
+    // Create a temporary form
+    const tempForm = $('&lt;form&gt;', {
+      method: 'POST',
+      action: window.location.href
+    });
+
+    // Add the variant data
+    $('&lt;input&gt;').attr({
+      type: 'hidden',
+      name: 'selectedVariant',
+      value: currentVariant
+    }).appendTo(tempForm);
+
+    // Add the action type
+    $('&lt;input&gt;').attr({
+      type: 'hidden',
+      name: 'variantAction',
+      value: action
+    }).appendTo(tempForm);
+
+    // Add CSRF token if needed
+    const token = $('meta[name="form_token"]').attr('content');
+    if (token) {
+      $('&lt;input&gt;').attr({
+        type: 'hidden',
+        name: 'form_token',
+        value: token
+      }).appendTo(tempForm);
+    }
+
+    // Append form to body, submit it, and remove it
+    tempForm.appendTo('body').submit();
+  }
+
+  // Handle link clicks
+  linkToVariant.on('click', function(e) {
+    e.preventDefault();
+    handleVariantAction('link');
+  });
+
+  unlinkFromVariant.on('click', function(e) {
+    e.preventDefault();
+    handleVariantAction('unlink');
+  });
+});</code>
+    </property>
+    <property>
+      <name>bookNavigation</name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>BookVersions.Code.VariantsNavigationMenu</name>
+    <number>0</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>14ce8a0f-3deb-4449-93a4-d839f6b471c0</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <async_cached>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>async_cached</name>
+        <number>3</number>
+        <prettyName>Cached</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </async_cached>
+      <async_context>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>1</multiSelect>
+        <name>async_context</name>
+        <number>4</number>
+        <prettyName>Context elements</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator>, </separator>
+        <separators>|, </separators>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <values>action=Action|doc.reference=Document|doc.revision|icon.theme=Icon theme|locale=Language|rendering.defaultsyntax=Default syntax|rendering.restricted=Restricted|rendering.targetsyntax=Target syntax|request.base=Request base URL|request.cookies|request.headers|request.parameters=Request parameters|request.remoteAddr|request.session|request.url=Request URL|request.wiki=Request wiki|sheet|user=User|wiki=Wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </async_context>
+      <async_enabled>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>async_enabled</name>
+        <number>2</number>
+        <prettyName>Asynchronous rendering</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </async_enabled>
+      <content>
+        <disabled>0</disabled>
+        <editor>Text</editor>
+        <name>content</name>
+        <number>1</number>
+        <prettyName>Executed Content</prettyName>
+        <restricted>0</restricted>
+        <rows>25</rows>
+        <size>120</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>5</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>6</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>parameters</name>
+        <number>7</number>
+        <prettyName>Extension Parameters</prettyName>
+        <restricted>0</restricted>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>8</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <async_cached>0</async_cached>
+    </property>
+    <property>
+      <async_context/>
+    </property>
+    <property>
+      <async_enabled>0</async_enabled>
+    </property>
+    <property>
+      <content>{{velocity}}
+  #set ($debuglogger = $services.logging.getLogger('BookVersions.VariantsNavigationMenu'))
+  ## Current document reference
+  #set ($docRef = $doc.getDocumentReference())
+  ## Collection Book reference
+  #set ($collectionRef = $services.bookversions.getVersionedCollectionReference($docRef))
+  ## Check if the book page is versioned
+  #set ($isVersionedPage = $services.bookversions.isVersionedPage($docRef))
+  ## Check if the current document is of type versioned content
+  #set ($isVersionedContent = $services.bookversions.isVersionedContent($docRef))
+  ## Check for non-existing but valid variant content page
+  #set ($contentRef = $services.model.resolveDocument($services.model.serialize($docRef.getParent(),'local')))
+  #set ($isUnexistingContent = !$xwiki.exists($doc) &amp;&amp; $services.bookversions.isPossibleVersionedContentReference($collectionRef,$contentRef))
+  ## Get the current selected variant
+  #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
+  ## Get the list of variants defined for the current collection
+  #set ($variants = $services.bookversions.getCollectionVariants($collectionRef))
+  ## Versioned Content Template
+  #set ($versionedContentTemplate = 'BookVersions.Code.BookVersionedContentTemplate')
+  ## Handle variant selection from request parameter
+  #if ("$!request.selectedVariant" != '')
+    #set ($newVariant = $request.selectedVariant)
+    $services.bookversions.setSelectedVariant($collectionRef, $newVariant)
+    #set ($selectedVariant = $newVariant)
+    ## Redirect to clean URL after setting the variant
+    $response.sendRedirect($xwiki.getURL($doc, $xcontext.action))
+  #end
+  #if ("$!collectionRef" != '' &amp;&amp; $variants.size() &gt; 0 &amp;&amp; ($isVersionedPage || $isVersionedContent || $isUnexistingContent))
+    #if (!$selectedVariant)
+      #set ($selectedVariant = $variants.get(0))
+      #if ($selectedVariant)
+        $services.bookversions.setSelectedVariant($collectionRef, $selectedVariant)
+      #end
+      #set ($variantedContentReference = $services.bookversions.getVariantReference($collectionRef, $selectedVariant))
+      $response.sendRedirect($xwiki.getURL($doc, $xcontext.action))
+    #else
+      #set ($variantsObj = $doc.getObject("BookVersions.Code.VariantsListClass"))
+      #set ($associatedVariants = $variantsObj.getProperty('variantsList').getValue())
+      ## Display variant picker
+      #set ($discard = $xwiki.ssx.use('BookVersions.Code.NavigationMenu'))
+      #set ($discard = $xwiki.jsx.use('BookVersions.Code.VariantsNavigationMenu'))
+      #set ($currentDocName = $docRef.getName())
+      #set ($selectedVariantName = $services.bookversions.getVariantName($services.model.resolveDocument($selectedVariant)))
+      ## Set the display message
+      #if ($associatedVariants.size() &gt; 0 &amp;&amp; $associatedVariants.contains($selectedVariant))
+        #set ($variantStateMessageKey = 'BookVersions.navMenu.contentForVariant')
+      #elseif ($associatedVariants.size() &gt; 0 &amp;&amp; !$associatedVariants.contains($selectedVariant))
+        #set ($variantStateMessageKey = 'BookVersions.navMenu.pageIsNotAssociated')
+        #set ($msgAssociateVariantName = $services.bookversions.getVariantName($services.model.resolveDocument($selectedVariant)))
+      #else
+        #set ($variantStateMessageKey = 'BookVersions.navMenu.pageAvailableForAll')
+        #set ($msgAssociateVariantName = $services.bookversions.getVariantName($services.model.resolveDocument($selectedVariant)))
+      #end
+      #set ($variantTitle = $xwiki.getDocument($services.bookversions.getVariantReference($collectionRef,$selectedVariantName)).displayTitle)
+      ## Link and unlink variant
+      #if("$!request.variantAction" != '')
+        ## Get or create the variants object
+        #set ($variantsObj = $doc.getObject("BookVersions.Code.VariantsListClass"))
+        #if(!$variantsObj)
+          #set ($variantsObj = $doc.newObject("BookVersions.Code.VariantsListClass"))
+          #set ($associatedVariants = [])
+        #else
+          #set ($associatedVariants = $variantsObj.getProperty('variantsList').getValue())
+        #end
+        #set ($selectedVariant = "$!request.selectedVariant")
+        #if($selectedVariant != '')
+          #if($request.variantAction == 'link' &amp;&amp; !$associatedVariants.contains($selectedVariant))
+            ## Add the variant to the list
+            $associatedVariants.add($selectedVariant)
+            $variantsObj.set('variantsList', $associatedVariants)
+            $doc.save('Added variant association')
+          #elseif($request.variantAction == 'unlink' &amp;&amp; $associatedVariants.contains($selectedVariant))
+            ## Remove the variant from the list
+            $associatedVariants.remove($selectedVariant)
+            $variantsObj.set('variantsList', $associatedVariants)
+            $doc.save('Removed variant association')
+          #end
+        #end
+      #end
+
+      {{html}}
+      &lt;div class='formContainer'&gt;
+        &lt;form class='xformInline' id='changeVariantStatus' method="post"&gt;
+          &lt;input type="hidden" id="variant_form_token" name="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
+          &lt;input type="hidden" name="selectedVariant" id="selectedVariantInput" value="$selectedVariant"/&gt;
+          &lt;label for="collectionVariant"&gt;$services.localization.render('BookVersions.navMenu.variantSelect')&lt;/label&gt;
+          &lt;select name='collectionVariant' id='collectionVariant'&gt;
+            #foreach($variant in $variants)
+              #if ($variant)
+                #set ($variantReference = $services.model.resolveDocument($variant))
+                #set ($variantDocument = $xwiki.getDocument($variantReference))
+                #set ($variantName = $services.bookversions.getVariantName($variant))
+                #set ($versionedCollectionRef =  $services.bookversions.getVersionedCollectionReference($docRef))
+                #set ($variantLocalReference = $services.model.serialize($services.bookversions.getVariantReference($versionedCollectionRef, $variantReference.getName()), 'local'))
+                #if ($variantLocalReference)
+                  #set ($isSelected = $variantName &amp;&amp; $selectedVariantName &amp;&amp; $variantName.equals($selectedVariantName))
+                  &lt;option value="$variantLocalReference" #if($isSelected)selected#end&gt;$variantDocument.displayTitle&lt;/option&gt;
+                #end
+              #end
+            #end
+          &lt;/select&gt;
+        &lt;/form&gt;
+        &lt;p class='noitems'&gt;
+          $services.localization.render($variantStateMessageKey, [$variantTitle])
+          ####
+          ##Display "Link page to variant [{0}]" button under Variant dropdown
+          #*
+          #if("$!msgAssociateVariantName" != '')
+            &lt;a class="btn btn-default associate-variant-btn" href="#"&gt;
+              &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
+              $services.localization.render('BookVersions.navMenu.associateVariantWithLink', [$msgAssociateVariantName])
+            &lt;/a&gt;
+          #end
+          *#
+        &lt;/p&gt;
+      &lt;/div&gt;
+      {{/html}}
+    #end
+  #end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.xwiki.platform.template.title.before</extensionPointId>
+    </property>
+    <property>
+      <name>NavigationMenu</name>
+    </property>
+    <property>
+      <parameters>order=10000</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+</xwikidoc>

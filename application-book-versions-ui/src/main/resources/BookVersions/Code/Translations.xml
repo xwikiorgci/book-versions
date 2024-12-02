@@ -77,6 +77,11 @@ BookVersions.navMenu.versioned=Content from version [{0}].
 BookVersions.navMenu.inherited=Content inherited from version [{0}].
 BookVersions.navMenu.createVersionWithLink=Create content for version {0}
 BookVersions.navMenu.warning.noversion=The page is versioned, but it doesn''t have content for version {0} or its preceding versions.
+BookVersions.navMenu.variantSelect=Variant
+BookVersions.navMenu.contentForVariant=
+BookVersions.navMenu.pageIsNotAssociated=Page not linked to variant [{0}].
+BookVersions.navMenu.pageAvailableForAll=Page is not restricted to a variant.
+BookVersions.navMenu.associateVariantWithLink=Link page to variant [{0}]
 
 # Administration menu
 BookVersions.adminMenu.title=Versions
@@ -84,13 +89,19 @@ BookVersions.adminMenu.manage=Manage
 BookVersions.adminMenu.manageVersions=Versions
 BookVersions.adminMenu.manageVariants=Variants
 BookVersions.adminMenu.manageLibraries=Libraries
+BookVersions.adminMenu.addPageToVariant=Link page to variant [{0}]
+BookVersions.adminMenu.removePageFromVariant=Unlink page from variant [{0}]
 BookVersions.adminMenu.publishLable=Publishing
 BookVersions.adminMenu.publish=Publish current version
 
 # Admin live data values
 BookVersions.adminLD.version=Version
 BookVersions.adminLD.variant=Variant
-BookVersions.adminLD.library=Librarie</content>
+BookVersions.adminLD.library=Librarie
+
+# Variants linked pages
+BookVersions.variants.noLinkedPage=No pages linked to this variant.
+BookVersions.variants.showPagesForVariant=Show linked pages for variant: </content>
   <object>
     <name>BookVersions.Code.Translations</name>
     <number>0</number>

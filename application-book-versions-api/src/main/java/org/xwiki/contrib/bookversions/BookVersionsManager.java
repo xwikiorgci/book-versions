@@ -208,6 +208,24 @@ public interface BookVersionsManager
     void setSelectedVersion(DocumentReference documentReference, String version);
 
     /**
+     * Get the selected variant that is stored in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @return the selected variant.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    String getSelectedVariant(DocumentReference documentReference) throws XWikiException, QueryException;
+
+    /**
+     * Set the selected variant in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference of the collection.
+     * @param variant the variant to be stored for the given collection.
+     */
+    void setSelectedVariant(DocumentReference documentReference, String variant);
+
+    /**
      * Check if a page is a nested page of another one, recursively.
      * 
      * @param documentReference the reference of the supposed space
@@ -236,6 +254,14 @@ public interface BookVersionsManager
     String getVersionName(DocumentReference versionReference);
 
     /**
+     * Get the name of the referenced variant.
+     * 
+     * @param variantReference The version reference.
+     * @return the name of the referenced version.
+     */
+    String getVariantName(DocumentReference variantReference);
+
+    /**
      * Get the reference of a given version id, in the given referenced collection.
      * 
      * @param collectionReference The reference of the collection (book / library).
@@ -244,6 +270,16 @@ public interface BookVersionsManager
      * @throws XWikiException
      */
     DocumentReference getVersionReference(DocumentReference collectionReference, String version) throws XWikiException;
+
+    /**
+     * Get the reference of a given variant id, in the given referenced collection.
+     * 
+     * @param collectionReference The reference of the collection (book / library).
+     * @param variant The variant id.
+     * @return the reference of a given version id, in the given referenced collection.
+     * @throws XWikiException
+     */
+    DocumentReference getVariantReference(DocumentReference collectionReference, String variant) throws XWikiException;
 
     /**
      * Get the version references from a versioned collection (book or library.
@@ -255,6 +291,17 @@ public interface BookVersionsManager
      * @throws XWikiException
      */
     List<String> getCollectionVersions(DocumentReference documentReference) throws QueryException, XWikiException;
+
+    /**
+     * Get the variant references from a versioned collection (book or library.
+     * 
+     * @param documentReference the reference of the collection to get variants from
+     * @return a list of variants references declared in the versioned collection, ordered by descending date. Returns
+     *         an empty list if none are found.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    List<String> getCollectionVariants(DocumentReference documentReference) throws QueryException, XWikiException;
 
     /**
      * Get the reference of the page content corresponding to the given version. No inheritance is used for this

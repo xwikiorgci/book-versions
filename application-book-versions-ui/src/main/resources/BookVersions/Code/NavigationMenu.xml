@@ -251,9 +251,51 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>.create-versioned-content-btn {
-  font-size: 12px;
-  display: inline-block;
+      <code>/* Set up grid for the entire document-info section */
+.document-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Form containers specific styling */
+.document-info &gt; .formContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 80px;
+}
+
+/* Ensure document title and last modification span full width */
+.document-info &gt; #document-title,
+.document-info &gt; .xdocLastModification {
+  grid-column: 1 / -1;
+}
+
+/* Form styling */
+.xformInline {
+  margin-bottom: 0.5rem;
+}
+
+/* Text and button container */
+.noitems {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Select elements */
+#collectionVersion,
+#collectionVariant {
+  width: 100%;
+  max-width: 200px;
+}
+
+/* Button styling */
+.create-versioned-content-btn,
+.associate-variant-btn {
+  white-space: nowrap;
 }</code>
     </property>
     <property>
@@ -527,6 +569,7 @@
       ## Set the display message
       #set ($currentDocName = $docRef.getName())
       #set ($selectedVersionName = $services.bookversions.getVersionName($services.model.resolveDocument($selectedVersion)))
+      #set ($stateMessageKey = '')
       #if ($selectedVersionName.equals($currentDocName))
         #set ($stateMessageKey = 'BookVersions.navMenu.versioned')
       #else
@@ -537,33 +580,35 @@
       #set ($selectedVersionName = $services.bookversions.getVersionName($services.model.resolveDocument($selectedVersion)))
 
       {{html}}
-      &lt;form class='xformInline' id='changeArchiveStatus'&gt;
-        &lt;input type="hidden" id="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
-        &lt;label for="collectionVersion"&gt;$services.localization.render('BookVersions.navMenu.versionSelect')&lt;/label&gt;
-        &lt;select name='collectionVersion' id='collectionVersion'&gt;
-          #foreach($version in $versions)
-            #if ($version)
-              #set ($versionReference = $services.model.resolveDocument($version))
-              #set ($versionDocument = $xwiki.getDocument($versionReference))
-              #set ($versionName = $services.bookversions.getVersionName($version))
-              #set ($versionedContentReference = $services.model.serialize($services.bookversions.getVersionedContentReference($docRef, $versionReference), 'local'))
-              #if ($versionedContentReference)
-                #set ($isSelected = $versionName &amp;&amp; $selectedVersionName &amp;&amp; $versionName.equals($selectedVersionName))
-                &lt;option value="$versionedContentReference" #if ($isSelected)selected#end&gt;$versionDocument.displayTitle#if ($isInherited) (inherited)#end&lt;/option&gt;
+      &lt;div class='formContainer' &gt;
+        &lt;form class='xformInline' id='changeArchiveStatus'&gt;
+          &lt;input type="hidden" id="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
+          &lt;label for="collectionVersion"&gt;$services.localization.render('BookVersions.navMenu.versionSelect')&lt;/label&gt;
+          &lt;select name='collectionVersion' id='collectionVersion'&gt;
+            #foreach($version in $versions)
+              #if ($version)
+                #set ($versionReference = $services.model.resolveDocument($version))
+                #set ($versionDocument = $xwiki.getDocument($versionReference))
+                #set ($versionName = $services.bookversions.getVersionName($version))
+                #set ($versionedContentReference = $services.model.serialize($services.bookversions.getVersionedContentReference($docRef, $versionReference), 'local'))
+                #if ($versionedContentReference)
+                  #set ($isSelected = $versionName &amp;&amp; $selectedVersionName &amp;&amp; $versionName.equals($selectedVersionName))
+                  &lt;option value="$versionedContentReference" #if ($isSelected)selected#end&gt;$versionDocument.displayTitle#if ($isInherited) (inherited)#end&lt;/option&gt;
+                #end
               #end
             #end
+          &lt;/select&gt;
+        &lt;/form&gt;
+        &lt;p class='noitems'&gt;
+          $services.localization.render($stateMessageKey, [$versionTitle])
+          #if("$!msgCreateVerisonName" != '' &amp;&amp; "$!msgCreateVerisonURL" != '')
+            &lt;a class="btn btn-default create-versioned-content-btn" href="${msgCreateVerisonURL}"&gt;
+              &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
+              $services.localization.render('BookVersions.navMenu.createVersionWithLink', [$msgCreateVerisonName])
+            &lt;/a&gt;
           #end
-        &lt;/select&gt;
-      &lt;/form&gt;
-      &lt;p class='noitems'&gt;
-        $services.localization.render($stateMessageKey, [$versionTitle])
-        #if("$!msgCreateVerisonName" != '' &amp;&amp; "$!msgCreateVerisonURL" != '')
-          &lt;a class="btn btn-default create-versioned-content-btn" href="${msgCreateVerisonURL}"&gt;
-            &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
-            $services.localization.render('BookVersions.navMenu.createVersionWithLink', [$msgCreateVerisonName])
-          &lt;/a&gt;
-        #end
-      &lt;/p&gt;
+        &lt;/p&gt;
+      &lt;/div&gt;
       {{/html}}
     #end
   #end
@@ -576,7 +621,7 @@
       <name>NavigationMenu</name>
     </property>
     <property>
-      <parameters/>
+      <parameters>order=1000</parameters>
     </property>
     <property>
       <scope>wiki</scope>

@@ -175,6 +175,8 @@
   #set ($variantsUrl = $xwiki.getURL($variantsRef))
   #set ($librariesUrl = $xwiki.getURL($librariesRef))
   #set ($currentSpace = $escapetool.xml($doc.space))
+  #set ($docRef = $doc.getDocumentReference())
+  #set ($isVersionedContent = $services.bookversions.isVersionedContent($docRef))
   {{html}}
     &lt;div class="btn-group" id="tmAdministrationMenu"&gt;
       &lt;button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"&gt;
@@ -202,6 +204,24 @@
             &lt;/li&gt;
           &lt;/ul&gt;
         &lt;/dd&gt;
+        #if($isVersionedContent)
+        &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.manageVariants')&lt;/dt&gt;
+        &lt;dd&gt;
+          &lt;ul&gt;
+            &lt;li&gt;
+              #if("$!{msgAssociateVariantName}" != '')
+                &lt;a id="linkToVariant" href="#" data-variant="$selectedVariant"&gt;
+                  $services.localization.render('BookVersions.adminMenu.addPageToVariant', [$variantTitle])
+                &lt;/a&gt;
+              #else
+                &lt;a id="unlinkFromVariant" href="#" data-variant="$selectedVariant"&gt;
+                  $services.localization.render('BookVersions.adminMenu.removePageFromVariant', [$variantTitle])
+                &lt;/a&gt;
+              #end
+            &lt;/li&gt;
+          &lt;/ul&gt;
+        &lt;/dd&gt;
+        #end
         &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.publishLable')&lt;/dt&gt;
         &lt;dd&gt;
           &lt;ul&gt;

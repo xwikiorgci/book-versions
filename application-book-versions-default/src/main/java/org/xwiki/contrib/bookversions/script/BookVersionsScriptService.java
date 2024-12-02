@@ -28,14 +28,13 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.bookversions.BookVersionsManager;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.query.QueryException;
 import org.xwiki.script.service.ScriptService;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
-
-import org.xwiki.contrib.bookversions.BookVersionsManager;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.query.QueryException;
 
 /**
  * Book versions script service.
@@ -180,6 +179,30 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the selected version that is stored in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @return the selected version.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    public String getSelectedVariant(DocumentReference documentReference) throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getSelectedVariant(documentReference);
+    }
+
+    /**
+     * Set the selected variant in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @param variant the variant to be stored for the given collection.
+     */
+    public void setSelectedVariant(DocumentReference documentReference, String variant)
+    {
+        bookVersionsManagerProvider.get().setSelectedVariant(documentReference, variant);
+    }
+
+    /**
      * Check if a page is a nested page of another one, recursively.
      * 
      * @param spaceReference the reference of the supposed space
@@ -216,6 +239,17 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the name of the referenced variant.
+     * 
+     * @param variantReference The version reference.
+     * @return the name of the referenced version.
+     */
+    public String getVariantName(DocumentReference variantReference)
+    {
+        return this.bookVersionsManagerProvider.get().getVariantName(variantReference);
+    }
+
+    /**
      * Get the reference of a given version id, in the given referenced collection.
      * 
      * @param collectionReference The reference of the collection (book / library).
@@ -227,6 +261,20 @@ public class BookVersionsScriptService implements ScriptService
         throws XWikiException
     {
         return this.bookVersionsManagerProvider.get().getVersionReference(collectionReference, version);
+    }
+
+    /**
+     * Get the reference of a given varoamt id, in the given referenced collection.
+     * 
+     * @param collectionReference The reference of the collection (book / library).
+     * @param variant The variant id.
+     * @return the reference of a given variant id, in the given referenced collection.
+     * @throws XWikiException
+     */
+    public DocumentReference getVariantReference(DocumentReference collectionReference, String variant)
+        throws XWikiException
+    {
+        return this.bookVersionsManagerProvider.get().getVariantReference(collectionReference, variant);
     }
 
     /**
@@ -242,6 +290,21 @@ public class BookVersionsScriptService implements ScriptService
         throws QueryException, XWikiException
     {
         return bookVersionsManagerProvider.get().getCollectionVersions(collectionReference);
+    }
+
+    /**
+     * Get the variants references from a versioned collection (book library or variant).
+     * 
+     * @param collectionReference the reference of the collection to get versions from
+     * @return a list of variants references declared in the versioned collection, ordered by descending date. Returns
+     *         an empty list if none are found.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    public List<String> getCollectionVariants(DocumentReference collectionReference)
+        throws QueryException, XWikiException
+    {
+        return bookVersionsManagerProvider.get().getCollectionVariants(collectionReference);
     }
 
     /**
