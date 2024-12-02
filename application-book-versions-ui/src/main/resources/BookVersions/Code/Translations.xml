@@ -41,6 +41,7 @@ BookVersions.Code.VersionClass_precedingVersionReference=Preceding version refer
 
 # Creation templates
 BookVersions.template.newBook=Create a new book.
+BookVersions.template.newLibrary=Create a new library.
 BookVersions.template.description=Description
 BookVersions.template.title=Title
 

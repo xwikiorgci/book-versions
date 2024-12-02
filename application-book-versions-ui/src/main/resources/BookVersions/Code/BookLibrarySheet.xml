@@ -20,18 +20,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.BookSheet" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.BookLibrarySheet" locale="">
   <web>BookVersions.Code</web>
-  <name>BookSheet</name>
+  <name>BookLibrarySheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>BookVersions.Code.BookClass</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>#if($doc.documentReference.name == 'BookSheet')Book Sheet#{else}$services.display.title($doc, {'displayerHint': 'default', 'outputSyntaxId': 'plain/1.0'})#end</title>
+  <title>#if($doc.documentReference.name == 'BookLibrarySheet')Book and Library Sheet#{else}$services.display.title($doc, {'displayerHint': 'default', 'outputSyntaxId': 'plain/1.0'})#end</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
@@ -39,9 +39,14 @@
   <content>{{include reference="BookVersions.Code.BookNavAdaptivePanelSetter"/}}
 
 {{velocity}}
-#set ($object = $doc.getObject('BookVersions.Code.BookClass'))
-#if (!$object)
-  #stop
+#set ($xobject = $doc.getObject('BookVersions.Code.BookClass'))
+#set ($isLibrary = false)
+#if (!$xobject)
+  #set ($xobject = $doc.getObject('BookVersions.Code.LibraryClass'))
+  #set ($isLibrary = true)
+  #if (!$xobject)
+    #stop
+  #end
 #end
 ## We have to use wiki=true because $doc.display() can produce wiki syntax.
 {{html wiki="true" clean="false"}}
@@ -51,8 +56,6 @@
   'language': $xcontext.locale
 }))
 #set ($editing = $xcontext.action == 'edit')
-## The object to display.
-#set ($xobject = $doc.getObject('BookVersions.Code.BookClass'))
 ## The class that describes the object properties.
 #set ($xclass = $xobject.xWikiClass)
 ## Make sure the following display* method calls use the right object.
@@ -87,8 +90,11 @@
 ## Ensure Versions, Variants and Libraries WebHome pages exist in the current book space
 #set ($currentSpace = $doc.space)
 #set ($versionsFullName = $escapetool.xml("${currentSpace}.Versions.WebHome"))
-#set ($variantsFullName = $escapetool.xml("${currentSpace}.Variants.WebHome"))
-#set ($librariesFullName = $escapetool.xml("${currentSpace}.Libraries.WebHome"))
+#if (!$isLibrary)
+  ## Libraries don't use Variants and Libraries
+  #set ($variantsFullName = $escapetool.xml("${currentSpace}.Variants.WebHome"))
+  #set ($librariesFullName = $escapetool.xml("${currentSpace}.Libraries.WebHome"))
+#end
 
 ## Create Versions WebHome if it doesn't exist
 #if (!$xwiki.exists($versionsFullName))
@@ -97,18 +103,21 @@
     #set ($discard = $versionsDoc.save())
 #end
 
-## Create Variants WebHome if it doesn't exist
-#if (!$xwiki.exists($variantsFullName))
-    #set ($variantsDoc = $xwiki.getDocument($variantsFullName))
-    #set ($discard = $variantsDoc.setContent('{{admin-interface type="Variants" /}}'))
-    #set ($discard = $variantsDoc.save())
-#end
+#if (!$isLibrary)
+  ## Libraries don't use Variants and Libraries
+  ## Create Variants WebHome if it doesn't exist
+  #if (!$xwiki.exists($variantsFullName))
+      #set ($variantsDoc = $xwiki.getDocument($variantsFullName))
+      #set ($discard = $variantsDoc.setContent('{{admin-interface type="Variants" /}}'))
+      #set ($discard = $variantsDoc.save())
+  #end
 
-## Create Libraries WebHome if it doesn't exist
-#if (!$xwiki.exists($librariesFullName))
-    #set ($librariesDoc = $xwiki.getDocument($librariesFullName))
-    #set ($discard = $librariesDoc.setContent('{{admin-interface type="Libraries" /}}'))
-    #set ($discard = $librariesDoc.save())
+  ## Create Libraries WebHome if it doesn't exist
+  #if (!$xwiki.exists($librariesFullName))
+      #set ($librariesDoc = $xwiki.getDocument($librariesFullName))
+      #set ($discard = $librariesDoc.setContent('{{admin-interface type="Libraries" /}}'))
+      #set ($discard = $librariesDoc.save())
+  #end
 #end
 {{/velocity}}</content>
 </xwikidoc>
