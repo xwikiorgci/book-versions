@@ -176,7 +176,12 @@
   #set ($librariesUrl = $xwiki.getURL($librariesRef))
   #set ($currentSpace = $escapetool.xml($doc.space))
   #set ($docRef = $doc.getDocumentReference())
+  ## Check if the document is a page in a versioned book
+  #set ($isVersionedPage = $services.bookversions.isVersionedPage($docRef))
+  ## Check if the document is a versioned content one
   #set ($isVersionedContent = $services.bookversions.isVersionedContent($docRef))
+  ## Get the current selected version
+  #set ($selectedVersion = $services.bookversions.getSelectedVersion($docRef))
   {{html}}
     &lt;div class="btn-group" id="tmAdministrationMenu"&gt;
       &lt;button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"&gt;
@@ -204,6 +209,33 @@
             &lt;/li&gt;
           &lt;/ul&gt;
         &lt;/dd&gt;
+        #if("$!selectedVersion" != '' &amp;&amp; ($isVersionedContent || $isVersionedPage))
+          #set ($msgCreateVerisonName = $services.bookversions.getVersionName($services.model.resolveDocument($selectedVersion)))
+          #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef, $selectedVersion))
+          #if (!$versionedContentReference || !$xwiki.exists($versionedContentReference))
+            ## No versioned content for the selected version Add the option to create it.
+            #if($isVersionedPage)
+              ## Start from the default versioned content template
+              #set ($versionedContentTemplate = 'BookVersions.Code.BookVersionedContentTemplate')
+            #else
+              ## Start new content from the current (= inherited) version
+              #set ($versionedContentTemplate = $escapetool.url($services.model.serialize($docRef)))
+            #end
+            #set ($msgCreateVerisonURL = $xwiki.getURL($versionedContentReference, 'edit', 'template=' + $escapetool.url($versionedContentTemplate) + '&amp;title=' + $escapetool.url($msgCreateVerisonName) + '&amp;amp;form_token=' + $escapetool.url("$!services.csrf.token")))
+          #end
+          #if("$!msgCreateVerisonName" != '' &amp;&amp; "$!msgCreateVerisonURL" != '')
+            &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.manageVersions')&lt;/dt&gt;
+            &lt;dd&gt;
+              &lt;ul&gt;
+                &lt;li&gt;
+                  &lt;a id="create-versioned-content-btn" href="${msgCreateVerisonURL}"&gt;
+                    $services.localization.render('BookVersions.navMenu.createVersionWithLink', [$msgCreateVerisonName])
+                  &lt;/a&gt;
+                &lt;/li&gt;
+              &lt;/ul&gt;
+            &lt;/dd&gt;
+          #end
+        #end
         #if($isVersionedContent)
         &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.manageVariants')&lt;/dt&gt;
         &lt;dd&gt;

@@ -457,8 +457,6 @@
   #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
   ## Get the flag showing if the menu has redirected to an inherited version
   #set ($inheritedRedirFlag = $request.getSession().getAttribute('BookVersions.versionInheritedRedirFlag'))
-  ## Versioned Content Template
-  #set ($versionedContentTemplate = 'BookVersions.Code.BookVersionedContentTemplate')
   #set ($discard = $debuglogger.debug("START Navigation menu for [$docRef], inheritedRedirFlag [$inheritedRedirFlag],
         collectionRef [$collectionRef], isVersionedPage [$isVersionedPage], isVersionedContent [$isVersionedContent], isUnexistingContent [$isUnexistingContent]"))
   #if ("$!collectionRef" != '' &amp;&amp; $versions.size() &gt; 0 &amp;&amp; ($isVersionedPage || $isVersionedContent || $isUnexistingContent))
@@ -522,13 +520,6 @@
           #set ($inheritedVersionedContentReference = $services.bookversions.getInheritedContentReference($docRef, $services.model.resolveDocument($selectedVersion)))
           #if ($inheritedVersionedContentReference)
             $response.sendRedirect($xwiki.getURL($inheritedVersionedContentReference, $xcontext.action))
-          #else
-            #if ($isVersionedContent)
-              ## Start new content from the inherited version
-              #set ($versionedContentTemplate = $escapetool.url($services.model.serialize($docRef)))
-            #end
-            #set ($msgCreateVerisonName = $services.bookversions.getVersionName($services.model.resolveDocument($selectedVersion)))
-            #set ($msgCreateVerisonURL = $xwiki.getURL($versionedContentReference, 'edit', 'template=' + $escapetool.url($versionedContentTemplate) + '&amp;title=' + $escapetool.url($selectedVersionName) + '&amp;amp;form_token=' + $escapetool.url("$!services.csrf.token")))
           #end
         #else
           #set ($discard = $debuglogger.debug('Found NO versioned content for page[{}]', ${docRef}))
@@ -546,13 +537,6 @@
         ## Page reached through inheritance, selectedVersion stays untouched
         #set ($discard = $debuglogger.debug('Page reached through inheritance, selectedVersion stays untouched'))
         #set ($discard = $request.getSession().setAttribute('BookVersions.versionInheritedRedirFlag',false))
-        #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef, $selectedVersion))
-        #if ($isVersionedContent)
-          ## Start new content from the inherited version
-          #set ($versionedContentTemplate = $escapetool.url($services.model.serialize($docRef)))
-        #end
-        #set ($msgCreateVerisonName = $services.bookversions.getVersionName($services.model.resolveDocument($selectedVersion)))
-        #set ($msgCreateVerisonURL = $xwiki.getURL($versionedContentReference, 'edit', 'template=' + $escapetool.url($versionedContentTemplate) + '&amp;title=' + $escapetool.url($msgCreateVerisonName) + '&amp;amp;form_token=' + $escapetool.url("$!services.csrf.token")))
       #elseif ("$!selectedVersion" != '')
         ## Set selectedVersion from current page
         #set ($currentVersionedContentName = $docRef.getName())
@@ -577,7 +561,6 @@
       #end
       ## Get the current displayed page version
       #set ($versionTitle = $xwiki.getDocument($services.bookversions.getVersionReference($collectionRef,$docRef.getName())).displayTitle)
-      #set ($selectedVersionName = $services.bookversions.getVersionName($services.model.resolveDocument($selectedVersion)))
 
       {{html}}
       &lt;div class='formContainer' &gt;
@@ -601,12 +584,6 @@
         &lt;/form&gt;
         &lt;p class='noitems'&gt;
           $services.localization.render($stateMessageKey, [$versionTitle])
-          #if("$!msgCreateVerisonName" != '' &amp;&amp; "$!msgCreateVerisonURL" != '')
-            &lt;a class="btn btn-default create-versioned-content-btn" href="${msgCreateVerisonURL}"&gt;
-              &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
-              $services.localization.render('BookVersions.navMenu.createVersionWithLink', [$msgCreateVerisonName])
-            &lt;/a&gt;
-          #end
         &lt;/p&gt;
       &lt;/div&gt;
       {{/html}}
