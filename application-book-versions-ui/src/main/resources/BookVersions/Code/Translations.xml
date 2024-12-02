@@ -70,7 +70,7 @@ BookVersions.creationForm.newVersion=New version
 BookVersions.creationForm.newVariant=New variant
 
 # Library Creation form
-BookVersions.creationForm.newLibrary=New library
+BookVersions.creationForm.newLibrary=Add library
 
 # Navigation menu
 BookVersions.navMenu.versionSelect=Version
