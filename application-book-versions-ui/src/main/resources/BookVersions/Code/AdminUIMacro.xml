@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 #if ($type == "Variants")
-  #set ($query = "select doc.fullName, doc.content from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'BookVersions.Code.${typeClass}' and doc.space = :space")
+  #set ($query = "select doc.fullName, doc.title from XWikiDocument doc, BaseObject obj where obj.name = doc.fullName and obj.className = 'BookVersions.Code.${typeClass}' and doc.space = :space")
   #set ($variants = $services.query.xwql($query).bindValue("space", $doc.space).execute())
   #set ($discard = $xwiki.jsx.use('BookVersions.Code.AdminUIMacro'))
   {{html}}

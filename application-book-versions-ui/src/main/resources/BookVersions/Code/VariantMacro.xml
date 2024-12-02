@@ -20,25 +20,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.VaraiantMacro" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.VariantMacro" locale="">
   <web>BookVersions.Code</web>
-  <name>VaraiantMacro</name>
+  <name>VariantMacro</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>BookVersions.Code.WebHome</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>VaraiantMacro</title>
+  <title>VariantMacro</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>BookVersions.Code.VaraiantMacro</name>
+    <name>BookVersions.Code.VariantMacro</name>
     <number>0</number>
     <className>XWiki.WikiMacroClass</className>
     <guid>1d623e9f-7d78-4233-8d84-d6e31fa40327</guid>
@@ -298,7 +298,7 @@
     </property>
   </object>
   <object>
-    <name>BookVersions.Code.VaraiantMacro</name>
+    <name>BookVersions.Code.VariantMacro</name>
     <number>0</number>
     <className>XWiki.WikiMacroParameterClass</className>
     <guid>2ed54460-63cf-4869-90be-577303ac2579</guid>
