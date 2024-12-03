@@ -500,6 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
   #set ($discard = $xwiki.jsx.use('BookVersions.Code.AdminUIMacro'))
   {{html}}
   $services.localization.render("BookVersions.variants.showPagesForVariant") &lt;select id="variants" size="1"&gt;
+  &lt;option value="" label="" selected&gt;---&lt;/option&gt;
   #foreach($result in $variants)
     &lt;option value="$result[0]" label="$result[1]"&gt;$result[1]&lt;/option&gt;
   #end
@@ -509,17 +510,35 @@ document.addEventListener('DOMContentLoaded', function() {
   #set ($queryLinkedPages = "where doc.object(BookVersions.Code.VariantsListClass).variantsList like :variant")
   #set ($resultsLinkedPages = $services.query.xwql($queryLinkedPages).bindValue('variant',"%${request.variant}%").execute())
   #if ("$!{request.variant}" != "")
+    #set ($queryForVariantMacroPages = "where doc.content like :pattern")
+    #set ($resultsMacroPages = $services.query.xwql($queryForVariantMacroPages).bindValue('pattern',"%{{variant variantPage=_${request.variant}%").execute())
 
     {{box}}
-    === Pages linked with selected variant ===
+    === $services.localization.render("BookVersions.variants.linkedPagesListHeading") ===
     #if ($resultsLinkedPages.size() == 0 )
       $services.localization.render("BookVersions.variants.noLinkedPage")
     #end
     #foreach($result in $resultsLinkedPages)
-    * [[$xwiki.getDocument($result).title&gt;&gt;$result]]
+      #displayAssociatedPage($result)
     #end
-
+    === $services.localization.render("BookVersions.variants.macrosPagesListHeading") ===
+      #if ($resultsLinkedPages.size() == 0 )
+        $services.localization.render("BookVersions.variants.noMacroUsingPage")
+      #end
+      #foreach($result in $resultsMacroPages)
+        #displayAssociatedPage($result)
+      #end
       {{/box}}
+  #end
+#end
+
+#macro(displayAssociatedPage $result)
+  #set ($versionedContentDocRef = $services.model.resolveDocument($result))
+  #if ($services.bookversions.isVersionedContent($versionedContentDocRef))
+    #set($parentReference = $versionedContentDocRef.getParent())
+    * [[$xwiki.getDocument($parentReference).title&gt;&gt;$result]]
+  #else
+    * [[$xwiki.getDocument($result).title&gt;&gt;$result]]
   #end
 #end
 {{/velocity}}</code>

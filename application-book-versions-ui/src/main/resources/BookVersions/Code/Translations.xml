@@ -101,8 +101,11 @@ BookVersions.adminLD.version=Version
 BookVersions.adminLD.variant=Variant
 BookVersions.adminLD.library=Librarie
 
-# Variants linked pages
+# Variants linked pages Admin UI
+BookVersions.variants.linkedPagesListHeading=Pages linked with selected variant
+BookVersions.variants.macrosPagesListHeading=Pages containing variant macro
 BookVersions.variants.noLinkedPage=No pages linked to this variant.
+BookVersions.variants.noMacroUsingPage=No pages use this variant macro.
 BookVersions.variants.showPagesForVariant=Show linked pages for variant: </content>
   <object>
     <name>BookVersions.Code.Translations</name>
