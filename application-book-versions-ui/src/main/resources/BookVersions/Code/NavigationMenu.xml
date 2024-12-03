@@ -305,7 +305,7 @@
       <parse/>
     </property>
     <property>
-      <use/>
+      <use>onDemand</use>
     </property>
   </object>
   <object>
