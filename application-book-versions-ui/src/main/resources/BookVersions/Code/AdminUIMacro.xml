@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
         "filterable": false,
         "displayer": {
           "id": "actions",
-          "actions": ["delete"]
+          "actions": ["edit", "delete"]
         }
       }
     ],
