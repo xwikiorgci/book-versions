@@ -126,65 +126,14 @@
     </property>
     <property>
       <code>require(['jquery', 'xwiki-selectize'], function($) {
-  // Version selector handling
-  const versionSelect = $('#collectionVersion');
-  if (versionSelect.length) {
+    const versionSelect = $('#collectionVersion');
+    const formToken = $('#form_token');
+    const collectionRef = $('#collectionRef');
+    const setAttributeURL = $('#setAttributeURL');
     versionSelect.on("change", function() {
       window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction);
-    });
-  }
-
-  // Variant selector handling
-  const variantSelect = $('#collectionVariant');
-  const variantForm = $('#changeVariantStatus');
-  const selectedVariantInput = $('#selectedVariantInput');
-  
-  if (variantSelect.length) {
-    variantSelect.on("change", function() {
-      const selectedVariant = $(this).val();
-      selectedVariantInput.val(selectedVariant);
-      variantForm.submit();
-    });
-  }
-
-  // Link/unlink variant handling
-  function submitVariantAction(action, event) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    const formData = new FormData();
-    formData.append('selectedVariant', selectedVariantInput.val());
-    formData.append('variantAction', action);
-    formData.append('form_token', $('#variant_form_token').val());
-
-    // Use fetch API to submit the form
-    fetch(window.location.href, {
-      method: 'POST',
-      body: formData,
-      credentials: 'same-origin'
-    }).then(response =&gt; {
-      if (response.ok) {
-        // Reload the page to show updated state
-        window.location.reload();
-      }
-    }).catch(error =&gt; {
-      console.error('Error submitting variant action:', error);
-    });
-
-    return false;
-  }
-
-  // Bind link/unlink actions with both click and mousedown handlers
-  $(document).on('click', '#linkToVariant', function(e) {
-    return submitVariantAction('link', e);
-  });
-
-  $(document).on('click', '#unlinkFromVariant', function(e) {
-    return submitVariantAction('unlink', e);
-  });
-});</code>
+    })
+  })</code>
     </property>
     <property>
       <name>bookNavigation</name>
@@ -194,6 +143,169 @@
     </property>
     <property>
       <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>BookVersions.Code.NavigationMenu</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>08bd6337-e33f-4e61-b854-5aa5400bd278</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>require(['jquery', 'xwiki-selectize'], function($) {
+  const variantSelect = $('#collectionVariant');
+  const form = $('#changeVariantStatus');
+  const selectedVariantInput = $('#selectedVariantInput');
+  const linkToVariant = $('#linkToVariant');
+  const unlinkFromVariant = $('#unlinkFromVariant');
+
+  // Handle variant select change
+  variantSelect.on("change", function() {
+    const selectedVariant = $(this).val();
+    selectedVariantInput.val(selectedVariant);
+    form.submit();
+  });
+
+  // Create a reusable function to handle POST and redirect
+  function handleVariantAction(action) {
+    // Get the current variant value from the hidden input
+    const currentVariant = selectedVariantInput.val();
+
+    // Create a temporary form
+    const tempForm = $('&lt;form&gt;', {
+      method: 'POST',
+      action: window.location.href
+    });
+
+    // Add the variant data
+    $('&lt;input&gt;').attr({
+      type: 'hidden',
+      name: 'selectedVariant',
+      value: currentVariant
+    }).appendTo(tempForm);
+
+    // Add the action type
+    $('&lt;input&gt;').attr({
+      type: 'hidden',
+      name: 'variantAction',
+      value: action
+    }).appendTo(tempForm);
+
+    // Add CSRF token if needed
+    const token = $('meta[name="form_token"]').attr('content');
+    if (token) {
+      $('&lt;input&gt;').attr({
+        type: 'hidden',
+        name: 'form_token',
+        value: token
+      }).appendTo(tempForm);
+    }
+
+    // Append form to body, submit it, and remove it
+    tempForm.appendTo('body').submit();
+  }
+
+  // Handle link clicks
+  linkToVariant.on('click', function(e) {
+    e.preventDefault();
+    handleVariantAction('link');
+  });
+
+  unlinkFromVariant.on('click', function(e) {
+    e.preventDefault();
+    handleVariantAction('unlink');
+  });
+});</code>
+    </property>
+    <property>
+      <name>Variants</name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use/>
     </property>
   </object>
   <object>
