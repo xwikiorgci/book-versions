@@ -91,9 +91,12 @@ BookVersions.adminMenu.manage=Manage
 BookVersions.adminMenu.manageVersions=Versions
 BookVersions.adminMenu.manageVariants=Variants
 BookVersions.adminMenu.manageLibraries=Libraries
+BookVersions.adminMenu.pageActions=Page Actions
 BookVersions.adminMenu.addPageToVariant=Link page to variant [{0}]
 BookVersions.adminMenu.removePageFromVariant=Unlink page from variant [{0}]
 BookVersions.adminMenu.publishLable=Publishing
+BookVersions.navMenu.convertToUnversioned=Convert to unversioned
+BookVersions.navMenu.convertToVersioned=Convert to versioned
 BookVersions.adminMenu.publish=Publish current version
 
 # Admin live data values
