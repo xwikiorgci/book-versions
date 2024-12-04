@@ -438,4 +438,34 @@ public class BookVersionsScriptService implements ScriptService
         bookVersionsManagerProvider.get().setLibrary(bookReference, libraryReference,
             libraryVersionReference);
     }
+
+    /**
+     * Get the library version reference which is configured in the given book, for the given library, with the
+     * current selected book version.
+     * @param bookReference the reference of the book
+     * @param libraryReference the reference of the library
+     * @return the reference of the library version configured in the book for the library
+     * @throws XWikiException
+     * @throws QueryException
+     */
+    public DocumentReference getConfiguredLibraryVersion(DocumentReference bookReference,
+        DocumentReference libraryReference) throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getConfiguredLibraryVersion(bookReference, libraryReference);
+    }
+
+    /**
+     * Get the reference of the library content for the given key, depending on the configured library version in
+     * the given book and the current selected book version.
+     * @param bookReference the reference of the book
+     * @param keyReference the reference of the key (library page)
+     * @return the reference of the content of the library
+     * @throws XWikiException
+     * @throws QueryException
+     */
+    public DocumentReference getLinkedLibraryContentReference(DocumentReference bookReference,
+        DocumentReference keyReference) throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getLinkedLibraryContentReference(bookReference, keyReference);
+    }
 }

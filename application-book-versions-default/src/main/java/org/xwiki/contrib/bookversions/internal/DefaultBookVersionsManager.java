@@ -819,6 +819,52 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 "]: ["+libraryVersionReference.toString()+"]." , xcontext);
     }
 
+    @Override
+    public DocumentReference getConfiguredLibraryVersion(DocumentReference bookReference, DocumentReference libraryReference)
+        throws XWikiException, QueryException
+    {
+        if(isBook(bookReference) && isLibrary(libraryReference)) {
+            String selectedVersionStringRef = getSelectedVersion(bookReference);
+            if (selectedVersionStringRef == null || selectedVersionStringRef.isEmpty()) {
+                // in case no version has been selected yet, get the most recent one
+                selectedVersionStringRef = getCollectionVersions(bookReference).get(0);
+            }
+            DocumentReference selectedVersionRef = referenceResolver.resolve(selectedVersionStringRef, bookReference);
+            XWikiContext xcontext = getXWikiContext();
+            XWiki xwiki = xcontext.getWiki();
+            XWikiDocument selectedVersionDoc = xwiki.getDocument(selectedVersionRef, xcontext);
+            List<BaseObject> libRefObjects =
+                selectedVersionDoc.getXObjects(BookVersionsConstants.BOOKLIBRARYREFERENCE_CLASS_REFERENCE);
+            for (BaseObject libRefObject : libRefObjects) {
+                if (libraryReference.equals(referenceResolver.resolve(libRefObject.getStringValue(BookVersionsConstants.BOOKLIBRARYREFERENCE_PROP_LIBRARY),
+                    libraryReference))) {
+                    return referenceResolver.resolve(libRefObject.getStringValue(
+                        BookVersionsConstants.BOOKLIBRARYREFERENCE_PROP_LIBRARYVERSION));
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public DocumentReference getLinkedLibraryContentReference(DocumentReference bookReference, DocumentReference keyReference)
+        throws XWikiException, QueryException
+    {
+        DocumentReference libraryRef = getVersionedCollectionReference(keyReference);
+        if (keyReference != null && libraryRef != null && isLibrary(libraryRef) && isPage(keyReference)) {
+            // the passed reference is part of a library
+            if (isVersionedPage(keyReference)) {
+                // versioned page => get the content depending on the book configuration
+                DocumentReference libraryVersionRef = getConfiguredLibraryVersion(bookReference,libraryRef);
+                return getInheritedContentReference(keyReference,libraryVersionRef);
+            } else {
+                // unversioned page
+                return keyReference;
+            }
+        }
+        return null;
+    }
+
     /**
      * Get the XWiki context.
      *

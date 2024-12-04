@@ -111,7 +111,13 @@ BookVersions.variants.linkedPagesListHeading=Pages linked with selected variant
 BookVersions.variants.macrosPagesListHeading=Pages containing variant macro
 BookVersions.variants.noLinkedPage=No pages linked to this variant.
 BookVersions.variants.noMacroUsingPage=No pages use this variant macro.
-BookVersions.variants.showPagesForVariant=Show linked pages for variant: </content>
+BookVersions.variants.showPagesForVariant=Show linked pages for variant: 
+
+# Library include macro
+rendering.macro.includeLibrary.name=Include Library
+rendering.macro.includeLibrary.description=Include content from a versioned library
+rendering.macro.includeLibrary.parameter.keyReference.name=Library key
+rendering.macro.includeLibrary.parameter.keyReference.description=The key of a library to get the content from</content>
   <object>
     <name>BookVersions.Code.Translations</name>
     <number>0</number>
