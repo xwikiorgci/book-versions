@@ -355,6 +355,7 @@
             &lt;/li&gt;
           &lt;/ul&gt;
         &lt;/dd&gt;
+        #if($services.bookversions.isPage($docRef) || $isVersionedContent)
         &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.pageActions')&lt;/dt&gt;
         &lt;dd&gt;
           &lt;ul&gt;
@@ -394,7 +395,7 @@
               &lt;/ul&gt;
           #end
         #end
-        #if($isVersionedContent)
+        #if($isVersionedContent &amp;&amp; $variants.size() &gt; 0)
           &lt;ul&gt;
             &lt;li&gt;
               #if("$!{msgAssociateVariantName}" != '')
@@ -410,6 +411,7 @@
           &lt;/ul&gt;
         #end
         &lt;/dd&gt;
+        #end
         &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.publishLable')&lt;/dt&gt;
         &lt;dd&gt;
           &lt;ul&gt;
