@@ -188,8 +188,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         return isLibrary(xcontext.getWiki().getDocument(documentReference, xcontext));
     }
 
-    @Override
-    public boolean isLibrary(XWikiDocument document) throws XWikiException
+    private boolean isLibrary(XWikiDocument document) throws XWikiException
     {
         return new DefaultLibrary(document).isDefined();
     }

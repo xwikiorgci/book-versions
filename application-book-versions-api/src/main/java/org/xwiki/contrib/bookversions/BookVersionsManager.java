@@ -160,17 +160,7 @@ public interface BookVersionsManager
     boolean isLibrary(DocumentReference documentReference) throws XWikiException;
 
     /**
-     * Check if the given document is a library.
-     * 
-     * @param library The library reference.
-     * @return True, if the given document is a library.
-     * @throws XWikiException In case the system can't provide an answer.
-     */
-    boolean isLibrary(XWikiDocument library) throws XWikiException;
-
-    /**
      * Check if the given library version belongs to the qiven library.
-     * 
      * @param libraryReference The library reference
      * @param libraryVersionReference The library version reference
      * @return True if the library version belongs to the library
@@ -182,14 +172,14 @@ public interface BookVersionsManager
 
     /**
      * Check if the given library version belongs to the qiven library.
-     * 
      * @param library The library document
      * @param libraryVersion The library version document
      * @return True if the library version belongs to the library
      * @throws QueryException
      * @throws XWikiException
      */
-    boolean isFromLibrary(XWikiDocument library, XWikiDocument libraryVersion) throws QueryException, XWikiException;
+    boolean isFromLibrary(XWikiDocument library, XWikiDocument libraryVersion)
+        throws QueryException, XWikiException;
 
     /**
      * Transform the given name by using the slug name validation.
@@ -409,7 +399,6 @@ public interface BookVersionsManager
 
     /**
      * Set a library configuration to a book if it doesn't exit yet. The last version of the library is set as default.
-     * 
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library to add
      * @throws QueryException
@@ -420,7 +409,6 @@ public interface BookVersionsManager
 
     /**
      * Set a library configuration to a book if it doesn't exit yet.
-     * 
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library to add
      * @param libraryVersionReference the reference of the version of the library to add
