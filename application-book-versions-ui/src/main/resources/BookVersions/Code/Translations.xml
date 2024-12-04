@@ -63,6 +63,8 @@ BookVersions.creationForm.pageUnversioned=Unversioned content
 BookVersions.creationForm.pageUnversioned.hint=When the page is unversioned, the option of creating different content for multiple versions will be disabled and the same content of the page will be displayed in all versions of the book. It will be possible, though, to switch back to versioned content.
 BookVersions.creationForm.create=Create
 BookVersions.creationForm.add=Add
+BookVersions.creationForm.name=Name
+BookVersions.creationForm.libTitle=Library title
 
 # Version Creation form
 BookVersions.creationForm.newVersion=New version

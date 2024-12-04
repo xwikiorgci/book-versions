@@ -139,9 +139,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
     this.dTitleTerm = new Element('dt');
     this.dTitleDef = new Element('dd');
     this.dTitleLabel = new Element('label', {for: 'bookPageTitle'});
-    this.dTitleLabel.insert("$services.localization.render('BookVersions.creationForm.pageTitle')");
-    this.dTitleHint = new Element('span', {class: 'xHint'});
-    this.dTitleHint.insert("$services.localization.render('BookVersions.creationForm.pageTitle.hint')");
+    this.dTitleLabel.insert("$services.localization.render('BookVersions.creationForm.name')");
     this.dTitleTerm.insert(this.dTitleLabel);
     this.dTitleTerm.insert(this.dTitleHint);
     this.dTitleDef.insert(this.titleInput);
