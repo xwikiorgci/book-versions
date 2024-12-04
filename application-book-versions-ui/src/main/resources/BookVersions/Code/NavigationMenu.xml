@@ -620,8 +620,12 @@
   #set ($inheritedRedirFlag = $request.getSession().getAttribute('BookVersions.versionInheritedRedirFlag'))
   ##
   ## Variant-specific variables
-  #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
   #set ($variants = $services.bookversions.getCollectionVariants($collectionRef))
+  ## Handle single variant
+  #if ($variants.size() == 1)
+    #set ($discard = $services.bookversions.setSelectedVariant($collectionRef, $variants[0]))
+  #end
+  #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
   ##
   #set ($discard = $debuglogger.debug("START Navigation menu for [$docRef], inheritedRedirFlag [$inheritedRedirFlag], collectionRef [$collectionRef], isVersionedPage [$isVersionedPage], isVersionedContent [$isVersionedContent], isUnexistingContent [$isUnexistingContent]"))
   ##
