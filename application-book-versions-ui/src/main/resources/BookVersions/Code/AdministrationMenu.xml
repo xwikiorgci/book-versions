@@ -343,16 +343,18 @@
                 $services.localization.render('BookVersions.adminMenu.manageVersions')
               &lt;/a&gt;
             &lt;/li&gt;
-            &lt;li&gt;
-              &lt;a href="$variantsUrl"&gt;
-                $services.localization.render('BookVersions.adminMenu.manageVariants')
-              &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;li&gt;
-              &lt;a href="$librariesUrl"&gt;
-                $services.localization.render('BookVersions.adminMenu.manageLibraries')
-              &lt;/a&gt;
-            &lt;/li&gt;
+            #if ($services.bookversions.isBook($bookRef)
+              &lt;li&gt;
+                &lt;a href="$variantsUrl"&gt;
+                  $services.localization.render('BookVersions.adminMenu.manageVariants')
+                &lt;/a&gt;
+              &lt;/li&gt;
+              &lt;li&gt;
+                &lt;a href="$librariesUrl"&gt;
+                  $services.localization.render('BookVersions.adminMenu.manageLibraries')
+                &lt;/a&gt;
+              &lt;/li&gt;
+            #end
           &lt;/ul&gt;
         &lt;/dd&gt;
         #if($services.bookversions.isPage($docRef) || $isVersionedContent)
