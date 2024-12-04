@@ -365,7 +365,7 @@ return XWiki;
     #jsonResponse({
       'transformedName' : "$escapetool.json($transformedName)"
     })
-  #elseif ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($docRef) || $services.bookversions.isPage($docRef) || $isVersionedContent))
+  #elseif ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($docRef) || $services.bookversions.isLibrary($docRef) || $services.bookversions.isPage($docRef) || $isVersionedContent))
     #set ($BOOK_CODE = 'BookVersions.Code')
     #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookPage"))
     ## Display the custom new page button
