@@ -98,6 +98,7 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
                     DocumentReference userReference = this.xcontextProvider.get().getUserReference();
                     versionedContentDocument.setCreatorReference(userReference);
                     versionedContentDocument.setAuthorReference(userReference);
+                    versionedContentDocument.setHidden(true);
                     updatedXDoc.setContent("");
 
                     xcontext.getWiki().saveDocument(versionedContentDocument, xcontext);
