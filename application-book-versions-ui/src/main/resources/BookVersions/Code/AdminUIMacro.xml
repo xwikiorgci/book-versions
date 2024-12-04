@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
 #elseif ($type == "Libraries")
     #set ($typeSingular = "Library")
     #set ($typeClass = "LibraryReferenceClass")
-    #set ($LDproperties = "doc.location,doc.title,libraryReference,libraryVersionReference,doc.creationDate")
+    #set ($LDproperties = "doc.location,doc.title,libraryReference,libraryVersionReference")
     #set ($spaces = $doc.getDocumentReference().getSpaceReferences())
     ## The book name is the second space above this page. A dot is added just in case there a many book starting with the same name
     #set ($LDfilter = $spaces[$spaces.size() - 2].getName()+".")
