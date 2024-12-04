@@ -697,6 +697,17 @@
           $response.sendRedirect($xwiki.getURL($inheritedVersionedContentReference, $xcontext.action))
         #elseif($isVersionedContent)
           $response.sendRedirect($xwiki.getURL($inheritedVersionedContentReference, $xcontext.action, 'r=0'))
+        #else
+          #set($parentReference = $docRef.getParent())
+          #set($isParentVersionedPage = $services.bookversions.isVersionedPage($parentReference))
+          #if(!$isParentVersionedPage &amp;&amp; $docRef.getLastSpaceReference() &amp;&amp; $docRef.getLastSpaceReference().getParent()))
+            #set($parentReference = $docRef.getLastSpaceReference().getParent())
+            #set($isParentVersionedPage = $services.bookversions.isVersionedPage($parentReference))
+          #end
+          #if($isParentVersionedPage)
+            #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($parentReference, $services.model.serialize($selectedVersion)))
+            $response.sendRedirect($xwiki.getURL($versionedContentReference))
+          #end
         #end
       #elseif ($isVersionedPage &amp;&amp; !$isVersionedContent)
         #set ($discard = $debuglogger.debug('Page is a top page (versioned page but not content)'))
