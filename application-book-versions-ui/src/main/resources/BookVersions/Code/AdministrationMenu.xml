@@ -343,7 +343,7 @@
                 $services.localization.render('BookVersions.adminMenu.manageVersions')
               &lt;/a&gt;
             &lt;/li&gt;
-            #if ($services.bookversions.isBook($bookRef)
+            #if ($services.bookversions.isBook($bookRef))
               &lt;li&gt;
                 &lt;a href="$variantsUrl"&gt;
                   $services.localization.render('BookVersions.adminMenu.manageVariants')
