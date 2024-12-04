@@ -622,7 +622,7 @@
   ## Variant-specific variables
   #set ($variants = $services.bookversions.getCollectionVariants($collectionRef))
   ## Handle no variant selected
-  #if (!$selectedVariant &amp;&amp; $isVersionedPage &amp;&amp; $versions.size() &gt; 0)
+  #if (!$selectedVariant &amp;&amp; $isVersionedPage &amp;&amp; $variants.size() &gt; 0)
     #set ($discard = $services.bookversions.setSelectedVariant($collectionRef, $variants[0]))
   #end
   #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
