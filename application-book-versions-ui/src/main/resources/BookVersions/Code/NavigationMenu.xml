@@ -621,8 +621,8 @@
   ##
   ## Variant-specific variables
   #set ($variants = $services.bookversions.getCollectionVariants($collectionRef))
-  ## Handle single variant
-  #if ($variants.size() == 1)
+  ## Handle no variant selected
+  #if (!$selectedVariant)
     #set ($discard = $services.bookversions.setSelectedVariant($collectionRef, $variants[0]))
   #end
   #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
