@@ -37,14 +37,25 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
+#set($debuglogger = $services.logging.getLogger($doc.fullName))
+#set($discard = $debuglogger.debug("Received requests param: bookReference = [$request.bookReference], libraryReference = [$request.libraryReference]"))
 #if ($services.csrf.isTokenValid($!request.form_token))
+  #set($discard = $debuglogger.debug('CSRF token is valid'))
   #set ($bookReference = $!request.bookReference)
-  #set ($libraryReference = $!request.libraryReference)
-  #if ($bookReference &amp;&amp; $libraryReference &amp;&amp;
+  #set ($libraryReferences = $!request.libraryReference)
+  #set ($isBook = $services.bookversions.isBook($bookReference))
+  #set ($hasAccess = $services.security.authorization.hasAccess('edit', $bookReference))
+  #set($discard = $debuglogger.debug("isBook = [$isBook], hasAccess = [$hasAccess]"))
+  #if ($bookReference &amp;&amp; $libraryReferences &amp;&amp;
         $services.bookversions.isBook($bookReference) &amp;&amp;
-        $services.bookversions.isLibrary($libraryReference) &amp;&amp;
         $services.security.authorization.hasAccess('edit', $bookReference))
-    $services.bookversions.setLibrary($bookReference, $libraryReference)
+    #foreach ($libraryReference in $libraryReferences.split(','))
+      #set ($isLibrary = $services.bookversions.isLibrary($libraryReference))
+      #set($discard = $debuglogger.debug("Working on [$libraryReference], isLibrary = [$isLibrary]"))
+      #if ($isLibrary)
+        $services.bookversions.setLibrary($bookReference, $libraryReference)
+      #end
+    #end
   #end
 #end
 {{/velocity}}
