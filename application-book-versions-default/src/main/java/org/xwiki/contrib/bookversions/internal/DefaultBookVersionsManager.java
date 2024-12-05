@@ -227,6 +227,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             return null;
         }
 
+        DocumentReference versionedCollectionReference = getVersionedCollectionReference(documentReference);
         Map<String, String> versionsMap = new HashMap<String, String>();
         XWikiRequest request = getXWikiContext().getRequest();
         HttpSession session = request.getSession();
@@ -235,7 +236,6 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
             if (versionsMap != null) {
                 Iterator<?> it = versionsMap.entrySet().iterator();
-                DocumentReference versionedCollectionReference = getVersionedCollectionReference(documentReference);
 
                 while (it.hasNext()) {
                     Map.Entry<String, String> collectionVersion = (Map.Entry<String, String>) it.next();
@@ -247,6 +247,11 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
                 }
             }
+        }
+
+        List<String> collectionVersions = getCollectionVersions(documentReference);
+        if (collectionVersions.size() > 0) {
+            return collectionVersions.get(0);
         }
 
         return null;
