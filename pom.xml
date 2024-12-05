@@ -50,6 +50,10 @@
       <id>mpace</id>
       <name>Mathieu Pace</name>
     </developer>
+    <developer>
+      <id>ppantiru</id>
+      <name>Paul Pantiru</name>
+    </developer>
   </developers>
   <issueManagement>
     <system>jira</system>

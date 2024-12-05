@@ -10,13 +10,13 @@ that is:
 
 It aims at providing similar features as Scroll Versions extension for Confluence.
 
-* Project Lead: [Mathieu Pace](https://www.xwiki.org/xwiki/bin/view/XWiki/mpace)
+* Project Lead: [Raluca Stavro](https://www.xwiki.org/xwiki/bin/view/XWiki/rstavro)
 * Documentation & Downloads: [Documentation & Download](https://extensions.xwiki.org/xwiki/bin/view/Extension/(extension name)))
 * [Issue Tracker](https://jira.xwiki.org/browse/BVERSION)
 * Communication: [Forum](https://forum.xwiki.org/), [Chat](https://dev.xwiki.org/xwiki/bin/view/Community/Chat)
 * [Development Practices](https://dev.xwiki.org)
 * Minimal XWiki version supported: XWiki (minimal xwiki version)
 * License: LGPL 2.1
-* Translations: N/A
+* Translations: [Weblate](https://l10n.xwiki.org/projects/xwiki-contrib/book-versions-ui/)
 * Sonar Dashboard: N/A
 * Continuous Integration Status: [![Build Status](https://ci.xwiki.org/job/XWiki%20Contrib/job/book-versions/job/master/badge/icon)](https://ci.xwiki.org/job/XWiki%20Contrib/job/book-versions/job/master/)
