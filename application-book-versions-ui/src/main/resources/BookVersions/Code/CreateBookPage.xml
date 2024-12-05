@@ -168,15 +168,7 @@
 {{velocity}}
   #set ($docRef = $doc.documentReference)
   #set ($isVersionedContent = $services.bookversions.isVersionedContent($docRef))
-  #if ("$!request.action" == 'transformNameUsingSlug' &amp;&amp; "$!request.name" != '')
-    #set ($transformedName = "$!services.bookversions.transformUsingSlugValidation($!request.name)")
-    #if ("$!transformedName" == '')
-      #set ($transformedName = "$!request.name")
-    #end
-    #jsonResponse({
-      'transformedName' : "$escapetool.json($transformedName)"
-    })
-  #elseif ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($docRef) || $services.bookversions.isLibrary($docRef) || $services.bookversions.isPage($docRef) || $isVersionedContent))
+  #if ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($docRef) || $services.bookversions.isLibrary($docRef) || $services.bookversions.isPage($docRef) || $isVersionedContent))
     #set ($BOOK_CODE = 'BookVersions.Code')
     #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource"))
     ## Display the custom new page button
