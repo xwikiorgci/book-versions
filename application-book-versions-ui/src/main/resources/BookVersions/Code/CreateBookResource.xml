@@ -187,7 +187,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
   _onAdd : function() {
     if (this.titleInput.value != '') {
       // Transform the page name accorring to the slug name strategy
-      fetch("$xwiki.getURL('BookVersions.Code.CreateBookResource')" + '?action=transformNameUsingSlug&amp;name=' + this.titleInput.value, {
+      fetch("$xwiki.getURL('BookVersions.Code.CreateEntityRequest')" + '?action=transformNameUsingSlug&amp;name=' + this.titleInput.value, {
         method: 'get'
       })
         .then(response =&gt; response.json())
