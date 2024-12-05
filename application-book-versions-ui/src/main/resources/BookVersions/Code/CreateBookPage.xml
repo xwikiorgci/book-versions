@@ -195,7 +195,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
             transformedName = this.titleInput.value;
           }
           this.urlTemplate = $('bookPageUnversioned').checked ? this.urlUnversionedTemplate : this.urlVersionedTemplate;
-          window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)) + '&amp;form_token=$!{services.csrf.getToken()}';
+          window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)).replace(/__entryTitle__/g, this.titleInput.value) + '&amp;form_token=$!{services.csrf.getToken()}';
         })
       .catch(err =&gt; {
         console.log(err);
@@ -375,7 +375,8 @@ return XWiki;
     #end
     #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createSpaceReference('__entryName__', $parentReference)))
     #set ($params = {
-      'title': '__entryName__',
+      'name': '__entryName__',
+      'title': '__entryTitle__',
       'parent': $services.model.serialize($parentReference, 'local')
     })
     #set ($discard = $params.put('template', "${BOOK_CODE}.BookPageTemplate"))
