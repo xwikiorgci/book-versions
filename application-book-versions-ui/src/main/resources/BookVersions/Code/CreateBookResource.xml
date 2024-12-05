@@ -135,7 +135,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
 
     this.titleInput = new Element('input', {type: 'text', id: 'bookPageTitle'});
 
-    this.addButton = new Element('input', {class: 'btn btn-primary', value: "$services.localization.render('BookVersions.creationForm.create')"});
+    this.addButton = new Element('input', {type: 'button', class: 'btn btn-primary', value: "$services.localization.render('BookVersions.creationForm.create')"});
     this.dList = new Element('dl');
 
     this.dTitleTerm = new Element('dt');
