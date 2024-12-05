@@ -311,9 +311,9 @@
 #set ($bookRef = $services.bookversions.getVersionedCollectionReference($doc.getDocumentReference()))
 #if ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; "$!bookRef" != '')
   ## Create references for the nested pages using space array
-  #set ($versionsRef = $services.model.createDocumentReference($bookRef.wikiReference.name, [$bookRef.lastSpaceReference.name, "Versions"], "WebHome"))
-  #set ($variantsRef = $services.model.createDocumentReference($bookRef.wikiReference.name, [$bookRef.lastSpaceReference.name, "Variants"], "WebHome"))
-  #set ($librariesRef = $services.model.createDocumentReference($bookRef.wikiReference.name, [$bookRef.lastSpaceReference.name, "Libraries"], "WebHome"))
+  #set ($versionsRef = $services.model.resolveDocument('Versions', $bookRef.parent))
+  #set ($variantsRef = $services.model.resolveDocument('Variants', $bookRef.parent))
+  #set ($librariesRef = $services.model.resolveDocument('Libraries', $bookRef.parent))
   ## Create URLs using xwiki URL service
   #set ($versionsUrl = $xwiki.getURL($versionsRef))
   #set ($variantsUrl = $xwiki.getURL($variantsRef))
