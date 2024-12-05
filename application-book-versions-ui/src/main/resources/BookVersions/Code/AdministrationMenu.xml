@@ -385,7 +385,7 @@
               ## Start new content from the current (= inherited) version
               #set ($versionedContentTemplate = $escapetool.url($services.model.serialize($docRef)))
             #end
-            #set ($msgCreateVerisonURL = $xwiki.getURL($versionedContentReference, 'edit', 'template=' + $escapetool.url($versionedContentTemplate) + '&amp;title=' + $escapetool.url(${doc.title}) + '&amp;amp;form_token=' + $escapetool.url("$!services.csrf.token")))
+            #set ($msgCreateVerisonURL = $xwiki.getURL($versionedContentReference, 'edit', 'template=' + $escapetool.url($versionedContentTemplate) + '&amp;title=' + $escapetool.url(${doc.title}) + '&amp;xhidden=1&amp;amp;form_token=' + $escapetool.url("$!services.csrf.token")))
           #end
           #if("$!msgCreateVerisonName" != '' &amp;&amp; "$!msgCreateVerisonURL" != '')
               &lt;ul&gt;
