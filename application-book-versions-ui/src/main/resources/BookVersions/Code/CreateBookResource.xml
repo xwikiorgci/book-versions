@@ -131,8 +131,10 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
   initialize : function($super, trigger) {
     trigger.observe('click', this.showDialog.bindAsEventListener(this));
     this.urlTemplate = $('PageURL').value;
+    this.urlUnversionedTemplate = null;
 
     this.titleInput = new Element('input', {type: 'text', id: 'bookPageTitle'});
+
     this.addButton = new Element('input', {class: 'btn btn-primary', value: "$services.localization.render('BookVersions.creationForm.create')"});
     this.dList = new Element('dl');
 
@@ -145,6 +147,22 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
     this.dTitleDef.insert(this.titleInput);
     this.dList.insert(this.dTitleTerm);
     this.dList.insert(this.dTitleDef);
+    if($('unversionedBooKPageURL')) {
+      this.urlUnversionedTemplate = $('unversionedBooKPageURL').value;
+      this.unversionedInput = new Element('input', {type: 'checkbox', id: 'bookPageUnversioned'});
+      this.dUnversionedTerm = new Element('dt');
+      this.dUnversionedDef = new Element('dd');
+      this.dUnversionedLabel = new Element('label', {for: 'bookPageUnversioned'});
+      this.dUnversionedLabel.insert("$services.localization.render('BookVersions.creationForm.pageUnversioned')");
+      this.dUnversionedHint = new Element('span', {class: 'xHint'});
+      this.dUnversionedHint.insert("$services.localization.render('BookVersions.creationForm.pageUnversioned.hint')");
+      this.dUnversionedTerm.insert(this.dUnversionedLabel);
+      this.dUnversionedTerm.insert(this.dUnversionedHint);
+      this.dUnversionedDef.insert(this.unversionedInput);
+      this.dUnversionedDef.insert(this.unversionedInput);
+      this.dList.insert(this.dUnversionedTerm);
+      this.dList.insert(this.dUnversionedDef);
+    }
 
     var container = new Element('div', {id: 'entryNamePopup', class: 'xform'});
     container.insert(this.dList);
@@ -154,7 +172,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
       show: {method: this.showDialog, keys: []},
       add: {method: this._onAdd, keys: ['Enter']}
     }, {
-      title: '$escapetool.javascript($services.localization.render('BookVersions.creationForm.new'+$request.typeSingular))',
+      title: trigger.title,
       verticalPosition: 'top'
     });
   },
@@ -168,7 +186,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
   },
   _onAdd : function() {
     if (this.titleInput.value != '') {
-      // We use the global flag because we need to replace both the page name and its title.
+      // Transform the page name accorring to the slug name strategy
       fetch("$xwiki.getURL('BookVersions.Code.CreateBookResource')" + '?action=transformNameUsingSlug&amp;name=' + this.titleInput.value, {
         method: 'get'
       })
@@ -178,7 +196,10 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
           if(!transformedName &amp;&amp; transformedName != '') {
             transformedName = this.titleInput.value;
           }
-          window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)) + '&amp;form_token=$!{services.csrf.getToken()}';
+          if($('bookPageUnversioned') &amp;&amp; $('bookPageUnversioned').checked &amp;&amp; this.urlUnversionedTemplate) {
+            this.urlTemplate = this.urlUnversionedTemplate;
+          }
+          window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)).replace(/__entryTitle__/g, this.titleInput.value)  + '&amp;form_token=$!{services.csrf.getToken()}';
         })
       .catch(err =&gt; {
         console.log(err);
@@ -193,8 +214,9 @@ return XWiki;
 }(XWiki || {}));
 
 (XWiki.domIsLoaded) || document.observe('xwiki:dom:loaded', function(){
-  var bookPageNamePopup = new XWiki.EntryNamePopup($('tmCreateResource').down('.addResource'));
-  bookPageNamePopup.options.title = "$services.localization.render('BookVersions.creationForm.new'+$request.typeSingular)"
+  var addResource = $('tmCreateResource').down('.addResource');
+  var bookPageNamePopup = new XWiki.EntryNamePopup(addResource);
+  bookPageNamePopup.options.title = addResource.title;
 });
 </code>
     </property>

@@ -405,7 +405,8 @@ document.addEventListener('DOMContentLoaded', function() {
   #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createDocumentReference('__entryName__', $doc.documentReference.parent)))
   #set ($params = {
     'template': "${BOOK_CODE}.${typeSingular}Template",
-    'title': '__entryName__',
+    'name': '__entryName__',
+    'title': '__entryTitle__',
     'parent': $services.model.serialize($doc.documentReference, 'local')
   })
   #set ($newBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))

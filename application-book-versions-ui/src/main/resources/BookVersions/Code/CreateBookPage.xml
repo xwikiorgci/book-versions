@@ -40,195 +40,6 @@
   <object>
     <name>BookVersions.Code.CreateBookPage</name>
     <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>d97170aa-65db-42f3-8378-52e5da11603d</guid>
-    <class>
-      <name>XWiki.JavaScriptExtension</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <cache>
-        <cache>0</cache>
-        <defaultValue>long</defaultValue>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText>forbidden</freeText>
-        <largeStorage>0</largeStorage>
-        <multiSelect>0</multiSelect>
-        <name>cache</name>
-        <number>5</number>
-        <prettyName>Caching policy</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>long|short|default|forbid</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </cache>
-      <code>
-        <contenttype>PureText</contenttype>
-        <disabled>0</disabled>
-        <editor>PureText</editor>
-        <name>code</name>
-        <number>2</number>
-        <prettyName>Code</prettyName>
-        <restricted>0</restricted>
-        <rows>20</rows>
-        <size>50</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </code>
-      <name>
-        <disabled>0</disabled>
-        <name>name</name>
-        <number>1</number>
-        <prettyName>Name</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </name>
-      <parse>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType>yesno</displayType>
-        <name>parse</name>
-        <number>4</number>
-        <prettyName>Parse content</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </parse>
-      <use>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText>forbidden</freeText>
-        <largeStorage>0</largeStorage>
-        <multiSelect>0</multiSelect>
-        <name>use</name>
-        <number>3</number>
-        <prettyName>Use this extension</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </use>
-    </class>
-    <property>
-      <cache>long</cache>
-    </property>
-    <property>
-      <code>var XWiki = (function (XWiki) {
-
-XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
-  initialize : function($super, trigger) {
-    trigger.observe('click', this.showDialog.bindAsEventListener(this));
-    this.urlVersionedTemplate = $('versionedBooKPageURL').value;
-    this.urlUnversionedTemplate = $('unversionedBooKPageURL').value;
-
-    this.titleInput = new Element('input', {type: 'text', id: 'bookPageTitle'});
-    this.unversionedInput = new Element('input', {type: 'checkbox', id: 'bookPageUnversioned'});
-    this.addButton = new Element('input', {class: 'btn btn-primary', value: "$services.localization.render('BookVersions.creationForm.create')"});
-    this.dList = new Element('dl');
-
-    this.dTitleTerm = new Element('dt');
-    this.dTitleDef = new Element('dd');
-    this.dTitleLabel = new Element('label', {for: 'bookPageTitle'});
-    this.dTitleLabel.insert("$services.localization.render('BookVersions.creationForm.pageTitle')");
-    this.dTitleHint = new Element('span', {class: 'xHint'});
-    this.dTitleHint.insert("$services.localization.render('BookVersions.creationForm.pageTitle.hint')");
-    this.dTitleTerm.insert(this.dTitleLabel);
-    this.dTitleTerm.insert(this.dTitleHint);
-    this.dTitleDef.insert(this.titleInput);
-    this.dList.insert(this.dTitleTerm);
-    this.dList.insert(this.dTitleDef);
-
-    this.dUnversionedTerm = new Element('dt');
-    this.dUnversionedDef = new Element('dd');
-    this.dUnversionedLabel = new Element('label', {for: 'bookPageUnversioned'});
-    this.dUnversionedLabel.insert("$services.localization.render('BookVersions.creationForm.pageUnversioned')");
-    this.dUnversionedHint = new Element('span', {class: 'xHint'});
-    this.dUnversionedHint.insert("$services.localization.render('BookVersions.creationForm.pageUnversioned.hint')");
-    this.dUnversionedTerm.insert(this.dUnversionedLabel);
-    this.dUnversionedTerm.insert(this.dUnversionedHint);
-    this.dUnversionedDef.insert(this.unversionedInput);
-    this.dList.insert(this.dUnversionedTerm);
-    this.dList.insert(this.dUnversionedDef);
-
-    var container = new Element('div', {id: 'entryNamePopup', class: 'xform'});
-    container.insert(this.dList);
-    container.insert(this.addButton);
-
-    $super(container, {
-      show: {method: this.showDialog, keys: []},
-      add: {method: this._onAdd, keys: ['Enter']}
-    }, {
-      title: '$escapetool.javascript($services.localization.render('BookVersions.creationForm.newPage'))',
-      verticalPosition: 'top'
-    });
-  },
-  createDialog : function($super, event) {
-    this.addButton.observe('click', this._onAdd.bind(this));
-    $super(event);
-  },
-  showDialog : function($super, event) {
-    $super(event);
-    this.titleInput.clear().focus();
-  },
-  _onAdd : function() {
-    if (this.titleInput.value != '') {
-      // We use the global flag because we need to replace both the page name and its title.
-      fetch("$xwiki.getURL('BookVersions.Code.CreateBookPage')" + '?action=transformNameUsingSlug&amp;name=' + this.titleInput.value, {
-        method: 'get'
-      })
-        .then(response =&gt; response.json())
-        .then(data =&gt; {
-          var transformedName = data.transformedName;
-          if(!transformedName &amp;&amp; transformedName != '') {
-            transformedName = this.titleInput.value;
-          }
-          this.urlTemplate = $('bookPageUnversioned').checked ? this.urlUnversionedTemplate : this.urlVersionedTemplate;
-          window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)).replace(/__entryTitle__/g, this.titleInput.value) + '&amp;form_token=$!{services.csrf.getToken()}';
-        })
-      .catch(err =&gt; {
-        console.log(err);
-      });
-    } else {
-      this.titleInput.focus();
-    }
-  }
-});
-
-return XWiki;
-}(XWiki || {}));
-
-
-(XWiki.domIsLoaded) || document.observe('xwiki:dom:loaded', function(){
-  var bookPageNamePopup = new XWiki.EntryNamePopup($('tmCreateBookPage').down('.addBookPage'));
-  bookPageNamePopup.options.title = "$services.localization.render('BookVersions.creationForm.newPage')"
-});
-</code>
-    </property>
-    <property>
-      <name/>
-    </property>
-    <property>
-      <parse>1</parse>
-    </property>
-    <property>
-      <use>onDemand</use>
-    </property>
-  </object>
-  <object>
-    <name>BookVersions.Code.CreateBookPage</name>
-    <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>31048c90-c675-4349-8305-4478e1e72886</guid>
     <class>
@@ -367,7 +178,7 @@ return XWiki;
     })
   #elseif ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; ($services.bookversions.isBook($docRef) || $services.bookversions.isLibrary($docRef) || $services.bookversions.isPage($docRef) || $isVersionedContent))
     #set ($BOOK_CODE = 'BookVersions.Code')
-    #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookPage"))
+    #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource"))
     ## Display the custom new page button
     #set ($parentReference = $docRef.parent)
     #if ($isVersionedContent &amp;&amp; $docRef.parent &amp;&amp; $docRef.parent.parent)
@@ -383,17 +194,19 @@ return XWiki;
     #set ($newVersionedBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
     #set ($discard = $params.put('template', "${BOOK_CODE}.BookPageUnversionedTemplate"))
     #set ($newUnversioendBookPageEditURL = $xwiki.getURL($pageReference, 'edit', $escapetool.url($params)))
+    #set ($createFormTranslation = $services.localization.render('BookVersions.creationForm.newPage'))
 
     {{html clean="false"}}
-      &lt;div class="btn-group" id="tmCreateBookPage"&gt;
-        &lt;a href="#AddNewBookPage" role="button" title="$services.localization.render('BookVersions.creationForm.newPage')" class="btn btn-primary addBookPage"&gt;
+      &lt;div class="btn-group" id="tmCreateResource"&gt;
+        &lt;a href="#AddNew" type='button' role="button" title="$escapetool.xml($createFormTranslation)" class="btn btn-primary addResource"&gt;
           &lt;span class="fa fa-plus-square" aria-hidden="true"&gt;&lt;/span&gt;
-          &lt;span class="btn-label"&gt;$services.localization.render('BookVersions.creationForm.newPage')&lt;/span&gt;
+          &lt;span class="btn-label"&gt;$createFormTranslation&lt;/span&gt;
         &lt;/a&gt;
       &lt;/div&gt;
-      &lt;input type="hidden" id="versionedBooKPageURL" name="versionedBooKPageURL" value="$escapetool.xml($newVersionedBookPageEditURL)"/&gt;
+      &lt;input type="hidden" id="PageURL" name="PageURL" value="$escapetool.xml($newVersionedBookPageEditURL)"/&gt;
       &lt;input type="hidden" id="unversionedBooKPageURL" name="unversionedBooKPageURL" value="$escapetool.xml($newUnversioendBookPageEditURL)"/&gt;
       &lt;input type="hidden" id="bookSourceReference" name="sourceReference" value="$escapetool.xml($docRef)"/&gt;
+      &lt;input type="hidden" id="typeSingular" name="sourceReference" value="Page"/&gt;
     {{/html}}
   #end
 {{/velocity}}</content>
