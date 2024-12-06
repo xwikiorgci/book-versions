@@ -45,16 +45,6 @@ BookVersions.template.newBook=Créer un nouveau livre.
 ### Missing: BookVersions.template.description=Description
 ### Missing: BookVersions.template.title=Title
 
-# Creation form
-### Missing: BookVersions.creationForm.title=New page creation
-### Missing: BookVersions.creationForm.changedName=The chosen name isn't compatible with the naming policy chosen by your Administrator. A valid variant is proposed below. Please validate if the proposition is fine.
-### Missing: BookVersions.creationForm.noCollectionRef=The field [collectionRef] is missing in the URL. It is the reference of the collection (book/library) where to create the page.
-### Missing: BookVersions.creationForm.noTemplate=The field [template] is missing in the URL. It is the template to use for creating the new page.
-### Missing: BookVersions.creationForm.exists=The page [{0}] already exists, please select a new name.
-### Missing: BookVersions.creationForm.noPermission=Your user has no permission to create [{0}].
-### Missing: BookVersions.creationForm.docName=Enter the new {0} ID (different from the name, set later):
-### Missing: BookVersions.creationForm.submit=Create
-
 # Page Creation form
 ### Missing: BookVersions.creationForm.newPage=New page
 ### Missing: BookVersions.creationForm.pageTitle=Page title
