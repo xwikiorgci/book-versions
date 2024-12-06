@@ -397,9 +397,9 @@ document.addEventListener('DOMContentLoaded', function() {
   #set ($BOOK_CODE = 'BookVersions.Code')
   #if ($type == "Libraries")
     #set ($bookRef = $services.bookversions.getVersionedCollectionReference($doc.getDocumentReference()))
-    #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.AddBookLibrary",{'minify' : false, 'language': $context.language, 'type': $type, 'typeSingular': $typeSingular, 'bookRef': $bookRef}))
+    #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.AddBookLibrary",{'type': $type, 'typeSingular': $typeSingular, 'bookRef': $bookRef}))
   #else
-    #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource",{'minify' : false, 'language': $context.language, 'type': $type, 'typeSingular': $typeSingular}))
+    #set ($discard = $xwiki.jsx.use("${BOOK_CODE}.CreateBookResource",{'type': $type, 'typeSingular': $typeSingular}))
   #end
   ## Display the custom new page button
   #set ($pageReference = $services.model.resolveDocument('', 'default', $services.model.createDocumentReference('__entryName__', $doc.documentReference.parent)))
