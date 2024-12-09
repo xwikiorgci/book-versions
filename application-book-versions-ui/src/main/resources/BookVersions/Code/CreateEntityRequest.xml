@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content>{{velocity}}
   #if ("$!request.action" == 'transformNameUsingSlug' &amp;&amp; "$!request.name" != '')
-    #set ($transformedName = "$!services.bookversions.transformUsingSlugNameValidation($!request.name)")
+    #set ($transformedName = "$!services.bookversions.transformUsingSlugValidation($!request.name)")
     #if ("$!transformedName" == '')
       #set ($transformedName = "$!request.name")
     #end
