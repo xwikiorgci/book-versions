@@ -130,14 +130,14 @@
  */
 document.addEventListener('DOMContentLoaded', function() {
   const variantSelect = document.getElementById('variants');
-  
+
   // Set initial selection based on URL parameter
   const urlParams = new URLSearchParams(window.location.search);
   const currentVariant = urlParams.get('variant');
   if (currentVariant) {
     variantSelect.value = currentVariant;
   }
-  
+
   // Handle selection change
   variantSelect.addEventListener('change', function() {
     const selectedVariant = this.value;
@@ -544,14 +544,26 @@ document.addEventListener('DOMContentLoaded', function() {
 #end
 
 #if ($type == "Versions")
-== Status ==
+  #set($bookMainSpace = $LDfilter.replace('Versions',''))
+  == Status ==
 
-{{liveData
-  id="statuses"
-  properties="doc.title,doc.name,status,doc.creationDate,doc.date"
-  source="liveTable"
-  sourceParameters="className=BookVersions.Code.BookVersionedContentClass&amp;translationPrefix=BookVersions.versions.LD."
-/}}
+  {{liveData
+    id="statuses"
+    properties="doc.title,doc.location,doc.name,status,doc.creationDate,doc.date"
+    source="liveTable"
+    sourceParameters="className=BookVersions.Code.BookVersionedContentClass&amp;translationPrefix=BookVersions.versions.LD."
+    filters="doc.location=${bookMainSpace}"
+  }}{
+    "meta": {
+      "propertyDescriptors": [
+        {
+          "id": "doc.location",
+          "visible": false
+        }
+      ]
+    }
+  }{{/liveData}}
+
 #end
 {{/velocity}}</code>
     </property>
