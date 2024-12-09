@@ -48,18 +48,47 @@
     <validationScript/>
     <libraryReference>
       <cache>0</cache>
-      <classname/>
-      <customDisplay/>
+      <classname>BookVersions.Code.LibraryClass</classname>
+      <customDisplay>{{velocity}}
+#if ($type == 'edit')
+  #set($MyClass=$object.getxWikiClass())
+  #set($list=$MyClass.get($name).getListValues())
+  #set ($MySelectList="&lt;select id='" + "${prefix}${name}" + "' size='1' name='" + $prefix + ${name} + "'&gt;")
+  #set ($Selected="")
+  #if ($!value=='')
+    #set ($Selected=" selected='selected'")
+  #end
+  #set ($MySelectList=$MySelectList + "&lt;option value=''" + $!Selected + " label='" + $services.localization.render('BookVersions.Code.LibraryReferenceClass_libraryReference.Empty') + "'&gt;" + $services.localization.render('BookVersions.Code.LibraryReferenceClass_libraryReference.Empty') + "&lt;/option&gt;")
+  #foreach($listitem in $list)
+    #if ($listitem==$value)
+      #set ($Selected=" selected='selected'")
+    #else
+      #set ($Selected="")
+    #end
+    #set ($title = $xwiki.getDocument($listitem).getTitle())
+    #set ($MySelectList=$MySelectList + "&lt;option value='" + $listitem + "'" + $!Selected + " label='" + $title + "'&gt;" + $title + "&lt;/option&gt;")
+  #end
+  #set ($MySelectList=$MySelectList  + "&lt;/select&gt;")
+  #set ($MySelectList=$MySelectList  + "&lt;input type='hidden' value='' name='" + ${prefix} + ${name} +"'&gt;")
+  {{html clean=false}}
+  $MySelectList
+  {{/html}}
+#elseif (($type == 'view') &amp;&amp; ($!value!=''))
+  [[$xwiki.getDocument($value).getTitle()&gt;&gt;$value||rel="_blank"]]
+#else
+  $value
+#end
+{{/velocity}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
-      <displayType>input</displayType>
+      <displayType>select</displayType>
       <freeText/>
       <hint/>
-      <idField/>
+      <idField>doc.fullName</idField>
       <largeStorage>0</largeStorage>
       <multiSelect>0</multiSelect>
       <name>libraryReference</name>
-      <number>2</number>
+      <number>1</number>
       <picker>1</picker>
       <prettyName>libraryReference</prettyName>
       <relationalStorage>0</relationalStorage>
@@ -71,8 +100,8 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <valueField/>
-      <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+      <valueField>doc.fullName</valueField>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </libraryReference>
     <libraryVersionReference>
       <cache>0</cache>

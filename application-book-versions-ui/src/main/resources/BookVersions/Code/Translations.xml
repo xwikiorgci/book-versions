@@ -39,6 +39,19 @@
   <content># Class
 BookVersions.Code.VersionClass_precedingVersionReference=Preceding version reference
 
+# Library Reference Class
+BookVersions.Code.LibraryReferenceClass_libraryReference=Library Reference
+BookVersions.Code.LibraryReferenceClass_libraryReference.Empty=---
+BookVersions.Code.LibraryReferenceClass_libraryReference_=
+BookVersions.Code.LibraryReferenceClass_libraryVersionReference=Library Version Reference
+BookVersions.Code.LibraryReferenceClass_libraryVersionReference.Empty=---
+BookVersions.Code.LibraryReferenceClass_libraryVersionReference_=
+
+# Sheet
+BookVersions.Code.VersionClassSheet.versionConfiguration=Version Configuration
+BookVersions.Code.VersionClassSheet.librariesConfiguration=Libraries Configuration
+BookVersions.Code.VersionClassSheet.newConfiguration=New configuration
+
 # Creation templates
 BookVersions.template.newBook=Create a new book.
 BookVersions.template.newLibrary=Create a new library.
