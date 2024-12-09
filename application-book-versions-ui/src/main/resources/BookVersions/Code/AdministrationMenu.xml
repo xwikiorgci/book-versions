@@ -169,7 +169,152 @@
     e.preventDefault();
     handleSwitchUnversionAction('version');
   });
+
+  // Add handler for status changes
+  $('#statusProperty select').on('change', function(e) {
+    const selectedStatus = $(this).val();
+    const documentName = $('#crtDoc').val();
+    const setterUrl = $('#setterURL').val();
+
+    // Add query parameters
+    const url = new URL(setterUrl, window.location.origin);
+    url.searchParams.append('document', documentName);
+    url.searchParams.append('status', selectedStatus);
+
+    // Make the GET request
+    $.get(url.toString())
+      .done()
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        console.error('Failed to update status:', errorThrown);
+      });
+  });
 });</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>BookVersions.Code.AdministrationMenu</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>cc60aac0-622c-47c7-ad0b-219370de8bf6</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#statusProperty {
+  text-align: center;
+}
+#statusProperty select {
+  width: 80%;
+}</code>
+    </property>
+    <property>
+      <contentType/>
     </property>
     <property>
       <name/>
@@ -308,6 +453,8 @@
     </property>
     <property>
       <content>{{velocity}}
+#set ($discard = $xwiki.jsx.use('BookVersions.Code.AdministrationMenu'))
+#set ($discard = $xwiki.ssx.use('BookVersions.Code.AdministrationMenu'))
 #set ($bookRef = $services.bookversions.getVersionedCollectionReference($doc.getDocumentReference()))
 #if ($services.security.authorization.hasAccess("edit", $doc.space) &amp;&amp; $xcontext.action == 'view' &amp;&amp; "$!bookRef" != '')
   ## Create references for the nested pages using space array
@@ -414,6 +561,19 @@
         #end
         &lt;/dd&gt;
         #end
+        #if ($isVersionedContent)
+          #set ($setterURL = $xwiki.getDocument('BookVersions.Code.StatusSetterScript').getURL())
+          &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.statusLable')&lt;/dt&gt;
+          &lt;dd&gt;
+            &lt;ul&gt;
+              &lt;li&gt;
+                &lt;div id='statusProperty'&gt;$doc.display('status','edit')&lt;/div&gt;
+                &lt;input id='crtDoc' type='hidden' value="$escapetool.url($doc)"&gt;
+                &lt;input id='setterURL' type='hidden' value="$!{setterURL}"&gt;
+              &lt;/li&gt;
+            &lt;/ul&gt;
+          &lt;/dd&gt;
+        #end
         &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.publishLable')&lt;/dt&gt;
         &lt;dd&gt;
           &lt;ul&gt;
@@ -430,7 +590,6 @@
 #end
 
 ##Handle switch version/unversion action
-#set ($discard = $xwiki.jsx.use('BookVersions.Code.AdministrationMenu'))
 #if("$!{request.switchUnversonedAction}" != '')
   #if("${request.switchUnversonedAction}" == "unversion")
     ## Handle unversion

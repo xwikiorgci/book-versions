@@ -542,6 +542,17 @@ document.addEventListener('DOMContentLoaded', function() {
     * [[$xwiki.getDocument($result).title&gt;&gt;$result]]
   #end
 #end
+
+#if ($type == "Versions")
+== Status ==
+
+{{liveData
+  id="statuses"
+  properties="doc.title,doc.name,status,doc.creationDate,doc.date"
+  source="liveTable"
+  sourceParameters="className=BookVersions.Code.BookVersionedContentClass&amp;translationPrefix=BookVersions.versions.LD."
+/}}
+#end
 {{/velocity}}</code>
     </property>
     <property>

@@ -89,6 +89,7 @@ BookVersions.adminMenu.removePageFromVariant=Unlink page from variant [{0}]
 BookVersions.adminMenu.publishLable=Publishing
 BookVersions.navMenu.convertToUnversioned=Convert to unversioned
 BookVersions.navMenu.convertToVersioned=Convert to versioned
+BookVersions.adminMenu.statusLable=Status
 BookVersions.adminMenu.publish=Publish current version
 
 # Admin live data values
@@ -107,7 +108,15 @@ BookVersions.variants.showPagesForVariant=Show linked pages for variant:
 rendering.macro.includeLibrary.name=Include Library
 rendering.macro.includeLibrary.description=Include content from a versioned library
 rendering.macro.includeLibrary.parameter.keyReference.name=Library key
-rendering.macro.includeLibrary.parameter.keyReference.description=The key of a library to get the content from</content>
+rendering.macro.includeLibrary.parameter.keyReference.description=The key of a library to get the content from
+
+# Versions Admin UI
+BookVersions.versions.LD.status=Status
+BookVersions.versions.LD.doc.date=Last edit
+BookVersions.versions.LD.doc.name=Version
+BookVersions.versions.LD.doc.title=Page title
+BookVersions.versions.LD.doc.creationDate=Creation date
+BookVersions.versions.LD.emptyvalue=</content>
   <object>
     <name>BookVersions.Code.Translations</name>
     <number>0</number>
