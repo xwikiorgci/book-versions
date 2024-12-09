@@ -559,6 +559,10 @@ document.addEventListener('DOMContentLoaded', function() {
         {
           "id": "doc.location",
           "visible": false
+        },
+        {
+          "id": "doc.name",
+          "displayer": "text"
         }
       ]
     }
