@@ -104,6 +104,7 @@ BookVersions.navMenu.convertToUnversioned=Convert to unversioned
 BookVersions.navMenu.convertToVersioned=Convert to versioned
 BookVersions.adminMenu.statusLable=Status
 BookVersions.adminMenu.publish=Publish current version
+BookVersions.adminMenu.librariesText=The following libraries are configured to be used in the current book. To edit the configuration, go to the Versions administration page of the book and edit the version pages.
 
 # Admin live data values
 BookVersions.adminLD.version=Version
