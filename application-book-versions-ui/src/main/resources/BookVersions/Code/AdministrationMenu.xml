@@ -537,7 +537,7 @@
             &lt;/li&gt;
           &lt;/ul&gt;
         #if("$!selectedVersion" != '' &amp;&amp; ($isVersionedContent || $isVersionedPage))
-          #set ($msgCreateVerisonName = $services.bookversions.getVersionName($services.model.resolveDocument($selectedVersion)))
+          #set ($msgCreateVerisonName = $xwiki.getDocument($services.model.resolveDocument($selectedVersion)).getTitle())
           #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($docRef, $selectedVersion))
           #if (!$versionedContentReference || !$xwiki.exists($versionedContentReference))
             ## No versioned content for the selected version Add the option to create it.
