@@ -606,10 +606,6 @@
 ##
 #macro(initializeCommonVariables)
   #set ($debuglogger = $services.logging.getLogger('BookVersions.NavigationMenu'))
-  ## Do nothing if delete action
-  #if ($xcontext.action == 'delete')
-    #stop
-  #end
   #set ($docRef = $doc.getDocumentReference())
   #set ($collectionRef = $services.bookversions.getVersionedCollectionReference($docRef))
   #set ($isVersionedPage = $services.bookversions.isVersionedPage($docRef))
