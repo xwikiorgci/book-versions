@@ -116,6 +116,27 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Check if the given document is marked as deleted.
+     * @param documentReference The document reference
+     * @return True if the document is marked as deleted
+     * @throws XWikiException could occur if getDocument has an issue
+     */
+    public boolean isMarkedDeleted(DocumentReference documentReference) throws XWikiException
+    {
+        return bookVersionsManagerProvider.get().isMarkedDeleted(documentReference);
+    }
+
+    /**
+     * Check if the given document is marked as deleted.
+     * @param document The document
+     * @return True if the document is marked as deleted
+     */
+    public boolean isMarkedDeleted(XWikiDocument document)
+    {
+        return bookVersionsManagerProvider.get().isMarkedDeleted(document);
+    }
+
+    /**
      * Check if the given document is a versioned content one.
      * 
      * @param document The XWiki document.
@@ -467,5 +488,15 @@ public class BookVersionsScriptService implements ScriptService
         DocumentReference keyReference) throws XWikiException, QueryException
     {
         return bookVersionsManagerProvider.get().getLinkedLibraryContentReference(bookReference, keyReference);
+    }
+
+    /**
+     * Switch the document between "Marked as Deleted" or not.
+     * @param documentReference The document reference
+     * @throws XWikiException could occur if getDocument, newXObject or save have an issue
+     */
+    public void switchDeletedMark(DocumentReference documentReference) throws XWikiException
+    {
+        bookVersionsManagerProvider.get().switchDeletedMark(documentReference);
     }
 }

@@ -128,6 +128,7 @@
       <code>require(['jquery', 'xwiki-selectize'], function($) {
   const convertToUnversionedLink = $('#convert-to-unversioned');
   const convertToVersionedLink = $('#convert-to-versioned');
+  const switchDeletedLink = $('#switch-as-deleted');
 
   // Create a reusable function to handle POST and redirect
   function handleSwitchUnversionAction(action) {
@@ -168,6 +169,19 @@
   convertToVersionedLink.on('click', function(e) {
     e.preventDefault();
     handleSwitchUnversionAction('version');
+  });
+
+  switchDeletedLink.on('click', function(e) {
+    e.preventDefault();
+    fetch(new URL(window.location.origin+'/'+XWiki.webapppath+XWiki.servletpath+"view/BookVersions/Code/SwitchDeletedMark" + '?form_token=' + document.documentElement.dataset.xwikiFormToken + '&amp;pageReference=' + encodeURIComponent(XWiki.Model.serialize( XWiki.currentDocument.documentReference))), {
+      method: 'post'
+    })
+    .then(() =&gt; {
+      window.location.reload();
+    })
+    .catch(err =&gt; {
+      console.log(err);
+    });
   });
 
   // Add handler for status changes
@@ -473,6 +487,8 @@
   #set ($isUnVersionedPage = $services.bookversions.isPage($docRef) &amp;&amp; !$services.bookversions.isVersionedPage($docRef))
   ## Check if the document is a versioned content one
   #set ($isVersionedContent = $services.bookversions.isVersionedContent($docRef))
+  ## Check if the document is marked as deleted
+  #set ($isMarkedDeleted = $services.bookversions.isMarkedDeleted($docRef))
   ## Get the current selected version
   #set ($selectedVersion = $services.bookversions.getSelectedVersion($docRef))
   {{html}}
@@ -559,6 +575,35 @@
             &lt;/li&gt;
           &lt;/ul&gt;
         #end
+          &lt;ul&gt;
+            &lt;li&gt;
+              &lt;a id="switch-as-deleted" href="#" data-page="$doc"&gt;
+                #if($isMarkedDeleted)
+                  $services.localization.render('BookVersions.navMenu.unmarkDeleted')
+                #else
+                  $services.localization.render('BookVersions.navMenu.markDeleted')
+                #end
+              &lt;/a&gt;
+            &lt;/li&gt;
+            #if($isVersionedContent)
+              &lt;li&gt;
+                &lt;a href="$xwiki.getURL($docRef, 'delete', '')"&gt;
+                  $services.localization.render('BookVersions.navMenu.deleteVersion')
+                &lt;/a&gt;
+              &lt;/li&gt;
+              &lt;li&gt;
+                &lt;a href="$xwiki.getURL($doc.getParent(), 'delete', '')"&gt;
+                  $services.localization.render('BookVersions.navMenu.deleteAllVersions')
+                &lt;/a&gt;
+              &lt;/li&gt;
+            #elseif($isUnVersionedPage)
+              &lt;li&gt;
+                &lt;a href="$xwiki.getURL($docRef, 'delete', '')"&gt;
+                  $services.localization.render('BookVersions.navMenu.deletePage')
+                &lt;/a&gt;
+              &lt;/li&gt;
+            #end
+          &lt;/ul&gt;
         &lt;/dd&gt;
         #end
         &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.publishLable')&lt;/dt&gt;

@@ -182,6 +182,21 @@ public interface BookVersionsManager
         throws QueryException, XWikiException;
 
     /**
+     * Check if the given document is marked as deleted.
+     * @param documentReference The document reference
+     * @return True if the document is marked as deleted
+     * @throws XWikiException could occur if getDocument has an issue
+     */
+    boolean isMarkedDeleted(DocumentReference documentReference) throws XWikiException;
+
+    /**
+     * Check if the given document is marked as deleted.
+     * @param document The document
+     * @return True if the document is marked as deleted
+     */
+    boolean isMarkedDeleted(XWikiDocument document);
+
+    /**
      * Transform the given name by using the slug name validation.
      *
      * @param name The name to be transformed.
@@ -441,4 +456,11 @@ public interface BookVersionsManager
      */
     DocumentReference getLinkedLibraryContentReference(DocumentReference bookReference, DocumentReference keyReference)
         throws XWikiException, QueryException;
+
+    /**
+     * Switch the document between "Marked as Deleted" or not.
+     * @param documentReference The document reference
+     * @throws XWikiException could occur if getDocument, newXObject or save have an issue
+     */
+    void switchDeletedMark(DocumentReference documentReference) throws XWikiException;
 }

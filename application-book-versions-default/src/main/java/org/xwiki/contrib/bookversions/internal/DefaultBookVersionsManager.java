@@ -213,6 +213,24 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public boolean isMarkedDeleted(DocumentReference documentReference) throws XWikiException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+
+        return isMarkedDeleted(xcontext.getWiki().getDocument(documentReference, xcontext));
+    }
+
+    @Override
+    public boolean isMarkedDeleted(XWikiDocument document)
+    {
+        if (document.getXObject(BookVersionsConstants.MARKEDDELETED_CLASS_REFERENCE) != null)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public String transformUsingSlugValidation(String name)
     {
         EntityNameValidation modelValidationScriptService = this.slugEntityNameValidationProvider.get();
@@ -868,6 +886,24 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
         }
         return null;
+    }
+
+    @Override
+    public void switchDeletedMark(DocumentReference documentReference) throws XWikiException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+        XWiki xwiki = xcontext.getWiki();
+
+        XWikiDocument document = xwiki.getDocument(documentReference, xcontext).clone();
+
+        if (isMarkedDeleted(document)) {
+            BaseObject object = document.getXObject(BookVersionsConstants.MARKEDDELETED_CLASS_REFERENCE);
+            document.removeXObject(object);
+            xwiki.saveDocument(document,"Unmarked document as \"Deleted\"",xcontext);
+        } else {
+            document.newXObject(BookVersionsConstants.MARKEDDELETED_CLASS_REFERENCE,xcontext);
+            xwiki.saveDocument(document,"Marked document as \"Deleted\"",xcontext);
+        }
     }
 
     /**

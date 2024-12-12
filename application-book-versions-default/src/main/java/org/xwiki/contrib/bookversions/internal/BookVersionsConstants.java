@@ -80,6 +80,12 @@ public interface BookVersionsConstants
         new EntityReference("LibraryReferenceClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
+     * The reference of the library reference class.
+     */
+    EntityReference MARKEDDELETED_CLASS_REFERENCE =
+        new EntityReference("DeletedContentClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
      * The unversioned property of a book page.
      */
     String BOOKPAGE_PROP_UNVERSIONED = "unversioned";

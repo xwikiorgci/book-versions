@@ -51,6 +51,8 @@ BookVersions.Code.LibraryReferenceClass_libraryVersionReference_=
 BookVersions.Code.VersionClassSheet.versionConfiguration=Version Configuration
 BookVersions.Code.VersionClassSheet.librariesConfiguration=Libraries Configuration
 BookVersions.Code.VersionClassSheet.newConfiguration=New configuration
+BookVersions.Code.DeletedContentClassSheet.titlePrefix=DELETED: 
+BookVersions.Code.DeletedContentClassSheet.warning=This content has been marked as deleted. It won't be published.
 
 # Creation templates
 BookVersions.template.newBook=Create a new book.
@@ -104,6 +106,11 @@ BookVersions.navMenu.convertToUnversioned=Convert to unversioned
 BookVersions.navMenu.convertToVersioned=Convert to versioned
 BookVersions.adminMenu.statusLable=Status
 BookVersions.adminMenu.publish=Publish current version
+BookVersions.navMenu.markDeleted=Mark as deleted
+BookVersions.navMenu.unmarkDeleted=Unmark as deleted
+BookVersions.navMenu.deleteVersion=Delete this version
+BookVersions.navMenu.deleteAllVersions=Delete all versions
+BookVersions.navMenu.deletePage=Delete this page
 BookVersions.adminMenu.librariesText=The following libraries are configured to be used in the current book. To edit the configuration, go to the Versions administration page of the book and edit the version pages.
 
 # Admin live data values
