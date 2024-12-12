@@ -561,19 +561,6 @@
         #end
         &lt;/dd&gt;
         #end
-        #if ($isVersionedContent)
-          #set ($setterURL = $xwiki.getDocument('BookVersions.Code.StatusSetterScript').getURL())
-          &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.statusLable')&lt;/dt&gt;
-          &lt;dd&gt;
-            &lt;ul&gt;
-              &lt;li&gt;
-                &lt;div id='statusProperty'&gt;$doc.display('status','edit')&lt;/div&gt;
-                &lt;input id='crtDoc' type='hidden' value="$escapetool.url($doc)"&gt;
-                &lt;input id='setterURL' type='hidden' value="$!{setterURL}"&gt;
-              &lt;/li&gt;
-            &lt;/ul&gt;
-          &lt;/dd&gt;
-        #end
         &lt;dt class="dropdown-header"&gt;$services.localization.render('BookVersions.adminMenu.publishLable')&lt;/dt&gt;
         &lt;dd&gt;
           &lt;ul&gt;

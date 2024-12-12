@@ -415,22 +415,22 @@
     </property>
     <property>
       <code>/* Set up grid for the entire document-info section */
-.document-info {
+.book-info {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
 }
 
 /* Form containers specific styling */
-.document-info &gt; .formContainer {
+.book-info &gt; .formContainer {
   display: flex;
   flex-direction: column;
   min-height: 80px;
 }
 
 /* Ensure document title and last modification span full width */
-.document-info &gt; #document-title,
-.document-info &gt; .xdocLastModification {
+.book-info &gt; #document-title,
+.book-info &gt; .xdocLastModification {
   grid-column: 1 / -1;
 }
 
@@ -869,12 +869,15 @@
 ##
 #macro(renderSelectorsHTML)
   {{html}}
-  &lt;div class="document-info"&gt;
+  &lt;div class="book-info"&gt;
     #if ($versions.size() &gt; 0)
       #renderVersionSelector()
     #end
     #if ($variants.size() &gt; 0)
       #renderVariantSelector()
+    #end
+    #if ($isVersionedContent)
+      #displayStatusProperty()
     #end
   &lt;/div&gt;
   {{/html}}
@@ -937,6 +940,35 @@
         $services.localization.render($variantStateMessageKey, [$variantTitle])
       &lt;/p&gt;
     &lt;/form&gt;
+  &lt;/div&gt;
+#end
+
+##
+## Display status property
+##
+#macro(displayStatusProperty)
+  #set ($xobject = $doc.getObject('BookVersions.Code.BookVersionedContentClass'))
+  #set ($statusProp = $xobject.getProperty('status').getPropertyClass())
+  #set ($xclass = $xobject.xWikiClass)
+  #set ($discard = $doc.use($xobject))
+  #set ($editing = $xcontext.action == 'edit')
+  &lt;div class="formContainer"&gt;
+    &lt;div class="xform"&gt;
+      &lt;dl&gt;
+        &lt;dt #if (!$editing &amp;&amp; $hasEdit)
+            class="editableProperty"
+            #set ($xobjectPropertyReference = $xobject.getPropertyReference($statusProp.name))
+            data-property="$escapetool.xml($services.model.serialize($xobjectPropertyReference))"
+            data-property-type="object"#end&gt;
+          #set ($propertyId = "${xclass.name}_${xobject.number}_$statusProp.name")
+          &lt;label#if ($editing) for="$escapetool.xml($propertyId)"#end&gt;
+            $escapetool.xml($statusProp.translatedPrettyName)
+          &lt;/label&gt;
+          &lt;span class="xHint"&gt;$!escapetool.xml($services.localization.render($statusProp.hint))&lt;/span&gt;
+        &lt;/dt&gt;
+        &lt;dd&gt;$doc.display($statusProp.name)&lt;/dd&gt;
+      &lt;/dl&gt;
+    &lt;/div&gt;
   &lt;/div&gt;
 #end
 {{/velocity}}
