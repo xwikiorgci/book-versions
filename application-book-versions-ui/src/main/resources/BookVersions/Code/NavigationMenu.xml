@@ -977,6 +977,10 @@
 ##
 ## Main execution flow
 ##
+## Do nothing if not in the view action
+#if ($xcontext.action == 'view')
+  #stop
+#end
 ## Initialize all required variables
 #initializeCommonVariables()
 #initializeVersionVariables()
