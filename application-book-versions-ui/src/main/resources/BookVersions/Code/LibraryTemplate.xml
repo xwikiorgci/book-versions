@@ -40,6 +40,40 @@
   <object>
     <name>BookVersions.Code.LibraryTemplate</name>
     <number>0</number>
+    <className>BookVersions.Code.BookPageClass</className>
+    <guid>ff219686-c071-4a23-ab7b-593bcd6fbd02</guid>
+    <class>
+      <name>BookVersions.Code.BookPageClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <unversioned>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <hint/>
+        <name>unversioned</name>
+        <number>2</number>
+        <prettyName>unversioned</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </unversioned>
+    </class>
+    <property>
+      <unversioned>1</unversioned>
+    </property>
+  </object>
+  <object>
+    <name>BookVersions.Code.LibraryTemplate</name>
+    <number>0</number>
     <className>BookVersions.Code.LibraryClass</className>
     <guid>167e963f-7001-4ee1-844b-b55edb68201b</guid>
     <class>

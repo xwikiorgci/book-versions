@@ -91,4 +91,38 @@
       <publishedBookRefs/>
     </property>
   </object>
+  <object>
+    <name>BookVersions.Code.BookTemplate</name>
+    <number>0</number>
+    <className>BookVersions.Code.BookPageClass</className>
+    <guid>c33c5b45-e78c-4aed-9002-168233b8d896</guid>
+    <class>
+      <name>BookVersions.Code.BookPageClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <unversioned>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <hint/>
+        <name>unversioned</name>
+        <number>2</number>
+        <prettyName>unversioned</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </unversioned>
+    </class>
+    <property>
+      <unversioned>1</unversioned>
+    </property>
+  </object>
 </xwikidoc>

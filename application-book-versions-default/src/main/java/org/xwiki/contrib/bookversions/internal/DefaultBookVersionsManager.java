@@ -528,7 +528,17 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 // Check if the parent is a space.
                 SpaceReference parentSpaceReference = getSpaceReference(entityReference);
 
-                // If so and but it's the last space of the given reference,
+                // Check if the parent itself is a collection
+                DocumentReference parentDocumentReference = null;
+                if (parentSpaceReference != null) {
+                    parentDocumentReference = new DocumentReference(
+                        this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE, parentSpaceReference);
+                    if (isBook(parentDocumentReference) || isLibrary(parentDocumentReference)) {
+                        return parentDocumentReference;
+                    }
+                }
+
+                // If the parent is a space, but it's the last space of the given reference,
                 // then go upper with one level, to the parent of the parent to avoid Stack Overflow.
                 if (parentSpaceReference != null
                     && parentSpaceReference.equals(documentReference.getLastSpaceReference())) {
@@ -536,7 +546,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 }
 
                 // Get the document reference of the root for the parent space.
-                DocumentReference parentDocumentReference = parentSpaceReference != null ? new DocumentReference(
+                parentDocumentReference = parentSpaceReference != null ? new DocumentReference(
                     this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE, parentSpaceReference) : null;
 
                 // Verify recursively if this document is storing the collection definition.
