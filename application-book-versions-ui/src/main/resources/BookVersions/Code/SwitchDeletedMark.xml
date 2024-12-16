@@ -37,14 +37,18 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
+#set ($debuglogger = $services.logging.getLogger('BookVersions.SwitchDeletedMark'))
+#set ($discard = $debuglogger.debug("START Switch Deleted Mark"))
 #if ($services.csrf.isTokenValid($!request.form_token))
   #set ($pageReference = $!request.pageReference)
   #set ($isVersionedContent = $services.bookversions.isVersionedContent($pageReference))
-  #set ($isUnversionedContent = !$isVersionedContent &amp;&amp; !$services.bookversions.isPage($pageReference))
+  #set ($isUnversionedPage = $services.bookversions.isPage($pageReference) &amp;&amp; !$services.bookversions.isVersionedPage($pageReference))
   #set ($hasAccess = $services.security.authorization.hasAccess('edit', $bookReference))
-  #if (($isVersionedContent || $isUnversionedContent) &amp;&amp;
+  #set ($discard = $debuglogger.debug("pageReference [$pageReference], isVersionedContent [$isVersionedPage], isUnversionedPage [$isUnversionedPage], hasAccess [$isUnexistingConhasAccesstent]"))
+  #if (($isVersionedContent || $isUnversionedPage) &amp;&amp;
         $services.security.authorization.hasAccess('edit', $bookReference))
     $services.bookversions.switchDeletedMark($pageReference)
+      #set ($discard = $debuglogger.debug("switch required to API"))
   #end
 #end
 {{/velocity}}
