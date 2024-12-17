@@ -301,7 +301,7 @@
     id="bookVersions"
     properties="${LDproperties}"
     source="liveTable"
-    sourceParameters="className=BookVersions.Code.${typeClass}&amp;translationPrefix=platform.index."
+    sourceParameters="className=BookVersions.Code.${typeClass}&amp;translationPrefix=BookVersions.adminLD."
     sort="doc.creationDate:desc"
     filters="doc.location=${LDfilter}"
   }}{
@@ -312,39 +312,13 @@
           "visible": false
         },
         {
-          "id": "doc.title",
-          "name": "Title"
-        },
-        {
-          "id": "libraryReference",
-          "name": "Library"
-        },
-        {
-          "id": "libraryVersionReference",
-          "name": "Library Version"
-        },
-        {
           "id": "description",
-          "name": "Description",
           "displayer": {
             "id": "html"
           }
         },
         {
-          "id": "doc.creationDate",
-          "name": "Created On"
-        },
-        {
-          "id": "doc.date",
-          "name": "Modified On"
-        },
-        {
-          "id": "precedingVersionReference",
-          "name": "Previous Version"
-        },
-        {
           "id": "_actions",
-          "name": "Actions",
           "sortable": false,
           "filterable": false,
           "displayer": {
@@ -518,7 +492,7 @@
     <property>
       <description>The type of UI to be inserted into the template.
 
-Available options: Versions, Variants and Libraries</description>
+Available options: Versions, Variants, Libraries and PublicationConfiguration</description>
     </property>
     <property>
       <mandatory>1</mandatory>

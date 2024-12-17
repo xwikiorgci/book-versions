@@ -134,7 +134,16 @@ BookVersions.adminMenu.librariesText=The following libraries are configured to b
 # Admin live data values
 BookVersions.adminLD.version=Version
 BookVersions.adminLD.variant=Variant
-BookVersions.adminLD.library=Librarie
+BookVersions.adminLD.library=Library
+BookVersions.adminLD.emptyvalue=
+BookVersions.adminLD.doc.title=Title
+BookVersions.adminLD.doc.creationDate=Creation date
+BookVersions.adminLD.doc.date=Last edit
+BookVersions.adminLD.doc.libraryReference=Library
+BookVersions.adminLD.doc.libraryVersionReference=Library Version
+BookVersions.adminLD.doc.precedingVersionReference=Previous Version
+BookVersions.adminLD.description=Description
+BookVersions.adminLD._actions=Actions
 
 # Variants linked pages Admin UI
 BookVersions.variants.linkedPagesListHeading=Pages linked with selected variant
