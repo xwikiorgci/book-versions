@@ -49,18 +49,28 @@ BookVersions.Code.LibraryReferenceClass_libraryVersionReference_=
 
 # Publication Configuration Class
 BookVersions.Code.PublicationConfigurationClass_source=Source page*
+BookVersions.Code.PublicationConfigurationClass_source_hint=The top page of the tree to be published, usually the top page of the book/library. (Mandatory)
 BookVersions.Code.PublicationConfigurationClass_destinationSpace=Destination space*
+BookVersions.Code.PublicationConfigurationClass_destinationSpace_hint=The space where the content will be published. (Mandatory)
 BookVersions.Code.PublicationConfigurationClass_version=Version*
+BookVersions.Code.PublicationConfigurationClass_version_hint=The version to publish. (Mandatory)
 BookVersions.Code.PublicationConfigurationClass_variant=Variant
+BookVersions.Code.PublicationConfigurationClass_variant_hint=The variant to publish.
 BookVersions.Code.PublicationConfigurationClass_language=Language
-BookVersions.Code.PublicationConfigurationClass_createSubSpace=Automatically create publication sub-space
+BookVersions.Code.PublicationConfigurationClass_language_hint=The language to publish.
+BookVersions.Code.PublicationConfigurationClass_createSubSpace=Create publication sub-space
+BookVersions.Code.PublicationConfigurationClass_createSubSpace_hint=Automatically create a sub-space for the publication in the destination space. This allows publishing different versions/variants/... of the content in the same destination.
 BookVersions.Code.PublicationConfigurationClass_publishOnlyComplete=Publish only "Complete" pages
-BookVersions.Code.PublicationConfigurationClass_publishPageOrder=Publish page order from the source
+BookVersions.Code.PublicationConfigurationClass_publishOnlyComplete_hint=Publish only the pages with the status "Complete". If unchecked, all statuses are published.
+BookVersions.Code.PublicationConfigurationClass_publishPageOrder=Publish page order
+BookVersions.Code.PublicationConfigurationClass_publishPageOrder_hint=Publish the page order from the source, which might overwrite the target ordering. If unchecked, the target ordering is left untouched.
 BookVersions.Code.PublicationConfigurationClass_publishBehaviour=Publication behaviour
-BookVersions.Code.PublicationConfigurationClass_publishBehaviour_cancel=Don't publish
-BookVersions.Code.PublicationConfigurationClass_publishBehaviour_update=Update destination
+BookVersions.Code.PublicationConfigurationClass_publishBehaviour_hint=Which behaviour to adopt when the target space is already populated. "Cancel" for not publishing ; "Update" to publish update existing pages, add new pages from source but leave page deleted from source in the destination. Pages marked as deleted in source will be removed from destination. ; "Re-publish" to reset the destination space.
+BookVersions.Code.PublicationConfigurationClass_publishBehaviour_cancel=Cancel
+BookVersions.Code.PublicationConfigurationClass_publishBehaviour_update=Update
 BookVersions.Code.PublicationConfigurationClass_publishBehaviour_republish=Re-publish
 BookVersions.Code.PublicationConfigurationClass_description=Description
+BookVersions.Code.PublicationConfigurationClass_description_hint=The description of the configuration
 
 # Sheet
 BookVersions.Code.VersionClassSheet.versionConfiguration=Version Configuration
