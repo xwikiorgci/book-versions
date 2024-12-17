@@ -265,6 +265,11 @@
     #set ($typeClass = "VersionClass")
     #set ($LDproperties = "doc.location,doc.title,description,doc.creationDate,precedingVersionReference,_actions")
     #set ($LDfilter = $doc.space)
+#elseif ($type == "PublicationConfiguration")
+    #set ($typeSingular = $type)
+    #set ($typeClass = "PublicationConfigurationClass")
+    #set ($LDproperties = "doc.location,doc.title,description,doc.date,_actions")
+    #set ($LDfilter = $doc.space)
 #end
 #if ($type != "Libraries")
   #set ($createFormTranslation = $services.localization.render("BookVersions.creationForm.new${typeSingular}"))
@@ -328,6 +333,10 @@
         {
           "id": "doc.creationDate",
           "name": "Created On"
+        },
+        {
+          "id": "doc.date",
+          "name": "Modified On"
         },
         {
           "id": "precedingVersionReference",

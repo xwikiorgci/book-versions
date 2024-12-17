@@ -90,6 +90,7 @@
 ## Ensure Versions, Variants and Libraries WebHome pages exist in the current book space
 #set ($currentSpace = $doc.space)
 #set ($versionsFullName = $escapetool.xml("${currentSpace}.Versions.WebHome"))
+#set ($publicationFullName = $escapetool.xml("${currentSpace}.Publication.WebHome"))
 #if (!$isLibrary)
   ## Libraries don't use Variants and Libraries
   #set ($variantsFullName = $escapetool.xml("${currentSpace}.Variants.WebHome"))
@@ -101,6 +102,13 @@
     #set ($versionsDoc = $xwiki.getDocument($versionsFullName))
     #set ($discard = $versionsDoc.setContent('{{admin-interface type="Versions" /}}'))
     #set ($discard = $versionsDoc.save())
+#end
+
+## Create Publication WebHome if it doesn't exist
+#if (!$xwiki.exists($publicationFullName))
+    #set ($publicationDoc = $xwiki.getDocument($publicationFullName))
+    #set ($discard = $publicationDoc.setContent('{{admin-interface type="PublicationConfiguration" /}}'))
+    #set ($discard = $publicationDoc.save())
 #end
 
 #if (!$isLibrary)
