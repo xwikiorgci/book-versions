@@ -90,6 +90,7 @@
 ## Ensure Versions, Variants and Libraries WebHome pages exist in the current book space
 #set ($currentSpace = $doc.space)
 #set ($versionsFullName = $escapetool.xml("${currentSpace}.Versions.WebHome"))
+#set ($languagesFullName = $escapetool.xml("${currentSpace}.Languages.WebHome"))
 #set ($publicationFullName = $escapetool.xml("${currentSpace}.Publication.WebHome"))
 #if (!$isLibrary)
   ## Libraries don't use Variants and Libraries
@@ -101,6 +102,14 @@
 #if (!$xwiki.exists($versionsFullName))
     #set ($versionsDoc = $xwiki.getDocument($versionsFullName))
     #set ($discard = $versionsDoc.setContent('{{admin-interface type="Versions" /}}'))
+    #set ($discard = $versionsDoc.save())
+#end
+
+## Create Languages WebHome if it doesn't exist
+#if (!$xwiki.exists($languagesFullName))
+    #set ($versionsDoc = $xwiki.getDocument($languagesFullName))
+    #set ($discard = $versionsDoc.setContent('{{admin-interface type="Languages" /}}'))
+    #set ($discard = $versionsDoc.newObject('BookVersions.Code.MultilingualClass'))
     #set ($discard = $versionsDoc.save())
 #end
 

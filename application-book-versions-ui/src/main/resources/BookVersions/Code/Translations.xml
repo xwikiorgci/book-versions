@@ -119,6 +119,8 @@ BookVersions.navMenu.contentForVariant=
 BookVersions.navMenu.pageIsNotAssociated=Page not linked to variant [{0}].
 BookVersions.navMenu.pageAvailableForAll=Page is not restricted to a variant.
 BookVersions.navMenu.associateVariantWithLink=Link page to variant [{0}]
+BookVersions.navMenu.languageSelect=Language
+BookVersions.navMenu.currentLanguage=
 
 # Administration menu
 BookVersions.adminMenu.title=Versions
@@ -126,6 +128,7 @@ BookVersions.adminMenu.manage=Manage
 BookVersions.adminMenu.manageVersions=Versions
 BookVersions.adminMenu.manageVariants=Variants
 BookVersions.adminMenu.manageLibraries=Libraries
+BookVersions.adminMenu.manageLanguages=Languages
 BookVersions.adminMenu.pageActions=Page Actions
 BookVersions.adminMenu.addPageToVariant=Link page to variant [{0}]
 BookVersions.adminMenu.removePageFromVariant=Unlink page from variant [{0}]
@@ -174,7 +177,10 @@ BookVersions.versions.LD.doc.date=Last edit
 BookVersions.versions.LD.doc.name=Version
 BookVersions.versions.LD.doc.title=Page title
 BookVersions.versions.LD.doc.creationDate=Creation date
-BookVersions.versions.LD.emptyvalue=</content>
+BookVersions.versions.LD.emptyvalue=
+
+# Multilingual
+BookVersions.languages.warning=There is no translation for the selected language.</content>
   <object>
     <name>BookVersions.Code.Translations</name>
     <number>0</number>

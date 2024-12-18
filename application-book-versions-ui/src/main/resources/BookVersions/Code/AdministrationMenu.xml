@@ -475,11 +475,13 @@
   #set ($versionsRef = $services.model.resolveDocument('Versions', $bookRef.parent))
   #set ($variantsRef = $services.model.resolveDocument('Variants', $bookRef.parent))
   #set ($librariesRef = $services.model.resolveDocument('Libraries', $bookRef.parent))
+  #set ($languagesRef = $services.model.resolveDocument('Languages', $bookRef.parent))
   #set ($publicationRef = $services.model.resolveDocument('Publication', $bookRef.parent))
   ## Create URLs using xwiki URL service
   #set ($versionsUrl = $xwiki.getURL($versionsRef))
   #set ($variantsUrl = $xwiki.getURL($variantsRef))
   #set ($librariesUrl = $xwiki.getURL($librariesRef))
+  #set ($languagesUrl = $xwiki.getURL($languagesRef))
   #set ($publicationUrl = $xwiki.getURL($publicationRef))
   #set ($currentSpace = $escapetool.xml($doc.space))
   #set ($docRef = $doc.getDocumentReference())
@@ -517,6 +519,11 @@
               &lt;li&gt;
                 &lt;a href="$librariesUrl"&gt;
                   $services.localization.render('BookVersions.adminMenu.manageLibraries')
+                &lt;/a&gt;
+              &lt;/li&gt;
+              &lt;li&gt;
+                &lt;a href="$languagesUrl"&gt;
+                  $services.localization.render('BookVersions.adminMenu.manageLanguages')
                 &lt;/a&gt;
               &lt;/li&gt;
             #end
