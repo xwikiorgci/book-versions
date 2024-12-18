@@ -310,6 +310,118 @@
   </object>
   <object>
     <name>BookVersions.Code.NavigationMenu</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>de80df4b-0f01-4fb1-8f64-339b57ba0141</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <defaultValue>long</defaultValue>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <contenttype>PureText</contenttype>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <restricted>0</restricted>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText>forbidden</freeText>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>require(['jquery', 'xwiki-selectize'], function($) {
+  // Get the language selector elements
+  const languageSelect = $('#collectionLanguage');
+  const form = $('#changeLanguageStatus');
+  const selectedLanguageInput = $('#selectedLanguageInput');
+
+  // Handle language select change
+  languageSelect.on("change", function() {
+    const selectedLanguage = $(this).val();
+    selectedLanguageInput.val(selectedLanguage);
+    form.submit();
+  });
+});</code>
+    </property>
+    <property>
+      <name>Languages</name>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use/>
+    </property>
+  </object>
+  <object>
+    <name>BookVersions.Code.NavigationMenu</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
     <guid>a644f6c1-ea9c-4a15-972b-9b0255417e27</guid>
@@ -417,7 +529,7 @@
       <code>/* Set up grid for the entire document-info section */
 .book-info {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 1rem;
 }
 
@@ -450,7 +562,8 @@
 
 /* Select elements */
 #collectionVersion,
-#collectionVariant {
+#collectionVariant,
+#collectionLanguage {
   width: 100%;
   max-width: 200px;
 }
@@ -613,6 +726,7 @@
   #set ($isUnversionedPage = $services.bookversions.isPage($docRef) &amp;&amp; !$services.bookversions.isVersionedPage($docRef))
   #set ($contentRef = $services.model.resolveDocument($services.model.serialize($docRef.getParent(),'local')))
   #set ($isUnexistingContent = !$xwiki.exists($doc) &amp;&amp; $services.bookversions.isPossibleVersionedContentReference($collectionRef,$contentRef))
+  #set ($bookRef = $services.model.resolveDocument($services.model.serialize($collectionRef,'local')))
 #end
 
 ##
@@ -633,6 +747,44 @@
     #set ($discard = $services.bookversions.setSelectedVariant($collectionRef, $variants[0]))
   #end
   #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
+#end
+
+##
+## Initialize language-related variables
+##
+#macro(initializeLanguageVariables)
+  #set ($languagesRef = $services.model.resolveDocument('Languages', $bookRef.parent))
+  #set ($languagesDoc = $xwiki.getDocument("${languagesRef}.WebHome"))
+  #set ($languagesObj = $languagesDoc.getObject('BookVersions.Code.MultilingualClass'))
+  #if ($languagesObj)
+    #set ($languages = $languagesObj.getProperty('supportedLanguages').getValue())
+  #else
+    #set ($languages = [])
+  #end
+  #set ($selectedLanguage = $services.bookversions.getSelectedLanguage($collectionRef))
+#end
+
+##
+## Handle language selection from request
+##
+#macro(handleLanguageSelection)
+  #if ("$!request.selectedLanguage" != '')
+    #set ($newLanguage = $request.selectedLanguage)
+    $services.bookversions.setSelectedLanguage($collectionRef, $newLanguage)
+    #set ($selectedLanguage = $newLanguage)
+    $response.sendRedirect($xwiki.getURL($doc, $xcontext.action))
+  #end
+#end
+
+##
+## Setup language display variables
+##
+#macro(setupLanguageDisplay)
+  #if ($selectedLanguage)
+    #set ($languageStateMessageKey = 'BookVersions.navMenu.currentLanguage')
+  #else
+    #set ($languageStateMessageKey = 'BookVersions.navMenu.noLanguageSelected')
+  #end
 #end
 
 ##
@@ -823,6 +975,7 @@
   #if ($isVersionedContent || $isVersionedPage)
     #setupVersionDisplay()
     #setupVariantDisplay()
+    #setupLanguageDisplay()
     #renderSelectorsHTML()
   #end
 #end
@@ -875,6 +1028,9 @@
     #end
     #if ($variants.size() &gt; 0)
       #renderVariantSelector()
+    #end
+    #if ($languages.size() &gt; 0)
+      #renderLanguageSelector()
     #end
     #if ($isVersionedContent)
       #displayStatusProperty()
@@ -971,6 +1127,32 @@
     &lt;/div&gt;
   &lt;/div&gt;
 #end
+
+##
+## Render language selector HTML
+##
+#macro(renderLanguageSelector)
+  #if ($languages.size() &gt; 0)
+    &lt;div class="formContainer"&gt;
+      &lt;form class="xformInline" id="changeLanguageStatus" method="post"&gt;
+        &lt;input type="hidden" id="language_form_token" name="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
+        &lt;input type="hidden" name="selectedLanguage" id="selectedLanguageInput" value="$!selectedLanguage"/&gt;
+        &lt;label for="collectionLanguage"&gt;$services.localization.render('BookVersions.navMenu.languageSelect')&lt;/label&gt;
+        &lt;select name="collectionLanguage" id="collectionLanguage"&gt;
+          #foreach($language in $languages)
+            #if ($language)
+              #set ($isSelected = $language &amp;&amp; $selectedLanguage &amp;&amp; $language.equals($selectedLanguage))
+              &lt;option value="$language" #if($isSelected)selected#end&gt;$language&lt;/option&gt;
+            #end
+          #end
+        &lt;/select&gt;
+        &lt;p class="noitems"&gt;
+          $services.localization.render($languageStateMessageKey, [$selectedLanguage])
+        &lt;/p&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  #end
+#end
 {{/velocity}}
 
 {{velocity}}
@@ -985,12 +1167,14 @@
 #initializeCommonVariables()
 #initializeVersionVariables()
 #initializeVariantVariables()
+#initializeLanguageVariables()
 ##
 #set ($discard = $debuglogger.debug("START Navigation menu for [$docRef], inheritedRedirFlag [$inheritedRedirFlag], collectionRef [$collectionRef], isVersionedPage [$isVersionedPage], isVersionedContent [$isVersionedContent], isUnexistingContent [$isUnexistingContent]"))
 ##
-## Handle variant-related actions
+## Handle variant and language-related actions
 #handleVariantActions()
 #handleVariantSelection()
+#handleLanguageSelection()
 ##
 ## Process version selection and handle redirections if needed
 #if ("$!collectionRef" != '' &amp;&amp; ($versions.size() &gt; 0 || $variants.size() &gt; 0) &amp;&amp; ($isVersionedPage || $isVersionedContent || $isUnexistingContent))

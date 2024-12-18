@@ -346,6 +346,56 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public String getSelectedLanguage(DocumentReference documentReference) throws XWikiException, QueryException
+    {
+        if (documentReference == null) {
+            return null;
+        }
+    
+        Map<String, String> languagesMap = new HashMap<String, String>();
+        XWikiRequest request = getXWikiContext().getRequest();
+        HttpSession session = request.getSession();
+        if (session != null) {
+            languagesMap = (Map<String, String>) session.getAttribute(BookVersionsConstants.SESSION_SELECTEDLANGUAGE);
+    
+            if (languagesMap != null) {
+                Iterator<?> it = languagesMap.entrySet().iterator();
+                DocumentReference versionedCollectionReference = getVersionedCollectionReference(documentReference);
+    
+                while (it.hasNext()) {
+                    Map.Entry<String, String> collectionLanguage = (Map.Entry<String, String>) it.next();
+                    String collectionReference = collectionLanguage.getKey();
+                    if (!collectionReference.isBlank()
+                        && collectionReference.equals(localSerializer.serialize(versionedCollectionReference))) {
+                        return collectionLanguage.getValue();
+                    }
+                }
+            }
+        }
+    
+        return null;
+    }
+    
+    @Override
+    public void setSelectedLanguage(DocumentReference documentReference, String language)
+    {
+        if (documentReference == null) {
+            return;
+        }
+    
+        Map<String, String> languagesMap = new HashMap<String, String>();
+        XWikiRequest request = getXWikiContext().getRequest();
+        HttpSession session = request.getSession();
+        if (session != null) {
+            Object sessionAttribute = session.getAttribute(BookVersionsConstants.SESSION_SELECTEDLANGUAGE);
+            languagesMap = sessionAttribute != null ? (Map<String, String>) sessionAttribute : languagesMap;
+            String collectionReferenceSerialized = localSerializer.serialize(documentReference);
+            languagesMap.put(collectionReferenceSerialized, language);
+            session.setAttribute(BookVersionsConstants.SESSION_SELECTEDLANGUAGE, languagesMap);
+        }
+    }    
+
+    @Override
     public boolean isAParent(DocumentReference spaceReference, DocumentReference nestedReference)
     {
         if (spaceReference != null && nestedReference != null) {

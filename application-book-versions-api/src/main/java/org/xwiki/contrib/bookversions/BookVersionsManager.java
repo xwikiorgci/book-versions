@@ -241,6 +241,24 @@ public interface BookVersionsManager
     void setSelectedVariant(DocumentReference documentReference, String variant);
 
     /**
+     * Get the selected language that is stored in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @return the selected variant.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    String getSelectedLanguage(DocumentReference documentReference) throws XWikiException, QueryException;
+
+    /**
+     * Set the selected language in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference of the collection.
+     * @param language the language to be stored for the given collection.
+     */
+    void setSelectedLanguage(DocumentReference documentReference, String language);
+
+    /**
      * Check if a page is a nested page of another one, recursively.
      * 
      * @param documentReference the reference of the supposed space

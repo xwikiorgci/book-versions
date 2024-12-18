@@ -115,6 +115,7 @@ public class BookVersionsScriptService implements ScriptService
         return bookVersionsManagerProvider.get().isVersionedContent(documentReference);
     }
 
+    
     /**
      * Check if the given document is marked as deleted.
      * @param documentReference The document reference
@@ -221,6 +222,30 @@ public class BookVersionsScriptService implements ScriptService
     public void setSelectedVariant(DocumentReference documentReference, String variant)
     {
         bookVersionsManagerProvider.get().setSelectedVariant(documentReference, variant);
+    }
+
+    /**
+     * Get the selected language that is stored in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @return the selected version.
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    public String getSelectedLanguage(DocumentReference documentReference) throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getSelectedLanguage(documentReference);
+    }
+
+    /**
+     * Set the selected language in the session for the given collection (book / library).
+     * 
+     * @param documentReference the document reference.
+     * @param language the language to be stored for the given collection.
+     */
+    public void setSelectedLanguage(DocumentReference documentReference, String language)
+    {
+        bookVersionsManagerProvider.get().setSelectedLanguage(documentReference, language);
     }
 
     /**

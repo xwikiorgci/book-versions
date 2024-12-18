@@ -126,6 +126,11 @@ public interface BookVersionsConstants
     String SESSION_SELECTEDVARIANT = "BookVersions.selectedVariant";
 
     /**
+     * The selected language that is stored in the session.
+     */
+    String SESSION_SELECTEDLANGUAGE = "BookVersions.selectedLanguage";
+
+    /**
      * The selected version that is stored in the session.
      */
     String VERSION_PROP_PRECEDINGVERSION = "precedingVersionReference";
