@@ -265,7 +265,7 @@
   ## Set translated title object if not present for current language
   #if ("$!{translatedTitle}" != '')
     ## Get all title translation objects
-    #set ($titleObjects = $doc.getObjects('BookVersions.Code.PageTitleTransaltionClass'))
+    #set ($titleObjects = $doc.getObjects('BookVersions.Code.PageTitleTranslationClass'))
     ## Flag to track if we found an object for this language
     #set ($foundObject = false)
     ## If we have existing objects, check if one exists for this language
@@ -283,7 +283,7 @@
 
     ## If no object exists for this language, create a new one
     #if (!$foundObject)
-      #set ($newObj = $doc.newObject('BookVersions.Code.PageTitleTransaltionClass'))
+      #set ($newObj = $doc.newObject('BookVersions.Code.PageTitleTranslationClass'))
       #set ($discard = $newObj.set('language', $contentLanguage))
       #set ($discard = $newObj.set('title', $translatedTitle))
     #end

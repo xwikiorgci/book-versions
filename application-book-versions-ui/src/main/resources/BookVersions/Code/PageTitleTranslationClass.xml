@@ -20,25 +20,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.PageTitleTransaltionClass" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.PageTitleTranslationClass" locale="">
   <web>BookVersions.Code</web>
-  <name>PageTitleTransaltionClass</name>
+  <name>PageTitleTranslationClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>BookVersions.Code.WebHome</parent>
+  <parent>WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>PageTitleTransaltionClass</title>
+  <title>PageTitleTranslationClass</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
   <class>
-    <name>BookVersions.Code.PageTitleTransaltionClass</name>
+    <name>BookVersions.Code.PageTitleTranslationClass</name>
     <customClass/>
     <customMapping/>
     <defaultViewSheet/>
@@ -101,7 +101,7 @@
     </title>
   </class>
   <object>
-    <name>BookVersions.Code.PageTitleTransaltionClass</name>
+    <name>BookVersions.Code.PageTitleTranslationClass</name>
     <number>0</number>
     <className>XWiki.ClassSheetBinding</className>
     <guid>6c1e3ddf-e64f-4ba7-8203-58fc1d3de062</guid>
@@ -145,7 +145,7 @@
     </property>
   </object>
   <object>
-    <name>BookVersions.Code.PageTitleTransaltionClass</name>
+    <name>BookVersions.Code.PageTitleTranslationClass</name>
     <number>0</number>
     <className>XWiki.DocumentSheetBinding</className>
     <guid>2c5f993d-e376-4574-b60d-cc560733f709</guid>
