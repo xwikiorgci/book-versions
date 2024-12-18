@@ -757,6 +757,7 @@
   #set ($languagesDoc = $xwiki.getDocument("${languagesRef}.WebHome"))
   #set ($languagesObj = $languagesDoc.getObject('BookVersions.Code.MultilingualClass'))
   #if ($languagesObj)
+    #set ($multilingualEnabled = $languagesObj.getProperty('enabled').getValue())
     #set ($languages = $languagesObj.getProperty('supportedLanguages').getValue())
   #else
     #set ($languages = [])
@@ -1132,7 +1133,7 @@
 ## Render language selector HTML
 ##
 #macro(renderLanguageSelector)
-  #if ($languages.size() &gt; 0)
+  #if ($multilingualEnabled == 1 &amp;&amp; $languages.size() &gt; 0)
     &lt;div class="formContainer"&gt;
       &lt;form class="xformInline" id="changeLanguageStatus" method="post"&gt;
         &lt;input type="hidden" id="language_form_token" name="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;

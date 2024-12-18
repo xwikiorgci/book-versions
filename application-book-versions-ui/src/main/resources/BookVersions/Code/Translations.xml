@@ -121,7 +121,7 @@ BookVersions.navMenu.pageAvailableForAll=Page is not restricted to a variant.
 BookVersions.navMenu.associateVariantWithLink=Link page to variant [{0}]
 BookVersions.navMenu.languageSelect=Language
 BookVersions.navMenu.currentLanguage=
-
+BookVersions.navMenu.noLanguageSelected=
 # Administration menu
 BookVersions.adminMenu.title=Versions
 BookVersions.adminMenu.manage=Manage
