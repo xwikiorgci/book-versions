@@ -78,6 +78,7 @@ BookVersions.Code.VersionClassSheet.librariesConfiguration=Libraries Configurati
 BookVersions.Code.VersionClassSheet.newConfiguration=New configuration
 BookVersions.Code.DeletedContentClassSheet.titlePrefix=DELETED: 
 BookVersions.Code.DeletedContentClassSheet.warning=This content has been marked as deleted. It won't be published.
+BookVersions.Code.PublicationConfigurationSheet.nextButton=Publish
 
 # Creation templates
 BookVersions.template.newBook=Create a new book.

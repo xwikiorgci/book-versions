@@ -86,6 +86,57 @@ public interface BookVersionsConstants
         new EntityReference("DeletedContentClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
+     * The reference of the publication configuration class.
+     */
+    EntityReference PUBLICATIONCONFIGURATION_CLASS_REFERENCE =
+        new EntityReference("PublicationConfigurationClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
+     * The source property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_SOURCE = "source";
+
+    /**
+     * The destinationSpace property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE = "destinationSpace";
+
+    /**
+     * The version property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_VERSION = "version";
+
+    /**
+     * The variant property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_VARIANT = "variant";
+
+    /**
+     * The language property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_LANGUAGE = "language";
+
+    /**
+     * The createSubSpace property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_CREATESUBSPACE = "createSubSpace";
+
+    /**
+     * The publishOnlyComplete property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE = "publishOnlyComplete";
+
+    /**
+     * The publishPageOrder property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_PUBLISHPAGEORDER = "publishPageOrder";
+
+    /**
+     * The publishBehaviour property of a publication configuration.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_PUBLISHBEHAVIOUR = "publishBehaviour";
+
+    /**
      * The unversioned property of a book page.
      */
     String BOOKPAGE_PROP_UNVERSIONED = "unversioned";
@@ -154,4 +205,9 @@ public interface BookVersionsConstants
      * The location of variant definitions, in a book / library.
      */
     String VARIANTS_LOCATION = "Variants";
+
+    /**
+     * The location of variant definitions, in a book / library.
+     */
+    String PUBLICATIONJOB_TYPE = "BookPublicationJob";
 }

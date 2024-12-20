@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.bookversions.BookVersionsManager;
+import org.xwiki.job.JobException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.QueryException;
 import org.xwiki.script.service.ScriptService;
@@ -537,5 +538,15 @@ public class BookVersionsScriptService implements ScriptService
     public void switchDeletedMark(DocumentReference documentReference) throws XWikiException
     {
         bookVersionsManagerProvider.get().switchDeletedMark(documentReference);
+    }
+
+    /**
+     * Execcute the publication job.
+     * @param configurationReference the configuration reference
+     * @param jobId the job ID
+     */
+    public void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException
+    {
+        bookVersionsManagerProvider.get().executePublicationJob(configurationReference, jobId);
     }
 }

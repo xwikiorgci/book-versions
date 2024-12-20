@@ -23,6 +23,7 @@ package org.xwiki.contrib.bookversions;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.job.JobException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.QueryException;
 
@@ -492,4 +493,19 @@ public interface BookVersionsManager
      * @throws XWikiException could occur if getDocument, newXObject or save have an issue
      */
     void switchDeletedMark(DocumentReference documentReference) throws XWikiException;
+
+    /**
+     * Execute the publication job.
+     * @param configurationReference the configuration reference
+     * @param jobId the job ID
+     */
+    void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException;
+
+    /**
+     * Execute the publication process with the provided configuration.
+     * @param configurationReference The configuration reference
+     * @throws XWikiException could occur if loadPublicationConfiguration has an issue
+     */
+    void publish(DocumentReference configurationReference) throws XWikiException, QueryException;
+
 }
