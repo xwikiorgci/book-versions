@@ -259,6 +259,17 @@ public interface BookVersionsManager
     void setSelectedLanguage(DocumentReference documentReference, String language);
 
     /**
+     * Get the translated title for a document based on the selected language.
+     * 
+     * @param document The document to get the translated title for
+     * @return The translated title if found, null otherwise
+     * @throws XWikiException
+     * @throws QueryException
+     */
+    String getTranslatedTitle(XWikiDocument document) throws XWikiException, QueryException;
+
+
+    /**
      * Check if a page is a nested page of another one, recursively.
      * 
      * @param documentReference the reference of the supposed space

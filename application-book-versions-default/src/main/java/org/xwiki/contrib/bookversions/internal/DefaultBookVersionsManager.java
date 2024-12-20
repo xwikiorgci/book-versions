@@ -20,6 +20,7 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -394,6 +395,30 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             session.setAttribute(BookVersionsConstants.SESSION_SELECTEDLANGUAGE, languagesMap);
         }
     }    
+
+    @Override
+    public String getTranslatedTitle(XWikiDocument document) throws XWikiException, QueryException
+    {
+        DocumentReference collectionRef = getVersionedCollectionReference(document.getDocumentReference());
+        String selectedLanguage = getSelectedLanguage(collectionRef);
+        
+        List<BaseObject> titleObjects = document.getXObjects(new DocumentReference(
+            document.getDocumentReference().getWikiReference().getName(),
+            Arrays.asList("BookVersions", "Code"),
+            "PageTitleTranslationClass"));
+            
+        if (titleObjects != null && !titleObjects.isEmpty()) {
+            for (BaseObject obj : titleObjects) {
+                if (obj != null && selectedLanguage != null && 
+                    selectedLanguage.equals(obj.getStringValue("language"))) {
+                    return obj.getStringValue("title");
+                }
+            }
+        }
+        
+        return null;
+    }
+    
 
     @Override
     public boolean isAParent(DocumentReference spaceReference, DocumentReference nestedReference)

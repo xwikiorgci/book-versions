@@ -249,6 +249,20 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the translated title for a document based on the selected language.
+     * 
+     * @param document The document to get the translated title for
+     * @return The translated title if found, null otherwise
+     * @throws XWikiException
+     * @throws QueryException  
+     */
+    public String getTranslatedTitle(XWikiDocument document) throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getTranslatedTitle(document);
+    }
+
+
+    /**
      * Check if a page is a nested page of another one, recursively.
      * 
      * @param spaceReference the reference of the supposed space
