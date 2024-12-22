@@ -2,3 +2,4 @@ org.xwiki.contrib.bookversions.internal.DefaultBookVersionsManager
 org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener
 org.xwiki.contrib.bookversions.script.BookVersionsScriptService
 org.xwiki.contrib.bookversions.internal.PublicationJob
+org.xwiki.contrib.bookversions.internal.displayers.LibraryReferenceConverter

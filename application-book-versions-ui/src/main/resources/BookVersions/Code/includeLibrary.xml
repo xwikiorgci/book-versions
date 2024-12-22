@@ -382,7 +382,7 @@
       <name>keyReference</name>
     </property>
     <property>
-      <type>org.xwiki.model.reference.DocumentReference</type>
+      <type>org.xwiki.contrib.bookversions.internal.displayers.LibraryReference</type>
     </property>
   </object>
 </xwikidoc>
