@@ -98,7 +98,7 @@ public interface BookVersionsManager
      * 
      * @param documentReference The document reference.
      * @return true if the given reference is a versioned content document.
-     * @throws XWikiException
+     * @throws XWikiException In case the system can't provide an answer.
      */
     boolean isVersionedContent(DocumentReference documentReference) throws XWikiException;
 
@@ -107,7 +107,7 @@ public interface BookVersionsManager
      * 
      * @param document The XWiki document.
      * @return true if the given document is a versioned content one.
-     * @throws XWikiException
+     * @throws XWikiException In case the system can't provide an answer.
      */
     boolean isVersionedContent(XWikiDocument document) throws XWikiException;
 
@@ -118,8 +118,7 @@ public interface BookVersionsManager
      * @param collectionReference The collection reference.
      * @param documentReference The document reference.
      * @return true if the given reference is a possible versioned content reference in its collection.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws XWikiException In case the system can't provide an answer.
      */
     boolean isPossibleVersionedContentReference(DocumentReference collectionReference,
         DocumentReference documentReference) throws XWikiException;
@@ -161,12 +160,12 @@ public interface BookVersionsManager
     boolean isLibrary(DocumentReference documentReference) throws XWikiException;
 
     /**
-     * Check if the given library version belongs to the qiven library.
+     * Check if the given library version belongs to the given library.
      * @param libraryReference The library reference
      * @param libraryVersionReference The library version reference
      * @return True if the library version belongs to the library
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     boolean isFromLibrary(DocumentReference libraryReference, DocumentReference libraryVersionReference)
         throws QueryException, XWikiException;
@@ -176,8 +175,8 @@ public interface BookVersionsManager
      * @param library The library document
      * @param libraryVersion The library version document
      * @return True if the library version belongs to the library
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     boolean isFromLibrary(XWikiDocument library, XWikiDocument libraryVersion)
         throws QueryException, XWikiException;
@@ -201,7 +200,7 @@ public interface BookVersionsManager
      * Transform the given name by using the slug name validation.
      *
      * @param name The name to be transformed.
-     * @return the transformed.
+     * @return the transformed name.
      */
     String transformUsingSlugValidation(String name);
 
@@ -210,8 +209,8 @@ public interface BookVersionsManager
      * 
      * @param documentReference the document reference.
      * @return the selected version.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     String getSelectedVersion(DocumentReference documentReference) throws XWikiException, QueryException;
 
@@ -228,8 +227,8 @@ public interface BookVersionsManager
      * 
      * @param documentReference the document reference.
      * @return the selected variant.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     String getSelectedVariant(DocumentReference documentReference) throws XWikiException, QueryException;
 
@@ -246,8 +245,8 @@ public interface BookVersionsManager
      * 
      * @param documentReference the document reference.
      * @return the selected variant.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     String getSelectedLanguage(DocumentReference documentReference) throws XWikiException, QueryException;
 
@@ -264,8 +263,8 @@ public interface BookVersionsManager
      * 
      * @param document The document to get the translated title for
      * @return The translated title if found, null otherwise
-     * @throws XWikiException
-     * @throws QueryException
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
      */
     String getTranslatedTitle(XWikiDocument document) throws XWikiException, QueryException;
 
@@ -284,8 +283,8 @@ public interface BookVersionsManager
      * 
      * @param documentReference the page from which to take the collection reference
      * @return the versioned collection reference, or null if the page is not part of a collection
-     * @throws XWikiException
-     * @throws QueryException
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
      */
     DocumentReference getVersionedCollectionReference(DocumentReference documentReference)
         throws XWikiException, QueryException;
@@ -312,7 +311,7 @@ public interface BookVersionsManager
      * @param collectionReference The reference of the collection (book / library).
      * @param version The version id.
      * @return the reference of a given version id, in the given referenced collection.
-     * @throws XWikiException
+     * @throws XWikiException In case the system can't provide an answer.
      */
     DocumentReference getVersionReference(DocumentReference collectionReference, String version) throws XWikiException;
 
@@ -322,7 +321,7 @@ public interface BookVersionsManager
      * @param collectionReference The reference of the collection (book / library).
      * @param variant The variant id.
      * @return the reference of a given version id, in the given referenced collection.
-     * @throws XWikiException
+     * @throws XWikiException In case the system can't provide an answer.
      */
     DocumentReference getVariantReference(DocumentReference collectionReference, String variant) throws XWikiException;
 
@@ -332,8 +331,8 @@ public interface BookVersionsManager
      * @param documentReference the reference of the collection to get versions from
      * @return a list of versions references declared in the versioned collection, ordered by descending date. Returns
      *         an empty list if none are found.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     List<String> getCollectionVersions(DocumentReference documentReference) throws QueryException, XWikiException;
 
@@ -343,8 +342,8 @@ public interface BookVersionsManager
      * @param documentReference the reference of the collection to get variants from
      * @return a list of variants references declared in the versioned collection, ordered by descending date. Returns
      *         an empty list if none are found.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     List<String> getCollectionVariants(DocumentReference documentReference) throws QueryException, XWikiException;
 
@@ -355,8 +354,8 @@ public interface BookVersionsManager
      * @param documentReference The page reference.
      * @param version The version id.
      * @return the reference of the page content corresponding to the given version.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     DocumentReference getVersionedContentReference(DocumentReference documentReference, String version)
         throws QueryException, XWikiException;
@@ -367,8 +366,8 @@ public interface BookVersionsManager
      * @param documentReference The page reference.
      * @param version The version id.
      * @return true if the page has content corresponding to the given version.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     boolean hasContentForVersion(DocumentReference documentReference, String version)
         throws QueryException, XWikiException;
@@ -378,8 +377,8 @@ public interface BookVersionsManager
      * 
      * @param documentReference the reference of the book page
      * @return the versioned content reference
-     * @throws XWikiException
-     * @throws QueryException
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
      */
     DocumentReference getVersionedContentReference(DocumentReference documentReference)
         throws XWikiException, QueryException;
@@ -389,8 +388,8 @@ public interface BookVersionsManager
      * 
      * @param document The XWiki document
      * @return the versioned content reference
-     * @throws XWikiException
-     * @throws QueryException
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
      */
     DocumentReference getVersionedContentReference(XWikiDocument document) throws XWikiException, QueryException;
 
@@ -399,8 +398,8 @@ public interface BookVersionsManager
      * 
      * @param documentReference the reference of the (versioned content) page
      * @return the reference of the versioned page content
-     * @throws XWikiException
-     * @throws QueryException
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
      */
     DocumentReference getInheritedVersionedContentReference(DocumentReference documentReference)
         throws XWikiException, QueryException;
@@ -422,8 +421,8 @@ public interface BookVersionsManager
      * @param versionReference the reference of the version from which to get the content from, or inherit
      * @return the reference of the version of the content to be displayed. Null if there's no versioned content for the
      *         page, neither to inherit.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     DocumentReference getInheritedContentVersionReference(DocumentReference documentReference,
         DocumentReference versionReference) throws QueryException, XWikiException;
@@ -436,8 +435,8 @@ public interface BookVersionsManager
      * @param versionReference the reference of the version from which to get the content from, or inherit
      * @return the reference of the content to be displayed. Null if there's no versioned content for the page, neither
      *         to inherit.
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     DocumentReference getInheritedContentReference(DocumentReference documentReference,
         DocumentReference versionReference) throws QueryException, XWikiException;
@@ -446,8 +445,8 @@ public interface BookVersionsManager
      * Set a library configuration to a book if it doesn't exit yet. The last version of the library is set as default.
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library to add
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     void setLibrary(DocumentReference bookReference, DocumentReference libraryReference)
         throws QueryException, XWikiException;
@@ -457,8 +456,8 @@ public interface BookVersionsManager
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library to add
      * @param libraryVersionReference the reference of the version of the library to add
-     * @throws QueryException
-     * @throws XWikiException
+     * @throws QueryException If any exception occurs while querying the database.
+     * @throws XWikiException In case the system can't provide an answer.
      */
     void setLibrary(DocumentReference bookReference, DocumentReference libraryReference,
         DocumentReference libraryVersionReference) throws QueryException, XWikiException;
@@ -469,8 +468,8 @@ public interface BookVersionsManager
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library
      * @return the reference of the library version configured in the book for the library
-     * @throws XWikiException
-     * @throws QueryException
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
      */
     DocumentReference getConfiguredLibraryVersion(DocumentReference bookReference, DocumentReference libraryReference)
         throws XWikiException, QueryException;
@@ -481,8 +480,8 @@ public interface BookVersionsManager
      * @param bookReference the reference of the book
      * @param keyReference the reference of the key (library page)
      * @return the reference of the content of the library
-     * @throws XWikiException
-     * @throws QueryException
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
      */
     DocumentReference getLinkedLibraryContentReference(DocumentReference bookReference, DocumentReference keyReference)
         throws XWikiException, QueryException;
@@ -498,6 +497,7 @@ public interface BookVersionsManager
      * Execute the publication job.
      * @param configurationReference the configuration reference
      * @param jobId the job ID
+     * @throws JobException if an error occurs while manipulating the publication job
      */
     void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException;
 
@@ -505,6 +505,7 @@ public interface BookVersionsManager
      * Execute the publication process with the provided configuration.
      * @param configurationReference The configuration reference
      * @throws XWikiException could occur if loadPublicationConfiguration has an issue
+     * @throws QueryException If any exception occurs while querying the database.
      */
     void publish(DocumentReference configurationReference) throws XWikiException, QueryException;
 
