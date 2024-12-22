@@ -67,8 +67,10 @@
 #end
 #if("$!input" == "")
   #set($hql = "$hql order by lower(doc.title) asc")
+#elseif($request.exactMatch=="true")
+  #set($hql = "$hql and doc.fullName = :input order by lower(doc.title) asc")
 #else
-  #set($hql = "$hql and lower(doc.title) like :input order by lower(doc.title) asc")
+  #set($hql = "$hql and (lower(doc.fullName) like :input or lower(doc.title) like :input) order by lower(doc.title) asc")
 #end
 #set($query = $services.query.hql($hql))
 #foreach($bind in $binds.keySet())
@@ -76,7 +78,11 @@
   #set($query = $query.bindValue($bind).literal("${value}.").anyChars().query())
 #end
 #if ("$!input" != "")
-  #set($ok = $query.bindValue('input', "%$!{input}%"))
+  #if($request.exactMatch=="true")
+   #set($ok = $query.bindValue('input', $request.q))
+  #else
+   #set($ok = $query.bindValue('input', "%$!{input}%"))
+  #end
 #end
 #set($results = $query.setLimit(10).execute())
 #set($json = [])
@@ -88,7 +94,7 @@
     #set($prettyName = $itemdoc.documentReference.parent.name)
   #end
   #set($discard = $json.add({
-    'label': $prettyName,
+    'label': $itemdoc.title,
     'value': "$res"
   }))
 #end
