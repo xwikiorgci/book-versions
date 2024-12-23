@@ -46,20 +46,21 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <id>
+    <excludePagesOutsideVariant>
       <customDisplay/>
+      <defaultValue/>
       <disabled>0</disabled>
+      <displayFormType>select</displayFormType>
+      <displayType/>
       <hint/>
-      <name>id</name>
+      <name>excludePagesOutsideVariant</name>
       <number>2</number>
-      <picker>1</picker>
-      <prettyName>id</prettyName>
-      <size>30</size>
+      <prettyName>Exclude pages that are not explicitly attached to this variant</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </id>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </excludePagesOutsideVariant>
   </class>
   <object>
     <name>BookVersions.Code.VariantClass</name>
