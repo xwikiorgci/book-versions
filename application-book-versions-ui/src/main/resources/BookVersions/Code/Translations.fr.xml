@@ -67,15 +67,16 @@ BookVersions.template.newBook=Créer un nouveau livre.
 
 # Navigation menu
 ### Missing: BookVersions.navMenu.versionSelect=Version
-### Missing: BookVersions.navMenu.versioned=Content from version [{0}].
-### Missing: BookVersions.navMenu.inherited=Content inherited from version [{0}].
+### Missing: BookVersions.navMenu.versioned=Content from version {0}.
+### Missing: BookVersions.navMenu.inherited=Content inherited from version {0}.
 ### Missing: BookVersions.navMenu.createVersionWithLink=Create content for version {0}
 ### Missing: BookVersions.navMenu.warning.noversion=The page is versioned, but it doesn''t have content for version {0} or its preceding versions.
 ### Missing: BookVersions.navMenu.variantSelect=Variant
 ### Missing: BookVersions.navMenu.contentForVariant=
-### Missing: BookVersions.navMenu.pageIsNotAssociated=Page not linked to variant [{0}].
+### Missing: BookVersions.navMenu.pageIsNotAssociated=Page not linked to variant {0}.
+### Missing: BookVersions.navMenu.pageRestrictedTo=Page is restricted to variant(s): {0}.
 ### Missing: BookVersions.navMenu.pageAvailableForAll=Page is not restricted to a variant.
-### Missing: BookVersions.navMenu.associateVariantWithLink=Link page to variant [{0}]
+### Missing: BookVersions.navMenu.associateVariantWithLink=Link page to variant {0}
 
 # Administration menu
 ### Missing: BookVersions.adminMenu.title=Versions
@@ -84,8 +85,8 @@ BookVersions.template.newBook=Créer un nouveau livre.
 ### Missing: BookVersions.adminMenu.manageVariants=Variants
 ### Missing: BookVersions.adminMenu.manageLibraries=Libraries
 ### Missing: BookVersions.adminMenu.pageActions=Page Actions
-### Missing: BookVersions.adminMenu.addPageToVariant=Link page to variant [{0}]
-### Missing: BookVersions.adminMenu.removePageFromVariant=Unlink page from variant [{0}]
+### Missing: BookVersions.adminMenu.addPageToVariant=Link page to variant {0}
+### Missing: BookVersions.adminMenu.removePageFromVariant=Unlink page from variant {0}
 ### Missing: BookVersions.adminMenu.publishLable=Publishing
 ### Missing: BookVersions.navMenu.convertToUnversioned=Convert to unversioned
 ### Missing: BookVersions.navMenu.convertToVersioned=Convert to versioned

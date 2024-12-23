@@ -260,7 +260,11 @@
   ## Get the current selected variant
   #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
   ## Display content only if the seleceted variant is the one set as parameter
-  #set($isVariant = false)
+  #if($selectedVariant=="")
+    #set($isVariant = true)
+  #else
+    #set($isVariant = false)
+  #end
   #foreach($variant in $wikimacro.parameters.name)
     #set($variantLocalRef = $services.model.serialize($variant, 'local'))
     #if ($variantLocalRef == $selectedVariant)

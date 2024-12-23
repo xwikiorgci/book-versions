@@ -744,7 +744,7 @@
 #macro(initializeVariantVariables)
   #set ($variants = $services.bookversions.getCollectionVariants($collectionRef))
   #if (!$selectedVariant &amp;&amp; $isVersionedPage &amp;&amp; $variants.size() &gt; 0)
-    #set ($discard = $services.bookversions.setSelectedVariant($collectionRef, $variants[0]))
+    #set ($discard = $services.bookversions.setSelectedVariant($collectionRef, ""))
   #end
   #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
 #end
@@ -819,7 +819,7 @@
 ## Handle variant selection from request
 ##
 #macro(handleVariantSelection)
-  #if ("$!request.selectedVariant" != '')
+  #if ($request.selectedVariant)
     #set ($newVariant = $request.selectedVariant)
     $services.bookversions.setSelectedVariant($collectionRef, $newVariant)
     #set ($selectedVariant = $newVariant)
@@ -1002,20 +1002,34 @@
 #macro(setupVariantDisplay)
   #set ($variantsObj = $doc.getObject("BookVersions.Code.VariantsListClass"))
   #set ($associatedVariants = [])
+  #set ($associatedVariantsTitle = [])
   #if ($variantsObj)
     #set ($associatedVariants = $variantsObj.getProperty('variantsList').getValue())
   #end
-  #set ($selectedVariantName = $services.bookversions.getVariantName($services.model.resolveDocument($selectedVariant)))
-  #if ($associatedVariants &amp;&amp; $associatedVariants.size() &gt; 0 &amp;&amp; $associatedVariants.contains($selectedVariant))
-    #set ($variantStateMessageKey = 'BookVersions.navMenu.contentForVariant')
-  #elseif ($associatedVariants &amp;&amp; $associatedVariants.size() &gt; 0 &amp;&amp; !$associatedVariants.contains($selectedVariant))
-    #set ($variantStateMessageKey = 'BookVersions.navMenu.pageIsNotAssociated')
-    #set ($msgAssociateVariantName = $services.bookversions.getVariantName($services.model.resolveDocument($selectedVariant)))
+  #if("$!selectedVariant" != "")
+    #set ($selectedVariantName = $services.bookversions.getVariantName($services.model.resolveDocument($selectedVariant)))
+    #set ($variantTitle = $xwiki.getDocument($services.bookversions.getVariantReference($collectionRef,$selectedVariantName)).displayTitle)
+    #if ($associatedVariants &amp;&amp; $associatedVariants.size() &gt; 0 &amp;&amp; $associatedVariants.contains($selectedVariant))
+      #set ($msgAssociateVariantName = "unlink")
+    #elseif ($associatedVariants &amp;&amp; $associatedVariants.size() &gt; 0 &amp;&amp; !$associatedVariants.contains($selectedVariant))
+      #set ($msgAssociateVariantName = "link")
+    #else
+      #set ($msgAssociateVariantName = "")
+    #end
   #else
-    #set ($variantStateMessageKey = 'BookVersions.navMenu.pageAvailableForAll')
-    #set ($msgAssociateVariantName = $services.bookversions.getVariantName($services.model.resolveDocument($selectedVariant)))
+    #set ($selectedVariantName = "")
+	#set ($variantTitle = "")
+    #set ($msgAssociateVariantName = "")
   #end
-  #set ($variantTitle = $xwiki.getDocument($services.bookversions.getVariantReference($collectionRef,$selectedVariantName)).displayTitle)
+  #if ($associatedVariants &amp;&amp; $associatedVariants.size() &gt; 0 )
+    #set ($variantStateMessageKey = 'BookVersions.navMenu.pageRestrictedTo')
+    #foreach($assocVariant in $associatedVariants)
+       #set ($assocVariantTitle = $services.bookversions.getVariantName($services.model.resolveDocument($assocVariant)))
+       #set ($ok = $associatedVariantsTitle.add($assocVariantTitle))
+    #end
+  #else
+    #set ($variantStateMessageKey = 'BookVersions.navMenu.pageIsNotAssociated')
+  #end
 #end
 
 ##
@@ -1079,6 +1093,7 @@
       &lt;input type="hidden" name="selectedVariant" id="selectedVariantInput" value="$selectedVariant"/&gt;
       &lt;label for="collectionVariant"&gt;$services.localization.render('BookVersions.navMenu.variantSelect')&lt;/label&gt;
       &lt;select name="collectionVariant" id="collectionVariant"&gt;
+        &lt;option value="" id="" #if(!$selectedVariant || $selectedVariant=="")selected#end&gt;---&lt;/option&gt;
         #foreach($variant in $variants)
           #if ($variant)
             #set ($variantReference = $services.model.resolveDocument($variant))
@@ -1094,7 +1109,8 @@
         #end
       &lt;/select&gt;
       &lt;p class="noitems"&gt;
-        $services.localization.render($variantStateMessageKey, [$variantTitle])
+        #set($associatedVariantsTitleS = $stringtool.join($associatedVariantsTitle, " "))
+        $services.localization.render($variantStateMessageKey, [$associatedVariantsTitleS])
       &lt;/p&gt;
     &lt;/form&gt;
   &lt;/div&gt;
@@ -1121,7 +1137,6 @@
           &lt;label#if ($editing) for="$escapetool.xml($propertyId)"#end&gt;
             $escapetool.xml($statusProp.translatedPrettyName)
           &lt;/label&gt;
-          &lt;span class="xHint"&gt;$!escapetool.xml($services.localization.render($statusProp.hint))&lt;/span&gt;
         &lt;/dt&gt;
         &lt;dd&gt;$doc.display($statusProp.name)&lt;/dd&gt;
       &lt;/dl&gt;

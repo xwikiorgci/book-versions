@@ -572,11 +572,11 @@
         #if($isVersionedContent &amp;&amp; $variants.size() &gt; 0)
           &lt;ul&gt;
             &lt;li&gt;
-              #if("$!{msgAssociateVariantName}" != '')
+              #if("$!{msgAssociateVariantName}" == 'link')
                 &lt;a id="linkToVariant" href="#" data-variant="$selectedVariant"&gt;
                   $services.localization.render('BookVersions.adminMenu.addPageToVariant', [$variantTitle])
                 &lt;/a&gt;
-              #else
+              #elseif(("$!{msgAssociateVariantName}" == 'unlink'))
                 &lt;a id="unlinkFromVariant" href="#" data-variant="$selectedVariant"&gt;
                   $services.localization.render('BookVersions.adminMenu.removePageFromVariant', [$variantTitle])
                 &lt;/a&gt;
