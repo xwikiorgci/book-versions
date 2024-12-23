@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -42,6 +43,7 @@ public class LibraryReferenceConverter extends AbstractConverter<LibraryReferenc
 {
     
     @Inject
+    @Named("current")
     private DocumentReferenceResolver<String> referenceResolver;
 
     @Override
