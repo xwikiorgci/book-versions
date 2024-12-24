@@ -37,4 +37,44 @@
       <version>${platform.version}</version>
     </dependency>
    </dependencies>
+   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <analysisConfiguration>
+            <revapi.differences>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslationStatus(com.xpn.xwiki.doc.XWikiDocument) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                  <justification>Added new method in order to handle the status of a translations.</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; org.xwiki.contrib.bookversions.BookVersionsManager::getLanguageData(com.xpn.xwiki.doc.XWikiDocument)</new>
+                  <justification>Added new method in order to handle the translations.</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method void org.xwiki.contrib.bookversions.BookVersionsManager::setLanguageData(com.xpn.xwiki.doc.XWikiDocument, java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt;)</new>
+                  <justification>Added new method in order to handle the translations.</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method boolean org.xwiki.contrib.bookversions.BookVersionsManager::isDefaultLanguage(com.xpn.xwiki.doc.XWikiDocument, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                  <justification>Added new method in order to handle the translations.</justification>
+                </item>
+              </differences>
+            </revapi.differences>
+          </analysisConfiguration>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

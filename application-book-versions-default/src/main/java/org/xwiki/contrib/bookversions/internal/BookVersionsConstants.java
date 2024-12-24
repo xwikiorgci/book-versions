@@ -92,6 +92,12 @@ public interface BookVersionsConstants
         new EntityReference("PublicationConfigurationClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
+     * The reference of the page translation class.
+     */
+    EntityReference PAGETRANSLATION_CLASS_REFERENCE =
+        new EntityReference("PageTranslationClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
      * The source property of a publication configuration.
      */
     String PUBLICATIONCONFIGURATION_PROP_SOURCE = "source";
@@ -210,4 +216,44 @@ public interface BookVersionsConstants
      * The location of variant definitions, in a book / library.
      */
     String PUBLICATIONJOB_TYPE = "BookPublicationJob";
+
+    /**
+     * The language property in the Page Translation class.
+     */
+    String PAGETRANSLATION_LANGUAGE = "language";
+
+    /**
+     * The title property in the Page Translation class.
+     */
+    String PAGETRANSLATION_TITLE = "title";
+
+    /**
+     * The status property in the Page Translation class.
+     */
+    String PAGETRANSLATION_STATUS = "status";
+
+    /**
+     * The 'not translated' status property in the Page Translation class.
+     */
+    String PAGETRANSLATION_STATUS_UNTRANSLATED = "notTranslated";
+
+    /**
+     * The 'in progress' status property in the Page Translation class.
+     */
+    String PAGETRANSLATION_STATUS_INPROGRESS = "inProgress";
+
+    /**
+     * The 'translated' status property in the Page Translation class.
+     */
+    String PAGETRANSLATION_STATUS_TRANSLATED = "translated";
+
+    /**
+     * The default flag in the Page Translation class.
+     */
+    String PAGETRANSLATION_ISDEFAULT = "isDefault";
+
+    /**
+     * The content translation macro id.
+     */
+    String CONTENTTRANSLATION_MACRO_ID = "contentTranslation";
 }

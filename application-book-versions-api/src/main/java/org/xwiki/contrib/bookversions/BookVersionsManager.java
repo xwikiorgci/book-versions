@@ -21,6 +21,7 @@
 package org.xwiki.contrib.bookversions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.job.JobException;
@@ -268,6 +269,15 @@ public interface BookVersionsManager
      */
     String getTranslatedTitle(XWikiDocument document) throws XWikiException, QueryException;
 
+    /**
+     * Get the translation status for the given document.
+     * 
+     * @param document The translated document.
+     * @return The translation status for the given document.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    String getTranslationStatus(XWikiDocument document) throws XWikiException, QueryException;
 
     /**
      * Check if a page is a nested page of another one, recursively.
@@ -508,5 +518,30 @@ public interface BookVersionsManager
      * @throws QueryException If any exception occurs while querying the database.
      */
     void publish(DocumentReference configurationReference) throws XWikiException, QueryException;
+
+    /**
+     * Get the data about page translations.
+     *
+     * @param document The XWiki document.
+     * @return the data about page translations.
+     */
+    Map<String, Map<String, Object>>getLanguageData(XWikiDocument document);
+
+    /**
+     * Update the language data in the document.
+     *
+     * @param document The XWiki document.
+     * @param languageData The language data.
+     */
+    void setLanguageData(XWikiDocument document, Map<String, Map<String, Object>> languageData);
+
+    /**
+     * Check if the given language is set to be the default one.
+     *
+     * @param document The XWiki document.
+     * @param language The lanugage.
+     * @return true if the given language is set to be the default one.
+     */
+    boolean isDefaultLanguage(XWikiDocument document, String language) throws XWikiException, QueryException;
 
 }

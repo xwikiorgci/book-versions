@@ -53,7 +53,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public class DocumentCreatingEventListener extends AbstractLocalEventListener
 {
 
-    static final String NAME = "org.xwiki.contrib.bookversions.listeners.DocumentUpdatingEventListener";
+    static final String NAME = "org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener";
 
     private static final List<Event> EVENT_LIST = List.of(new DocumentCreatingEvent());
 
@@ -101,6 +101,9 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
                     versionedContentDocument.setTitle(updatedXDoc.getTitle());
                     versionedContentDocument.setHidden(true);
                     updatedXDoc.setContent("");
+
+                    bookVersionsManager.setLanguageData(versionedContentDocument,
+                        bookVersionsManager.getLanguageData(versionedContentDocument));
 
                     xcontext.getWiki().saveDocument(versionedContentDocument, xcontext);
                 }

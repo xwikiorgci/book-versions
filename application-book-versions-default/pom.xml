@@ -70,8 +70,32 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
+              org/xwiki/contrib/bookversions/internal/BookVersionsConstants.java,
               org/xwiki/contrib/bookversions/internal/DefaultBookVersionsManager.java
           </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <analysisConfiguration>
+            <revapi.differences>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.annotation.attributeValueChanged</code>
+                  <old>class org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener</old>
+                  <new>class org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener</new>
+                  <annotationType>javax.inject.Named</annotationType>
+                  <attribute>value</attribute>
+                  <oldValue>"org.xwiki.contrib.bookversions.listeners.DocumentUpdatingEventListener"</oldValue>
+                  <newValue>"org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener"</newValue>
+                  <justification>Used the wrong name from the start.</justification>
+                </item>
+              </differences>
+            </revapi.differences>
+          </analysisConfiguration>
         </configuration>
       </plugin>
     </plugins>
