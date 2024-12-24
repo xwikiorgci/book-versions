@@ -162,6 +162,7 @@ public interface BookVersionsManager
 
     /**
      * Check if the given library version belongs to the given library.
+     * 
      * @param libraryReference The library reference
      * @param libraryVersionReference The library version reference
      * @return True if the library version belongs to the library
@@ -173,17 +174,18 @@ public interface BookVersionsManager
 
     /**
      * Check if the given library version belongs to the qiven library.
+     * 
      * @param library The library document
      * @param libraryVersion The library version document
      * @return True if the library version belongs to the library
      * @throws QueryException If any exception occurs while querying the database.
      * @throws XWikiException In case the system can't provide an answer.
      */
-    boolean isFromLibrary(XWikiDocument library, XWikiDocument libraryVersion)
-        throws QueryException, XWikiException;
+    boolean isFromLibrary(XWikiDocument library, XWikiDocument libraryVersion) throws QueryException, XWikiException;
 
     /**
      * Check if the given document is marked as deleted.
+     * 
      * @param documentReference The document reference
      * @return True if the document is marked as deleted
      * @throws XWikiException could occur if getDocument has an issue
@@ -192,6 +194,7 @@ public interface BookVersionsManager
 
     /**
      * Check if the given document is marked as deleted.
+     * 
      * @param document The document
      * @return True if the document is marked as deleted
      */
@@ -278,6 +281,29 @@ public interface BookVersionsManager
      * @throws QueryException If any exception occurs while querying the database.
      */
     String getTranslationStatus(XWikiDocument document) throws XWikiException, QueryException;
+
+    /**
+     * Get the translation status for the given reference, for the given language.
+     *
+     * @param documentReference The Document reference.
+     * @param language The language to get the status of.
+     * @return the translation status for the given reference, for the given language.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    String getTranslationStatus(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException;
+
+    /**
+     * Get the translation status for the given document, for the given language.
+     *
+     * @param document The XWiki document.
+     * @param language The language to get the status of.
+     * @return the translation status for the given document, for the given language.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    String getTranslationStatus(XWikiDocument document, String language) throws XWikiException, QueryException;
 
     /**
      * Check if a page is a nested page of another one, recursively.
@@ -453,6 +479,7 @@ public interface BookVersionsManager
 
     /**
      * Set a library configuration to a book if it doesn't exit yet. The last version of the library is set as default.
+     * 
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library to add
      * @throws QueryException If any exception occurs while querying the database.
@@ -463,6 +490,7 @@ public interface BookVersionsManager
 
     /**
      * Set a library configuration to a book if it doesn't exit yet.
+     * 
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library to add
      * @param libraryVersionReference the reference of the version of the library to add
@@ -473,8 +501,9 @@ public interface BookVersionsManager
         DocumentReference libraryVersionReference) throws QueryException, XWikiException;
 
     /**
-     * Get the library version reference which is configured in the given book, for the given library, with the
-     * current selected book version.
+     * Get the library version reference which is configured in the given book, for the given library, with the current
+     * selected book version.
+     * 
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library
      * @return the reference of the library version configured in the book for the library
@@ -485,8 +514,9 @@ public interface BookVersionsManager
         throws XWikiException, QueryException;
 
     /**
-     * Get the reference of the library content for the given key, depending on the configured library version in
-     * the given book and the current selected book version.
+     * Get the reference of the library content for the given key, depending on the configured library version in the
+     * given book and the current selected book version.
+     * 
      * @param bookReference the reference of the book
      * @param keyReference the reference of the key (library page)
      * @return the reference of the content of the library
@@ -498,6 +528,7 @@ public interface BookVersionsManager
 
     /**
      * Switch the document between "Marked as Deleted" or not.
+     * 
      * @param documentReference The document reference
      * @throws XWikiException could occur if getDocument, newXObject or save have an issue
      */
@@ -505,6 +536,7 @@ public interface BookVersionsManager
 
     /**
      * Execute the publication job.
+     * 
      * @param configurationReference the configuration reference
      * @param jobId the job ID
      * @throws JobException if an error occurs while manipulating the publication job
@@ -513,6 +545,7 @@ public interface BookVersionsManager
 
     /**
      * Execute the publication process with the provided configuration.
+     * 
      * @param configurationReference The configuration reference
      * @throws XWikiException could occur if loadPublicationConfiguration has an issue
      * @throws QueryException If any exception occurs while querying the database.
@@ -525,7 +558,7 @@ public interface BookVersionsManager
      * @param document The XWiki document.
      * @return the data about page translations.
      */
-    Map<String, Map<String, Object>>getLanguageData(XWikiDocument document);
+    Map<String, Map<String, Object>> getLanguageData(XWikiDocument document);
 
     /**
      * Update the language data in the document.
@@ -536,11 +569,25 @@ public interface BookVersionsManager
     void setLanguageData(XWikiDocument document, Map<String, Map<String, Object>> languageData);
 
     /**
+     * Check if the given language is the default one for the given reference.
+     *
+     * @param documentReference The document reference.
+     * @param language The laguage.
+     * @return true if the given language is the default one for the given reference.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    boolean isDefaultLanguage(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException;
+
+    /**
      * Check if the given language is set to be the default one.
      *
      * @param document The XWiki document.
      * @param language The lanugage.
      * @return true if the given language is set to be the default one.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
      */
     boolean isDefaultLanguage(XWikiDocument document, String language) throws XWikiException, QueryException;
 

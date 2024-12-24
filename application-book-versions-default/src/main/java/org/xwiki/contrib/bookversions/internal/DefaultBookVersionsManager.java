@@ -435,6 +435,15 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public String getTranslationStatus(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+
+        return getTranslationStatus(xcontext.getWiki().getDocument(documentReference, xcontext), language);
+    }
+
+    @Override
     public String getTranslationStatus(XWikiDocument document) throws XWikiException, QueryException
     {
         DocumentReference collectionRef = getVersionedCollectionReference(document.getDocumentReference());
@@ -454,17 +463,42 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public String getTranslationStatus(XWikiDocument document, String language) throws XWikiException, QueryException
+    {
+        for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
+            String languageEntry = tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_LANGUAGE);
+            if (!languageEntry.isEmpty() && languageEntry.equals(language)) {
+                return tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_STATUS);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean isDefaultLanguage(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+
+        return isDefaultLanguage(xcontext.getWiki().getDocument(documentReference, xcontext), language);
+    }
+
+    @Override
     public boolean isDefaultLanguage(XWikiDocument document, String language) throws XWikiException, QueryException
     {
-        DocumentReference collectionRef = getVersionedCollectionReference(document.getDocumentReference());
-        String selectedLanguage = getSelectedLanguage(collectionRef);
+        for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
+            String languageEntry = tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_LANGUAGE);
+            if (!languageEntry.isEmpty() && languageEntry.equals(language)) {
+                int isDefault = tObj.getIntValue(BookVersionsConstants.PAGETRANSLATION_ISDEFAULT);
+                if (isDefault == 1) {
+                    return true;
+                }
+                break;
+            }
+        }
 
-        BaseObject translationObject = document.getXObject(
-            referenceResolver.resolve(localSerializer.serialize(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)),
-            BookVersionsConstants.PAGETRANSLATION_LANGUAGE, selectedLanguage);
-
-        return translationObject != null
-            && translationObject.getIntValue(BookVersionsConstants.PAGETRANSLATION_ISDEFAULT) > 0;
+        return false;
     }
 
     @Override
@@ -1220,8 +1254,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     if (!statusParameterValue.isEmpty() && statusParameterValue.equals("TRANSLATED")) {
                         status = PageTranslationStatus.TRANSLATED;
                     }
-                    if (!statusParameterValue.isEmpty() && statusParameterValue.equals("IN_PROGRESS")) {
-                        status = PageTranslationStatus.IN_PROGRESS;
+                    if (!statusParameterValue.isEmpty() && statusParameterValue.equals("OUTDATED")) {
+                        status = PageTranslationStatus.OUTDATED;
                     }
 
                     // Default language

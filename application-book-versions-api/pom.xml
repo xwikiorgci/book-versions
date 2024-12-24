@@ -70,6 +70,24 @@
                   <new>method boolean org.xwiki.contrib.bookversions.BookVersionsManager::isDefaultLanguage(com.xpn.xwiki.doc.XWikiDocument, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
                   <justification>Added new method in order to handle the translations.</justification>
                 </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method boolean org.xwiki.contrib.bookversions.BookVersionsManager::isDefaultLanguage(org.xwiki.model.reference.DocumentReference, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                  <justification>Needed in order to check if a language is the default one.</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslationStatus(com.xpn.xwiki.doc.XWikiDocument, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                  <justification>Needed for new features.</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslationStatus(org.xwiki.model.reference.DocumentReference, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                  <justification>Needed for new features.</justification>
+                </item>
               </differences>
             </revapi.differences>
           </analysisConfiguration>

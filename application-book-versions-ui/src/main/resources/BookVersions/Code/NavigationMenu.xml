@@ -1149,6 +1149,8 @@
 ##
 #macro(renderLanguageSelector)
   #if ($multilingualEnabled == 1 &amp;&amp; $languages.size() &gt; 0)
+    #set ($translationStatus = $services.bookversions.getTranslationStatus($docRef, $selectedLanguage))
+    #set ($isDefaultLanguage = $services.bookversions.isDefaultLanguage($docRef, $selectedLanguage))
     &lt;div class="formContainer"&gt;
       &lt;form class="xformInline" id="changeLanguageStatus" method="post"&gt;
         &lt;input type="hidden" id="language_form_token" name="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
@@ -1163,7 +1165,14 @@
           #end
         &lt;/select&gt;
         &lt;p class="noitems"&gt;
-          $services.localization.render($languageStateMessageKey, [$selectedLanguage])
+          #if($isDefaultLanguage)
+            $services.localization.render('BookVersions.navMenu.defaultLanguage')
+          #else
+            $services.localization.render($languageStateMessageKey, [$selectedLanguage])
+          #end
+          #if("$!translationStatus" != '')
+            $services.localization.render("BookVersions.navMenu.translationStatus.${translationStatus}")&lt;br /&gt;
+          #end
         &lt;/p&gt;
       &lt;/form&gt;
     &lt;/div&gt;

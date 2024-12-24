@@ -39,7 +39,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
  * Book versions script service.
- * 
+ *
  * @version $Id$
  * @since 0.1
  */
@@ -116,9 +116,9 @@ public class BookVersionsScriptService implements ScriptService
         return bookVersionsManagerProvider.get().isVersionedContent(documentReference);
     }
 
-    
     /**
      * Check if the given document is marked as deleted.
+     * 
      * @param documentReference The document reference
      * @return True if the document is marked as deleted
      * @throws XWikiException could occur if getDocument has an issue
@@ -130,6 +130,7 @@ public class BookVersionsScriptService implements ScriptService
 
     /**
      * Check if the given document is marked as deleted.
+     * 
      * @param document The document
      * @return True if the document is marked as deleted
      */
@@ -255,13 +256,27 @@ public class BookVersionsScriptService implements ScriptService
      * @param document The document to get the translated title for
      * @return The translated title if found, null otherwise
      * @throws XWikiException
-     * @throws QueryException  
+     * @throws QueryException
      */
     public String getTranslatedTitle(XWikiDocument document) throws XWikiException, QueryException
     {
         return bookVersionsManagerProvider.get().getTranslatedTitle(document);
     }
-
+    
+    /**
+     * Get the translation status for the given reference, for the given language.
+     *
+     * @param documentReference The Document reference.
+     * @param language The language to get the status of.
+     * @return the translation status for the given reference, for the given language.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    public String getTranslationStatus(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getTranslationStatus(documentReference, language);
+    }
 
     /**
      * Check if a page is a nested page of another one, recursively.
@@ -473,6 +488,7 @@ public class BookVersionsScriptService implements ScriptService
 
     /**
      * Set a library configuration to a book if it doesn't exit yet. The last version of the library is set as default.
+     *
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library to add
      * @throws QueryException
@@ -486,6 +502,7 @@ public class BookVersionsScriptService implements ScriptService
 
     /**
      * Set a library configuration to a book if it doesn't exit yet.
+     * 
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library to add
      * @param libraryVersionReference the reference of the version of the library to add
@@ -493,16 +510,15 @@ public class BookVersionsScriptService implements ScriptService
      * @throws XWikiException
      */
     public void setLibrary(DocumentReference bookReference, DocumentReference libraryReference,
-        DocumentReference libraryVersionReference)
-        throws QueryException, XWikiException
+        DocumentReference libraryVersionReference) throws QueryException, XWikiException
     {
-        bookVersionsManagerProvider.get().setLibrary(bookReference, libraryReference,
-            libraryVersionReference);
+        bookVersionsManagerProvider.get().setLibrary(bookReference, libraryReference, libraryVersionReference);
     }
 
     /**
-     * Get the library version reference which is configured in the given book, for the given library, with the
-     * current selected book version.
+     * Get the library version reference which is configured in the given book, for the given library, with the current
+     * selected book version.
+     *
      * @param bookReference the reference of the book
      * @param libraryReference the reference of the library
      * @return the reference of the library version configured in the book for the library
@@ -516,8 +532,9 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
-     * Get the reference of the library content for the given key, depending on the configured library version in
-     * the given book and the current selected book version.
+     * Get the reference of the library content for the given key, depending on the configured library version in the
+     * given book and the current selected book version.
+     *
      * @param bookReference the reference of the book
      * @param keyReference the reference of the key (library page)
      * @return the reference of the content of the library
@@ -532,6 +549,7 @@ public class BookVersionsScriptService implements ScriptService
 
     /**
      * Switch the document between "Marked as Deleted" or not.
+     *
      * @param documentReference The document reference
      * @throws XWikiException could occur if getDocument, newXObject or save have an issue
      */
@@ -541,12 +559,28 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
-     * Execcute the publication job.
+     * Execute the publication job.
+     *
      * @param configurationReference the configuration reference
      * @param jobId the job ID
      */
     public void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException
     {
         bookVersionsManagerProvider.get().executePublicationJob(configurationReference, jobId);
+    }
+
+    /**
+     * Check if the given language is the default one for the given reference.
+     *
+     * @param documentReference The document reference.
+     * @param language The laguage.
+     * @return true if the given language is the default one for the given reference.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    public boolean isDefaultLanguage(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().isDefaultLanguage(documentReference, language);
     }
 }

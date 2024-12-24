@@ -146,6 +146,11 @@ BookVersions.navMenu.unmarkDeleted=Unmark as deleted
 BookVersions.navMenu.deleteVersion=Delete this version
 BookVersions.navMenu.deleteAllVersions=Delete all versions
 BookVersions.navMenu.deletePage=Delete this page
+BookVersions.navMenu.noLanguageSelected=No language was selected.
+BookVersions.navMenu.defaultLanguage=Default language.
+BookVersions.navMenu.translationStatus.not_translated=Translation needed.
+BookVersions.navMenu.translationStatus.outdated=Outdated translation.
+BookVersions.navMenu.translationStatus.translated=Translation done.
 BookVersions.adminMenu.librariesText=The following libraries are configured to be used in the current book. To edit the configuration, go to the Versions administration page of the book and edit the version pages.
 
 # Admin live data values

@@ -30,12 +30,12 @@ public enum PageTranslationStatus
     /**
      * The translation does not exist.
      */
-    NOT_TRANSLATED("notTranslated"),
+    NOT_TRANSLATED("not_translated"),
 
     /**
-     * The translation is in progress.
+     * The translation is outdated.
      */
-    IN_PROGRESS("inProgress"),
+    OUTDATED("outdated"),
 
     /**
      * The translation is done.
