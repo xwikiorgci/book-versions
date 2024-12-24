@@ -131,7 +131,7 @@
     const collectionRef = $('#collectionRef');
     const setAttributeURL = $('#setAttributeURL');
     versionSelect.on("change", function() {
-      window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction);
+      window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction) + '?force=1';
     })
   })</code>
     </property>
@@ -733,7 +733,11 @@
 ## Initialize version-related variables
 ##
 #macro(initializeVersionVariables)
-  #set ($selectedVersion = $services.bookversions.getSelectedVersion($docRef))
+  #if ($request.force)
+    ## If link comes from select list. Forcing selected Version
+    $services.bookversions.setSelectedVersion($collectionRef, $services.model.serialize($docRef,'local'))
+  #end
+  #set ($selectedVersion = $services.bookversions.getSelectedVersion($collectionRef))
   #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
   #set ($inheritedRedirFlag = $request.getSession().getAttribute('BookVersions.versionInheritedRedirFlag'))
 #end
@@ -743,6 +747,9 @@
 ##
 #macro(initializeVariantVariables)
   #set ($variants = $services.bookversions.getCollectionVariants($collectionRef))
+  #if (!$selectedVariant)
+    #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
+  #end
   #if (!$selectedVariant &amp;&amp; $isVersionedPage &amp;&amp; $variants.size() &gt; 0)
     #set ($discard = $services.bookversions.setSelectedVariant($collectionRef, ""))
   #end
@@ -901,7 +908,7 @@
   #end
   #if($isParentVersionedPage)
     #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($parentReference, $services.model.serialize($selectedVersion)))
-    $response.sendRedirect($xwiki.getURL($versionedContentReference))
+    $response.sendRedirect($xwiki.getURL($parentReference))
   #end
 #end
 
@@ -949,7 +956,8 @@
     #set ($discard = $debuglogger.debug('Page reached through inheritance, selectedVersion stays untouched'))
     #set ($discard = $request.getSession().setAttribute('BookVersions.versionInheritedRedirFlag',false))
   #elseif ("$!selectedVersion" != '')
-    #handleSelectedVersionUpdate()
+    ## THIS SHOULD PROBABLY NOT BE CALLED
+    ##handleSelectedVersionUpdate()
   #end
 #end
 
@@ -964,8 +972,8 @@
   #set ($versionReference = $services.bookversions.getVersionReference($collectionRef, $currentVersionedContentName))
   #set ($selectedVersion = $services.model.serialize($versionReference, 'local'))
   #if ($selectedVersion)
-    $services.bookversions.setSelectedVersion($collectionRef, $selectedVersion)
-    #set ($discard = $debuglogger.debug('Set selectedVersion from current page: [{}]', $selectedVersion))
+    ## $services.bookversions.setSelectedVersion($collectionRef, $selectedVersion)
+    ## #set ($discard = $debuglogger.debug('Set selectedVersion from current page: [{}]', $selectedVersion))
   #end
 #end
 
@@ -1077,7 +1085,11 @@
         #end
       &lt;/select&gt;
       &lt;p class="noitems"&gt;
+        #if($versionTitle)
         $services.localization.render($stateMessageKey, [$versionTitle])
+        #else
+        $services.localization.render('BookVersions.navMenu.warning.noversion', [$selectedVersionName])
+        #end
       &lt;/p&gt;
     &lt;/form&gt;
   &lt;/div&gt;
