@@ -21,6 +21,8 @@
 package org.xwiki.contrib.bookversions.listeners;
 
 import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -102,8 +104,15 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
                     versionedContentDocument.setHidden(true);
                     updatedXDoc.setContent("");
 
-                    bookVersionsManager.setLanguageData(versionedContentDocument,
-                        bookVersionsManager.getLanguageData(versionedContentDocument));
+                    Map<String, Map<String, Object>> lanugageData =
+                        bookVersionsManager.getLanguageData(versionedContentDocument);
+                    if (!lanugageData.isEmpty()) {
+                        bookVersionsManager.setLanguageData(versionedContentDocument, lanugageData);
+                        String title = bookVersionsManager.getTranslatedTitle(versionedContentDocument);
+                        versionedContentDocument
+                            .setTitle(title.isEmpty() ? BookVersionsConstants.MISSING_TRANSLATION_TITLE
+                                : BookVersionsConstants.DEFAULT_TRANSLATION_TITLE);
+                    }
 
                     xcontext.getWiki().saveDocument(versionedContentDocument, xcontext);
                 }

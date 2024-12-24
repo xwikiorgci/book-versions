@@ -256,4 +256,14 @@ public interface BookVersionsConstants
      * The content translation macro id.
      */
     String CONTENTTRANSLATION_MACRO_ID = "contentTranslation";
+
+    /**
+     * The default title value for translated documents.
+     */
+    String DEFAULT_TRANSLATION_TITLE = "$!services.bookversions.getTranslatedTitle($doc.getDocumentReference())";
+
+    /**
+     * The message about the missing title value for the selected translation.
+     */
+    String MISSING_TRANSLATION_TITLE = "$!services.localization.render('BookVersions.languages.title.missing')";
 }

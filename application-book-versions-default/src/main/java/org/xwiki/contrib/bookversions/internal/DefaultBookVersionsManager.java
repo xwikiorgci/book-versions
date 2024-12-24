@@ -416,6 +416,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public String getTranslatedTitle(DocumentReference documentReference) throws XWikiException, QueryException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+
+        return getTranslatedTitle(xcontext.getWiki().getDocument(documentReference, xcontext));
+    }
+
+    @Override
     public String getTranslatedTitle(XWikiDocument document) throws XWikiException, QueryException
     {
         DocumentReference collectionRef = getVersionedCollectionReference(document.getDocumentReference());
@@ -432,6 +440,28 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
         return translationObject != null ? translationObject.getStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE)
             : null;
+    }
+
+    @Override
+    public String getTranslatedTitle(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+
+        return getTranslatedTitle(xcontext.getWiki().getDocument(documentReference, xcontext), language);
+    }
+
+    @Override
+    public String getTranslatedTitle(XWikiDocument document, String language) throws XWikiException, QueryException
+    {
+        for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
+            String languageEntry = tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_LANGUAGE);
+            if (!languageEntry.isEmpty() && languageEntry.equals(language)) {
+                return tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE);
+            }
+        }
+
+        return null;
     }
 
     @Override

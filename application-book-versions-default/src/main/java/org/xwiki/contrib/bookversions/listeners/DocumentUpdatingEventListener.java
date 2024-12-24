@@ -21,6 +21,8 @@
 package org.xwiki.contrib.bookversions.listeners;
 
 import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -30,8 +32,11 @@ import org.slf4j.Logger;
 import org.xwiki.bridge.event.DocumentUpdatingEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.bookversions.BookVersionsManager;
+import org.xwiki.contrib.bookversions.internal.BookVersionsConstants;
 import org.xwiki.observation.event.AbstractLocalEventListener;
 import org.xwiki.observation.event.Event;
+import org.xwiki.query.QueryException;
+
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -74,9 +79,15 @@ public class DocumentUpdatingEventListener extends AbstractLocalEventListener
 
         try {
             if (bookVersionsManager.isPage(updatedXDoc) || bookVersionsManager.isVersionedContent(updatedXDoc)) {
-                bookVersionsManager.setLanguageData(updatedXDoc, bookVersionsManager.getLanguageData(updatedXDoc));
+                Map<String, Map<String, Object>> lanugageData = bookVersionsManager.getLanguageData(updatedXDoc);
+                if (!lanugageData.isEmpty()) {
+                    bookVersionsManager.setLanguageData(updatedXDoc, lanugageData);
+                    String title = bookVersionsManager.getTranslatedTitle(updatedXDoc);
+                    updatedXDoc.setTitle(title.isEmpty() ? BookVersionsConstants.MISSING_TRANSLATION_TITLE
+                        : BookVersionsConstants.DEFAULT_TRANSLATION_TITLE);
+                }
             }
-        } catch (XWikiException e) {
+        } catch (XWikiException | QueryException e) {
             logger.error("Could not handle the event listener.", e);
         }
     }

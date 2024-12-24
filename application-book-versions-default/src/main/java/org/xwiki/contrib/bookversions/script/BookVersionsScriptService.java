@@ -251,6 +251,19 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the translation title for the given reference, for the selected language.
+     *
+     * @param documentReference The document reference.
+     * @return the translation title for the given reference, for the selected language.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    public String getTranslatedTitle(DocumentReference documentReference) throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getTranslatedTitle(documentReference);
+    }
+
+    /**
      * Get the translated title for a document based on the selected language.
      * 
      * @param document The document to get the translated title for
@@ -262,7 +275,22 @@ public class BookVersionsScriptService implements ScriptService
     {
         return bookVersionsManagerProvider.get().getTranslatedTitle(document);
     }
-    
+
+    /**
+     * Get the translation title for the given reference, for the given language.
+     *
+     * @param documentReference The Document reference.
+     * @param language The language to get the title of.
+     * @return the translation title for the given reference, for the given language.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    public String getTranslatedTitle(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getTranslatedTitle(documentReference, language);
+    }
+
     /**
      * Get the translation status for the given reference, for the given language.
      *

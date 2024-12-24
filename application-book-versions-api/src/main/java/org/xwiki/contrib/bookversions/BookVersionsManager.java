@@ -273,6 +273,39 @@ public interface BookVersionsManager
     String getTranslatedTitle(XWikiDocument document) throws XWikiException, QueryException;
 
     /**
+     * Get the translation title for the given reference, for the selected language.
+     *
+     * @param documentReference The document reference.
+     * @return the translation title for the given reference, for the selected language.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    String getTranslatedTitle(DocumentReference documentReference) throws XWikiException, QueryException;
+
+    /**
+     * Get the translation title for the given reference, for the given language.
+     *
+     * @param documentReference The document reference.
+     * @param language The language to get the title of.
+     * @return the translation title for the given reference, for the given language.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    String getTranslatedTitle(DocumentReference documentReference, String language)
+        throws XWikiException, QueryException;
+
+    /**
+     * Get the translation title for the given document, for the given language.
+     *
+     * @param document The XWiki document.
+     * @param language The language to get the title of.
+     * @return the translation title for the given document, for the given language.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    String getTranslatedTitle(XWikiDocument document, String language) throws XWikiException, QueryException;
+
+    /**
      * Get the translation status for the given document.
      * 
      * @param document The translated document.

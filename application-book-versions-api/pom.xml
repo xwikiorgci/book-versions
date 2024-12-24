@@ -88,6 +88,24 @@
                   <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslationStatus(org.xwiki.model.reference.DocumentReference, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
                   <justification>Needed for new features.</justification>
                 </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslatedTitle(com.xpn.xwiki.doc.XWikiDocument, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                  <justification>Needed for new features.</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslatedTitle(org.xwiki.model.reference.DocumentReference, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                  <justification>Needed for new features.</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslatedTitle(org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                  <justification>Needed for new features.</justification>
+                </item>
               </differences>
             </revapi.differences>
           </analysisConfiguration>
