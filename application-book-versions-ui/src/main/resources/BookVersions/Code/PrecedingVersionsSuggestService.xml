@@ -1,0 +1,96 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc version="1.5" reference="BookVersions.Code.PrecedingVersionsSuggestService" locale="">
+  <web>BookVersions.Code</web>
+  <name>PrecedingVersionsSuggestService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>PrecedingVersionsSuggestService</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+## $response.setContentType("application/json")
+#set($input = "")
+#if($request.q)
+ #set($input = $!request.q.toLowerCase())
+#end
+#if("$!input" == "")
+ #if($request.text)
+   #set($input = $!request.text.toLowerCase())
+ #end
+#end
+#if($request.book)
+#set ($book = $xwiki.getDocument($!request.book).getSpace())
+#set ($hql = "select doc.fullName from Document as doc, doc.object(BookVersions.Code.VersionClass) as obj where doc.space like :space")
+#else
+#set ($hql = "select doc.fullName from Document as doc, doc.object(BookVersions.Code.VersionClass) as obj where 1=1"))
+#end
+#if($request.currentPage)
+#set ($hql = "$hql AND doc.fullName &lt;&gt; :currentPage")
+#end
+#if("$!input" == "")
+  #set($hql = "$hql order by lower(doc.title) asc")
+#elseif($request.exactMatch=="true")
+  #set($hql = "$hql and doc.fullName = :input order by lower(doc.title) asc")
+#else
+  #set($hql = "$hql and (lower(doc.fullName) like :input OR lower(doc.title) like :input) order by lower(doc.title) asc")
+#end
+#set($query = $services.query.xwql($hql))
+#if($request.book)
+  #set($query = $query.bindValue('space').literal("${book}.").anyChars().query())
+#end
+#if($request.currentPage)
+  #set($ok = $query.bindValue('currentPage', $request.currentPage))
+#end
+#if ("$!input" != "")
+  #if($request.exactMatch=="true")
+   #set($ok = $query.bindValue('input', $request.q))
+  #else
+   #set($ok = $query.bindValue('input', "%$!{input}%"))
+  #end
+#end
+#set($results = $query.setLimit(10).execute())
+#set($json = [])
+#foreach($res in $results)
+  #set ($itemdoc = $xwiki.getDocument($res))
+  #if ("$!{itemdoc.title}" != '')
+    #set($prettyName = $itemdoc.title)
+  #else
+    #set($prettyName = $itemdoc.documentReference.parent.name)
+  #end
+  #set($discard = $json.add({
+    'label': $prettyName,
+    'value': "$res"
+  }))
+#end
+#jsonResponse($json)
+{{/velocity}}</content>
+</xwikidoc>

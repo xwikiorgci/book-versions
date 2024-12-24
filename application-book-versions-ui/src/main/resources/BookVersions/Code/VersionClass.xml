@@ -67,7 +67,7 @@
     <precedingVersionReference>
       <cache>0</cache>
       <classname/>
-      <customDisplay/>
+      <customDisplay>{{include reference="BookVersions.Code.PrecedingVersionsSuggestPicker" /}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayType>input</displayType>
