@@ -85,12 +85,14 @@
   'form_token': $services.csrf.getToken()
 })
 #set ($jobURL = $xwiki.getURL($services.model.createDocumentReference($xcontext.getDatabase(),['BookVersions','Code'],'publicationJob'), 'view', $escapetool.url($params)))
+#if (!$editing)
 &lt;div class="btn-group" id="tmCreateResource"&gt;
   &lt;a href="$jobURL" type='button' role="button" title="$services.localization.render('BookVersions.Code.PublicationConfigurationSheet.nextButton')" class="btn btn-primary"&gt;
     &lt;span class="fa fa-print" aria-hidden="true"&gt;&lt;/span&gt;
     &lt;span class="btn-label"&gt;$services.localization.render('BookVersions.Code.PublicationConfigurationSheet.nextButton')&lt;/span&gt;
   &lt;/a&gt;
 &lt;/div&gt;
+#end
 {{/html}}
 {{/velocity}}</content>
 </xwikidoc>
