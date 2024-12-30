@@ -62,6 +62,12 @@ public interface BookVersionsConstants
         new EntityReference("VariantClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
+     * The reference of the variant list class.
+     */
+    EntityReference VARIANTLIST_CLASS_REFERENCE =
+        new EntityReference("VariantsListClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
      * The reference of the book page class.
      */
     EntityReference BOOKPAGE_CLASS_REFERENCE =
@@ -166,6 +172,11 @@ public interface BookVersionsConstants
      * The status property of a book page.
      */
     String BOOKVERSIONEDCONTENT_PROP_STATUS_COMPLETE = "complete";
+
+    /**
+     * The variantsList property of a book page.
+     */
+    String VARIANTLIST_PROP_VARIANTSLIST = "variantsList";
 
     /**
      * The slug validator hint.

@@ -216,6 +216,16 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the variants the page belongs to.
+     * @param page the page document
+     * @return the variants which the page belongs to
+     */
+    public List<DocumentReference> getPageVariants(XWikiDocument page)
+    {
+        return bookVersionsManagerProvider.get().getPageVariants(page);
+    }
+
+    /**
      * Set the selected variant in the session for the given collection (book / library).
      * 
      * @param documentReference the document reference.
@@ -595,6 +605,16 @@ public class BookVersionsScriptService implements ScriptService
     public void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException
     {
         bookVersionsManagerProvider.get().executePublicationJob(configurationReference, jobId);
+    }
+
+    /**
+     * Get the page status.
+     * @param page the page document
+     * @return the status of the page
+     */
+    public String getPageStatus(XWikiDocument page)
+    {
+        return bookVersionsManagerProvider.get().getPageStatus(page);
     }
 
     /**

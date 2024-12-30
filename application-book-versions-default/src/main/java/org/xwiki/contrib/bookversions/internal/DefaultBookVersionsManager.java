@@ -20,6 +20,7 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -344,6 +345,24 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
 
         return null;
+    }
+
+    @Override
+    public List<DocumentReference> getPageVariants(XWikiDocument page)
+    {
+        List<DocumentReference> result = new ArrayList<DocumentReference>();
+        if (page == null) {
+            return result;
+        }
+        BaseObject variantListObj = page.getXObject(BookVersionsConstants.VARIANTLIST_CLASS_REFERENCE);
+        if (variantListObj == null) {
+            return result;
+        }
+        for (String referenceString :
+            (List<String>) variantListObj.getListValue(BookVersionsConstants.VARIANTLIST_PROP_VARIANTSLIST)) {
+            result.add(referenceResolver.resolve(referenceString));
+        }
+        return result;
     }
 
     @Override
@@ -1187,7 +1206,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
 
             XWikiDocument contentPage = xwiki.getDocument(contentPageReference, xcontext).clone();
-            if (!isToBePublished(contentPage, versionReference, variantReference, publishOnlyComplete)) {
+            if (!isToBePublished(contentPage, variantReference, publishOnlyComplete)) {
                 // TODO: page shouldn't be ignored if it contains ordering and publishPageOrder is true
                 logger.info("Page [{}] is ignored.", pageStringReference);
                 continue;
@@ -1231,10 +1250,35 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
     }
 
-    private boolean isToBePublished(XWikiDocument page, DocumentReference versionReference,
-        DocumentReference variantReference, boolean publishOnlyComplete)
+    private boolean isToBePublished(XWikiDocument page, DocumentReference variantReference, boolean publishOnlyComplete)
     {
+        List<DocumentReference> variants = getPageVariants(page);
+        String status = getPageStatus(page);
+        if (isMarkedDeleted(page)) {
+            logger.debug("[isToBePublished] Page is ignored because it is marked as deleted.");
+            return false;
+        } else if (publishOnlyComplete && !status.equals(BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS_COMPLETE)) {
+            logger.debug("[isToBePublished] Page is ignored because its status is [{}] and only complete page are "
+                + "published.", status);
+            return false;
+        } else if (!variants.isEmpty() && !variants.contains(variantReference)) {
+            logger.debug("[isToBePublished] Page is ignored because it is associated with other variants.");
+            return false;
+        }
         return true;
+    }
+
+    @Override
+    public String getPageStatus(XWikiDocument page)
+    {
+        if (page == null) {
+            return "";
+        }
+        BaseObject statusObj = page.getXObject(BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE);
+        if (statusObj == null) {
+            return "";
+        }
+        return statusObj.getStringValue(BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS);
     }
 
     private List<String> getPageReferenceTree(DocumentReference sourceReference) throws QueryException
