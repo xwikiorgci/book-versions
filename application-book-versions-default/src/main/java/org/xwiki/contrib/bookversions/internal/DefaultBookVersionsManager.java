@@ -1123,33 +1123,30 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         jobExecutor.execute(BookVersionsConstants.PUBLICATIONJOB_TYPE, jobRequest);
     }
 
-    @Override
-    public void publish(DocumentReference configurationReference) throws XWikiException, QueryException
+    private Map<String, Object> loadPublicationConfiguration(DocumentReference configurationReference)
+        throws XWikiException
     {
-        logger.debug("[publish] Publication required with configuration [{}]", configurationReference);
-        logger.info("Starting publication job with configuration [{}].", configurationReference);
-
-        // publish(loadPublicationConfiguration(configurationReference));
-        // TODO: move code here to load configuration method, and load it into a to-be-coded class
-        logger.debug("[publish] Loading publication configuration from [{}]", configurationReference);
+        Map<String, Object> configuration = new HashMap<String, Object>();
+        logger.debug("[loadPublicationConfiguration] Loading publication configuration from [{}]", configurationReference);
         if (configurationReference == null) {
             logger.error("Configuration reference is null");
-            return;
+            return configuration;
         }
 
         XWikiContext xcontext = this.getXWikiContext();
         XWiki xwiki = xcontext.getWiki();
-        XWikiDocument configuration = xwiki.getDocument(configurationReference, xcontext);
+        XWikiDocument configurationDoc = xwiki.getDocument(configurationReference, xcontext);
         BaseObject configurationObject =
-            configuration.getXObject(BookVersionsConstants.PUBLICATIONCONFIGURATION_CLASS_REFERENCE);
+            configurationDoc.getXObject(BookVersionsConstants.PUBLICATIONCONFIGURATION_CLASS_REFERENCE);
 
         if (configurationObject == null) {
-            logger.error("[publish] Configuration page has no [{}]",
+            logger.error("[loadPublicationConfiguration] Configuration page has no [{}]",
                 BookVersionsConstants.PUBLICATIONCONFIGURATION_CLASS_REFERENCE);
-            return;
+            return configuration;
         }
 
         logger.info("Loading configuration.");
+
         String sourceReferenceString =
             configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
         String destinationReferenceString =
@@ -1158,40 +1155,55 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
         if (sourceReferenceString.isBlank() || destinationReferenceString.isBlank()
             || versionReferenceString.isBlank()) {
-            logger.error(
-                "One of the mandatory element in the configuration (source, destination or version) is " + "missing.");
-            return;
+            logger.error("One of the mandatory element in the configuration (source, destination or version) is missing.");
+            return configuration;
         }
-        DocumentReference sourceReference = referenceResolver.resolve(sourceReferenceString);
-        DocumentReference destinationReference = referenceResolver.resolve(destinationReferenceString);
-        DocumentReference versionReference = referenceResolver.resolve(versionReferenceString);
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE,
+            referenceResolver.resolve(sourceReferenceString));
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE,
+            referenceResolver.resolve(destinationReferenceString));
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION,
+            referenceResolver.resolve(versionReferenceString));
 
         String variantReferenceString =
             configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
-        DocumentReference variantReference =
-            variantReferenceString.isBlank() ? referenceResolver.resolve(variantReferenceString) : null;
-        String language =
-            configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE);
-        boolean createSubSpace =
-            (configurationObject.getIntValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_CREATESUBSPACE) != 0);
-        boolean publishOnlyComplete = (configurationObject
-            .getIntValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE) != 0);
-        boolean publishPageOrder = (configurationObject
-            .getIntValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHPAGEORDER) != 0);
-        String publishBehaviour =
-            configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHBEHAVIOUR);
-        logger.debug(
-            "[publish] Configuration loaded: sourceReference [{}], destinationReference [{}], "
-                + "versionReference [{}], variantReference [{}], language [{}], createSubSpace [{}], "
-                + "publishOnlyComplete [{}], publishPageOrder [{}], publishBehaviour [{}].",
-            sourceReference, destinationReference, versionReference, variantReference, language, createSubSpace,
-            publishOnlyComplete, publishPageOrder, publishBehaviour);
-        // end of TODO for loading configuration
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT,
+            variantReferenceString.isBlank() ? referenceResolver.resolve(variantReferenceString) : null);
+
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE,
+            configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE));
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_CREATESUBSPACE,
+            configurationObject.getIntValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_CREATESUBSPACE) != 0);
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE,
+            configurationObject.getIntValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE) != 0);
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHPAGEORDER,
+            configurationObject.getIntValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHPAGEORDER) != 0);
+        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHBEHAVIOUR,
+            configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHBEHAVIOUR));
+
+        logger.debug("[loadPublicationConfiguration] Configuration loaded: [{}].", configuration);
         logger.info("Configuration loaded.");
+
+        return configuration;
+    }
+
+    @Override
+    public void publish(DocumentReference configurationReference) throws XWikiException, QueryException
+    {
+        logger.debug("[publish] Publication required with configuration [{}]", configurationReference);
+        logger.info("Starting publication job with configuration [{}].", configurationReference);
+
+        Map<String, Object> configuration = loadPublicationConfiguration(configurationReference);
+        if (configuration.isEmpty()) {
+            return;
+        }
+        XWikiContext xcontext = this.getXWikiContext();
+        XWiki xwiki = xcontext.getWiki();
 
         // Execute publication job
         logger.info("Start publication.");
-        List<String> pageReferenceTree = getPageReferenceTree(sourceReference);
+        List<String> pageReferenceTree =
+            getPageReferenceTree((DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE));
         progressManager.pushLevelProgress(pageReferenceTree.size(), this);
         for (String pageStringReference : pageReferenceTree) {
             progressManager.startStep(this, pageStringReference);
@@ -1199,23 +1211,23 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             DocumentReference pageReference = referenceResolver.resolve(pageStringReference, configurationReference);
             XWikiDocument page = xwiki.getDocument(pageReference, xcontext);
 
-            DocumentReference contentPageReference = getContentPage(page, versionReference, publishOnlyComplete);
+            DocumentReference contentPageReference = getContentPage(page, configuration);
             logger.debug("[publish] For page [{}], the content will be taken from [{}]", page, contentPageReference);
             if (contentPageReference == null) {
                 continue;
             }
 
             XWikiDocument contentPage = xwiki.getDocument(contentPageReference, xcontext).clone();
-            if (!isToBePublished(contentPage, variantReference, publishOnlyComplete)) {
+            if (!isToBePublished(contentPage, configuration)) {
                 // TODO: page shouldn't be ignored if it contains ordering and publishPageOrder is true
                 logger.info("Page [{}] is ignored.", pageStringReference);
                 continue;
             }
 
             logger.info("Start preparing work content of page [{}].", pageStringReference);
-            contentPage = prepareForPublication(contentPage);
+            contentPage = prepareForPublication(contentPage, configuration);
             logger.info("Publish page [{}].", pageStringReference);
-            publishDocument(contentPage);
+            publishDocument(contentPage, configuration);
             logger.info("End working on page [{}].", pageStringReference);
             progressManager.endStep(this);
         }
@@ -1224,36 +1236,39 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         progressManager.popLevelProgress(this);
     }
 
-    private void publishDocument(XWikiDocument contentPage)
+    private void publishDocument(XWikiDocument contentPage, Map<String, Object> configuration)
     {
         logger.debug("[publishDocument] Publish page [{}].", contentPage);
     }
 
-    private XWikiDocument prepareForPublication(XWikiDocument contentPage)
+    private XWikiDocument prepareForPublication(XWikiDocument contentPage, Map<String, Object> configuration)
     {
         // Execute here all transformations on the document: change links, point to published library,
         logger.debug("[prepareForPublication] Apply changes on [{}] for publication.", contentPage);
         return contentPage;
     }
 
-    private DocumentReference getContentPage(XWikiDocument page, DocumentReference versionReference,
-        boolean publishOnlyComplete) throws QueryException, XWikiException
+    private DocumentReference getContentPage(XWikiDocument page, Map<String, Object> configuration) throws QueryException,
+        XWikiException
     {
         boolean unversioned = (page.getXObject(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE)
             .getIntValue(BookVersionsConstants.BOOKPAGE_PROP_UNVERSIONED) == 1);
         if (unversioned) {
             return page.getDocumentReference();
         } else {
-            // TODO: consider mark as deleted
-            // return getInheritedContentReference(page.getDocumentReference(), versionReference, publishOnlyComplete);
-            return getInheritedContentReference(page.getDocumentReference(), versionReference);
+            return getInheritedContentReference(page.getDocumentReference(),
+                (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION));
         }
     }
 
-    private boolean isToBePublished(XWikiDocument page, DocumentReference variantReference, boolean publishOnlyComplete)
+    private boolean isToBePublished(XWikiDocument page, Map<String, Object> configuration)
     {
         List<DocumentReference> variants = getPageVariants(page);
         String status = getPageStatus(page);
+        boolean publishOnlyComplete =
+            (boolean) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE);
+        DocumentReference variantReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
         if (isMarkedDeleted(page)) {
             logger.debug("[isToBePublished] Page is ignored because it is marked as deleted.");
             return false;
