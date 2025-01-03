@@ -1168,7 +1168,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         String variantReferenceString =
             configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT,
-            variantReferenceString.isBlank() ? referenceResolver.resolve(variantReferenceString) : null);
+            variantReferenceString.isBlank() ? null : referenceResolver.resolve(variantReferenceString));
 
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE,
             configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE));
@@ -1199,12 +1199,20 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
         XWikiContext xcontext = this.getXWikiContext();
         XWiki xwiki = xcontext.getWiki();
+        DocumentReference sourceReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
+        DocumentReference collectionReference = getVersionedCollectionReference(sourceReference);
+        XWikiDocument collection = xwiki.getDocument(collectionReference, xcontext);
+        DocumentReference versionReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
+        XWikiDocument version = xwiki.getDocument(versionReference,xcontext);
+        String publicationComment = "Published from [" + collection.getTitle()+ "], version [" + version.getTitle() + "].";
 
         // Execute publication job
         logger.info("Start publication.");
-        List<String> pageReferenceTree =
-            getPageReferenceTree((DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE));
+        List<String> pageReferenceTree = getPageReferenceTree(sourceReference);
         progressManager.pushLevelProgress(pageReferenceTree.size(), this);
+        DocumentReference targetTopReference = null;
         for (String pageStringReference : pageReferenceTree) {
             progressManager.startStep(this, pageStringReference);
             logger.info("Start working on page [{}].", pageStringReference);
@@ -1220,6 +1228,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             XWikiDocument contentPage = xwiki.getDocument(contentPageReference, xcontext).clone();
             if (!isToBePublished(contentPage, configuration)) {
                 // TODO: page shouldn't be ignored if it contains ordering and publishPageOrder is true
+                //TODO: markedAsDeleted shouldn't be ignored if update behaviour
                 logger.info("Page [{}] is ignored.", pageStringReference);
                 continue;
             }
@@ -1227,18 +1236,138 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             logger.info("Start preparing work content of page [{}].", pageStringReference);
             contentPage = prepareForPublication(contentPage, configuration);
             logger.info("Publish page [{}].", pageStringReference);
-            publishDocument(contentPage, configuration);
+            DocumentReference publishedReference = publishDocument(page, contentPage, configuration,
+                publicationComment);
+            if (collectionReference.equals(pageReference)) {
+                targetTopReference = publishedReference;
+            }
             logger.info("End working on page [{}].", pageStringReference);
             progressManager.endStep(this);
         }
+
+        // Add metadata in the collection page (master) and top page (published space)
+        addMasterPublicationData(collection, configuration);
+        addTopPublicationData(targetTopReference, publicationComment, collection, configuration);
+
         logger.debug("[publish] Publication ended.");
         logger.info("Publication finished");
         progressManager.popLevelProgress(this);
     }
 
-    private void publishDocument(XWikiDocument contentPage, Map<String, Object> configuration)
+    private void addTopPublicationData (DocumentReference targetTopReference,
+        String publicationComment, XWikiDocument collection,
+        Map<String, Object> configuration) throws XWikiException
     {
-        logger.debug("[publishDocument] Publish page [{}].", contentPage);
+        if (targetTopReference != null) {
+            XWikiContext xcontext = this.getXWikiContext();
+            XWiki xwiki = xcontext.getWiki();
+            DocumentReference versionReference =
+                (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
+            XWikiDocument version = xwiki.getDocument(versionReference, xcontext);
+            DocumentReference variantReference =
+                (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+            XWikiDocument variant = xwiki.getDocument(variantReference, xcontext);
+
+            // Set metadata
+            XWikiDocument targetTop = xwiki.getDocument(targetTopReference, xcontext).clone();
+            BaseObject publicationObject = targetTop.newXObject(BookVersionsConstants.PUBLISHEDCOLLECTION_CLASS_REFERENCE,
+                xcontext);
+            publicationObject.set(BookVersionsConstants.PUBLISHEDCOLLECTION_PROP_MASTERNAME, collection.getTitle(), xcontext);
+            publicationObject.set(BookVersionsConstants.PUBLISHEDCOLLECTION_PROP_VERSIONNAME, version.getTitle(), xcontext);
+            publicationObject.set(BookVersionsConstants.PUBLISHEDCOLLECTION_PROP_VARIANTNAME, variant.getTitle(),
+                xcontext);
+            xwiki.saveDocument(targetTop, publicationComment, xcontext);
+
+        }
+    }
+
+    private void addMasterPublicationData (XWikiDocument collection, Map<String, Object> configuration) throws XWikiException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+        XWiki xwiki = xcontext.getWiki();
+        DocumentReference sourceReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
+        DocumentReference destinationReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
+        DocumentReference versionReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
+        XWikiDocument version = xwiki.getDocument(versionReference,xcontext);
+        DocumentReference variantReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+        XWikiDocument collectionClone = collection.clone();
+
+        String publicationId, publicationComment;
+        if ( variantReference == null ) {
+            publicationId = versionReference.getName();
+            publicationComment = "Publication of space [" + sourceReference + "], version [" + version.getTitle() + "].";
+        } else {
+            XWikiDocument variant = xwiki.getDocument(variantReference,xcontext);
+            publicationId = versionReference.getName() + "-" + variantReference.getName();
+            publicationComment = "Publication of space [" + sourceReference + "], version [" + version.getTitle() +
+                "], variant [" + variant.getTitle() + "].";
+        }
+
+        // Check existing publication objects
+        BaseObject publicationObject = null;
+        for (BaseObject XObject : collectionClone.getXObjects(BookVersionsConstants.PUBLICATION_CLASS_REFERENCE)) {
+            String objectId = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_ID);
+            String objectSource = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_SOURCE);
+            if (publicationId.equals(objectId) && sourceReference.toString().equals(objectSource)) {
+                // Previous publication of the same space, with same version and variant found
+                publicationObject = XObject;
+                break;
+            }
+        }
+        if (publicationObject == null) {
+            // No previous publication found, create a new one
+            publicationObject = collectionClone.newXObject(BookVersionsConstants.PUBLICATION_CLASS_REFERENCE,
+                 xcontext);
+        }
+
+        // Add metadata
+        publicationObject.set(BookVersionsConstants.PUBLICATION_PROP_ID, publicationId, xcontext);
+        publicationObject.set(BookVersionsConstants.PUBLICATION_PROP_SOURCE, sourceReference.toString(), xcontext);
+        publicationObject.set(BookVersionsConstants.PUBLICATION_PROP_PUBLISHEDSPACE, destinationReference.toString(),
+            xcontext);
+        xwiki.saveDocument(collectionClone, publicationComment, xcontext);
+
+    }
+
+    private DocumentReference publishDocument(XWikiDocument originalPage, XWikiDocument contentPage,
+        Map<String, Object> configuration, String publicationComment)
+        throws QueryException, XWikiException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+        XWiki xwiki = xcontext.getWiki();
+
+        DocumentReference targetReference = (DocumentReference)
+            configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
+        DocumentReference originalReference = originalPage.getDocumentReference();
+        DocumentReference collectionReference = getVersionedCollectionReference(originalReference);
+        // the first getParent() gets the collection's space, the second the space above
+        DocumentReference publishedReference = originalReference.replaceParent(collectionReference.getParent().getParent(),
+            targetReference.getLastSpaceReference());
+        logger.info("[publishDocument] Publish page [{}] to [{}].", contentPage.getDocumentReference(),
+            publishedReference);
+
+        // Copy the document (force copy)
+        xwiki.copyDocument(contentPage.getDocumentReference(), publishedReference, null, true, true ,
+            xcontext);
+        // Update data and metadata
+        XWikiDocument publishedDocument = xwiki.getDocument(publishedReference, xcontext);
+        publishedDocument.setTitle(originalPage.getTitle());
+        publishedDocument = removeObjectsForPublication(publishedDocument);
+        xwiki.saveDocument(publishedDocument, publicationComment, xcontext);
+
+        return publishedReference;
+    }
+
+    private XWikiDocument removeObjectsForPublication(XWikiDocument publishedPage)
+    {
+        for (EntityReference objectRef : BookVersionsConstants.PUBLICATION_REMOVEDOBJECTS) {
+            publishedPage.removeXObjects(objectRef);
+        }
+        return publishedPage;
     }
 
     private XWikiDocument prepareForPublication(XWikiDocument contentPage, Map<String, Object> configuration)
@@ -1313,6 +1442,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     + "and doc.space like :space escape '/' order by doc.fullName asc", Query.HQL)
                 .bindValue("class", localSerializer.serialize(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE))
                 .bindValue("space", spacePrefix).execute();
+            // add the source as first element, as it's given by the query
+            result.add(0, sourceReference.toString());
 
             logger.debug("[getPageReferenceTree] result : [{}]", result);
 

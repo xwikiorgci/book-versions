@@ -20,6 +20,9 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
@@ -104,6 +107,48 @@ public interface BookVersionsConstants
         new EntityReference("PageTranslationClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
+     * The reference of a publication data class.
+     */
+    EntityReference PUBLICATION_CLASS_REFERENCE =
+        new EntityReference("PublicationClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
+     * The data of a published collection class.
+     */
+    EntityReference PUBLISHEDCOLLECTION_CLASS_REFERENCE =
+        new EntityReference("PublishedBookClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
+     * The masterName property of a published collection data.
+     */
+    String PUBLISHEDCOLLECTION_PROP_MASTERNAME = "masterName";
+
+    /**
+     * The bookVersionName property of a published collection data.
+     */
+    String PUBLISHEDCOLLECTION_PROP_VERSIONNAME = "bookVersionName";
+
+    /**
+     * The variantName property of a published collection data.
+     */
+    String PUBLISHEDCOLLECTION_PROP_VARIANTNAME = "variantName";
+
+    /**
+     * The id property of a publication data.
+     */
+    String PUBLICATION_PROP_ID = "id";
+
+    /**
+     * The source property of a publication data.
+     */
+    String PUBLICATION_PROP_SOURCE = "source";
+
+    /**
+     * The publishedSpace property of a publication data.
+     */
+    String PUBLICATION_PROP_PUBLISHEDSPACE = "publishedSpace";
+
+    /**
      * The source property of a publication configuration.
      */
     String PUBLICATIONCONFIGURATION_PROP_SOURCE = "source";
@@ -147,6 +192,21 @@ public interface BookVersionsConstants
      * The publishBehaviour property of a publication configuration.
      */
     String PUBLICATIONCONFIGURATION_PROP_PUBLISHBEHAVIOUR = "publishBehaviour";
+
+    /**
+     * The cancel value of publishBehaviour property.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_PUBLISHBEHAVIOUR_CANCEL = "cancel";
+
+    /**
+     * The update value of publishBehaviour property.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_PUBLISHBEHAVIOUR_UPDATE = "update";
+
+    /**
+     * The republish value of publishBehaviour property.
+     */
+    String PUBLICATIONCONFIGURATION_PROP_PUBLISHBEHAVIOUR_REPUBLISH = "republish";
 
     /**
      * The unversioned property of a book page.
@@ -277,4 +337,16 @@ public interface BookVersionsConstants
      * The message about the missing title value for the selected translation.
      */
     String MISSING_TRANSLATION_TITLE = "$!services.localization.render('BookVersions.languages.title.missing')";
+
+    /**
+     * The list of objects to remove in published pages
+     */
+    List<EntityReference> PUBLICATION_REMOVEDOBJECTS = Arrays.asList(
+        BookVersionsConstants.BOOK_CLASS_REFERENCE,
+        BookVersionsConstants.LIBRARY_CLASS_REFERENCE,
+        BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE,
+        BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE,
+        BookVersionsConstants.MARKEDDELETED_CLASS_REFERENCE,
+        BookVersionsConstants.VARIANTLIST_CLASS_REFERENCE
+    );
 }
