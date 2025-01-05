@@ -941,6 +941,7 @@
     #end
   #else
     #set ($discard = $debuglogger.debug('Found NO versioned content for page[{}]', ${docRef}))
+    #set ($displaySpecialWarning = true)
     {{warning}}
       {{html}}$services.localization.render('BookVersions.navMenu.warning.noversion'){{/html}}
     {{/warning}}
@@ -1001,6 +1002,7 @@
   #else
     #set ($stateMessageKey = 'BookVersions.navMenu.inherited')
   #end
+  #set ($selectedVersionTitle = $xwiki.getDocument($services.bookversions.getVersionReference($collectionRef,$selectedVersionName)).displayTitle)
   #set ($versionTitle = $xwiki.getDocument($services.bookversions.getVersionReference($collectionRef,$docRef.getName())).displayTitle)
 #end
 
@@ -1088,7 +1090,8 @@
         #if($versionTitle)
         $services.localization.render($stateMessageKey, [$versionTitle])
         #else
-        $services.localization.render('BookVersions.navMenu.warning.noversion', [$selectedVersionName])
+         #set($displaySpecialWarning = true)
+        $services.localization.render('BookVersions.navMenu.warning.noversion', [$selectedVersionTitle])
         #end
       &lt;/p&gt;
     &lt;/form&gt;
@@ -1220,6 +1223,12 @@
 ##
   #handleVersionSelection()
   #renderSelectors()
+#end
+
+#if($displaySpecialWarning)
+{{warning}}
+$services.localization.render('BookVersion.pageSheet.nocontent')
+{{/warning}}
 #end
 {{/velocity}}</content>
     </property>
