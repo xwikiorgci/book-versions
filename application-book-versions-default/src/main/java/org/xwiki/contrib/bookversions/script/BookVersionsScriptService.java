@@ -597,14 +597,14 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
-     * Execute the publication job.
+     * Execute the publication process with the provided configuration.
      *
      * @param configurationReference the configuration reference
-     * @param jobId the job ID
+     * @return the publication job's ID
      */
-    public void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException
+    public String publish(DocumentReference configurationReference) throws JobException
     {
-        bookVersionsManagerProvider.get().executePublicationJob(configurationReference, jobId);
+        return bookVersionsManagerProvider.get().publish(configurationReference);
     }
 
     /**

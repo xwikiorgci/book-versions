@@ -344,4 +344,14 @@ public interface BookVersionsConstants
         BookVersionsConstants.MARKEDDELETED_CLASS_REFERENCE,
         BookVersionsConstants.VARIANTLIST_CLASS_REFERENCE
     );
+
+    /**
+     * The first part of the publication job's ID
+     */
+    String PUBLICATION_JOBID_PREFIX = "BookVersionsPublication";
+
+    /**
+     * The separator of the publication job's ID
+     */
+    String PUBLICATION_JOBID_SEPARATOR = "_";
 }

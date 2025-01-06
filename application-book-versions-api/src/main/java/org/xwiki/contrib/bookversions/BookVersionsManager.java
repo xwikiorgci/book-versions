@@ -575,13 +575,13 @@ public interface BookVersionsManager
     void switchDeletedMark(DocumentReference documentReference) throws XWikiException;
 
     /**
-     * Execute the publication job.
-     * 
+     * Execute the publication process with the provided configuration.
+     *
      * @param configurationReference the configuration reference
-     * @param jobId the job ID
+     * @return the publication job's ID
      * @throws JobException if an error occurs while manipulating the publication job
      */
-    void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException;
+    String publish(DocumentReference configurationReference) throws JobException;
 
     /**
      * Load the configuration for the publication saved in a document.
@@ -599,7 +599,7 @@ public interface BookVersionsManager
      * @throws XWikiException could occur if loadPublicationConfiguration has an issue
      * @throws QueryException If any exception occurs while querying the database.
      */
-    void publish(DocumentReference configurationReference) throws XWikiException, QueryException;
+    void publishInternal(DocumentReference configurationReference) throws XWikiException, QueryException;
 
     /**
      * Get the page status.

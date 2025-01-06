@@ -40,11 +40,11 @@
 #if ($services.csrf.isTokenValid($!request.form_token))
   #set ($configReference = $!request.configReference)
   #set ($hasAccess = $services.security.authorization.hasAccess('edit', $bookReference))
-  ##TODO: check si config?
   #if ($services.security.authorization.hasAccess('edit', $bookReference))
-    #set ($jobId = 'BookVersions_'+$services.model.serialize($configReference))
-    {{jobprogress jobid=$jobId/}}
-    $services.bookversions.executePublicationJob($configReference, $jobId)
+    #set ($jobId = $services.bookversions.publish($configReference))
+    #if ($jobId)
+      {{jobprogress jobid=$jobId/}}
+    #end
   #end
 #end
 {{/velocity}}</content>

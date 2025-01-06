@@ -20,6 +20,7 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1120,12 +1121,17 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
-    public void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException
+    public String publish(DocumentReference configurationReference) throws JobException
     {
         DefaultRequest jobRequest = new DefaultRequest();
+        String jobId = BookVersionsConstants.PUBLICATION_JOBID_PREFIX
+            + BookVersionsConstants.PUBLICATION_JOBID_SEPARATOR
+            + configurationReference.getName() + BookVersionsConstants.PUBLICATION_JOBID_SEPARATOR
+            + Instant.now().toString();
         jobRequest.setId(jobId);
         jobRequest.setProperty("configurationReference", configurationReference);
         jobExecutor.execute(BookVersionsConstants.PUBLICATIONJOB_TYPE, jobRequest);
+        return jobId;
     }
 
     @Override
@@ -1195,7 +1201,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
-    public void publish(DocumentReference configurationReference) throws XWikiException, QueryException
+    public void publishInternal(DocumentReference configurationReference) throws XWikiException, QueryException
     {
         logger.debug("[publish] Publication required with configuration [{}]", configurationReference);
         logger.info("Starting publication job with configuration [{}].", configurationReference);

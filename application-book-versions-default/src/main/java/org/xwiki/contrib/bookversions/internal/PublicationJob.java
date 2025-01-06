@@ -55,6 +55,6 @@ public class PublicationJob extends AbstractJob<DefaultRequest, DefaultJobStatus
     protected void runInternal() throws Exception
     {
         DocumentReference configurationReference = this.request.getProperty("configurationReference");
-        bookVersionsManagerProvider.get().publish(configurationReference);
+        bookVersionsManagerProvider.get().publishInternal(configurationReference);
     }
 }
