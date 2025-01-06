@@ -584,6 +584,15 @@ public interface BookVersionsManager
     void executePublicationJob(DocumentReference configurationReference, String jobId) throws JobException;
 
     /**
+     * Load the configuration for the publication saved in a document.
+     * @param configurationReference The document containing the configuration for the publication.
+     * @return a map containing the configuration for the publication.
+     * @throws XWikiException if an error occurs while getting the document.
+     */
+    Map<String, Object> loadPublicationConfiguration(DocumentReference configurationReference)
+        throws XWikiException;
+
+    /**
      * Execute the publication process with the provided configuration.
      * 
      * @param configurationReference The configuration reference

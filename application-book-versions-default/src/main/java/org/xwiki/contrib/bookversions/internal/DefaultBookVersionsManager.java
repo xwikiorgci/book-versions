@@ -42,6 +42,8 @@ import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.JobException;
 import org.xwiki.job.JobExecutor;
 import org.xwiki.job.event.status.JobProgressManager;
+import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.event.LogEvent;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -61,6 +63,8 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.doc.merge.MergeConfiguration;
+import com.xpn.xwiki.doc.merge.MergeResult;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.XWikiRequest;
 
@@ -1124,7 +1128,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         jobExecutor.execute(BookVersionsConstants.PUBLICATIONJOB_TYPE, jobRequest);
     }
 
-    private Map<String, Object> loadPublicationConfiguration(DocumentReference configurationReference)
+    @Override
+    public Map<String, Object> loadPublicationConfiguration(DocumentReference configurationReference)
         throws XWikiException
     {
         Map<String, Object> configuration = new HashMap<String, Object>();
@@ -1224,6 +1229,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             DocumentReference pageReference = referenceResolver.resolve(pageStringReference, configurationReference);
             XWikiDocument page = xwiki.getDocument(pageReference, xcontext);
 
+            // Get the relevant content for the page
             DocumentReference contentPageReference = getContentPage(page, configuration);
             logger.debug("[publish] For page [{}], the content will be taken from [{}]", page.getDocumentReference(),
                 contentPageReference);
@@ -1231,6 +1237,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 continue;
             }
 
+            // Check if the content should be published
             XWikiDocument contentPage = xwiki.getDocument(contentPageReference, xcontext).clone();
             if (!isToBePublished(contentPage, configuration)) {
                 // TODO: page shouldn't be ignored if it contains ordering and publishPageOrder is true
@@ -1239,14 +1246,23 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 continue;
             }
 
-            logger.info("Start preparing work content of page [{}].", pageStringReference);
-            contentPage = prepareForPublication(contentPage, configuration);
-            logger.info("Publish page [{}].", pageStringReference);
-            DocumentReference publishedReference = publishDocument(page, contentPage, configuration,
-                publicationComment);
+            // Get the target reference and keep the top page reference for setting its metadata later
+            DocumentReference publishedReference = getPublishedReference(page, configuration);
             if (collectionReference.equals(pageReference)) {
                 targetTopReference = publishedReference;
             }
+
+            // Create the published document
+            logger.info("Prepare the publication of page [{}] to [{}].", contentPage.getDocumentReference(),
+                publishedReference);
+            XWikiDocument publishedDocument = xwiki.getDocument(publishedReference, xcontext);
+            copyContentsToNewVersion(contentPage, publishedDocument, xcontext);
+
+            logger.info("Start transforming content for publication.");
+            publishedDocument = prepareForPublication(page, publishedDocument, configuration);
+
+            logger.info("Publish page.");
+            xwiki.saveDocument(publishedDocument, publicationComment, xcontext);
             logger.info("End working on page [{}].", pageStringReference);
             progressManager.endStep(this);
         }
@@ -1258,6 +1274,52 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         logger.debug("[publish] Publication ended.");
         logger.info("Publication finished");
         progressManager.popLevelProgress(this);
+    }
+
+    // Adapted from org.xwiki.workflowpublication.internal (Publication Workflow Application)
+    protected boolean copyContentsToNewVersion(XWikiDocument fromDocument, XWikiDocument toDocument, XWikiContext xcontext)
+        throws XWikiException
+    {
+        // use a fake 3 way merge: previous is toDocument without comments, rights and wf object
+        // current version is current toDocument
+        // next version is fromDocument without comments, rights and wf object
+        XWikiDocument previousDoc = toDocument.clone();
+        this.removeObjectsForPublication(previousDoc);
+        // set reference and language
+
+        // make sure that the attachments are properly loaded in memory for the duplicate to work fine, otherwise it's a
+        // bit impredictable about attachments
+        fromDocument.loadAttachments(xcontext);
+        XWikiDocument nextDoc = fromDocument.duplicate(toDocument.getDocumentReference());
+        this.removeObjectsForPublication(nextDoc);
+
+        // and now merge. Normally the attachments which are not in the next doc are deleted from the current doc
+        MergeResult result = toDocument.merge(previousDoc, nextDoc, new MergeConfiguration(), xcontext);
+
+        // for some reason the creator doesn't seem to be copied if the toDocument is new, so let's put it
+        if (toDocument.isNew()) {
+            toDocument.setCreatorReference(fromDocument.getCreatorReference());
+        }
+        // Author does not seem to be merged anymore in the merge function in newer versions, so we'll do it here
+        toDocument.setAuthorReference(fromDocument.getAuthorReference());
+
+        List<LogEvent> exception = result.getLog().getLogs(LogLevel.ERROR);
+        if (exception.isEmpty()) {
+            return true;
+        } else {
+            StringBuffer exceptions = new StringBuffer();
+            for (LogEvent e : exception) {
+                if (exceptions.length() == 0) {
+                    exceptions.append(";");
+                }
+                exceptions.append(e.getMessage());
+            }
+            throw new XWikiException(XWikiException.MODULE_XWIKI_DOC, XWikiException.ERROR_XWIKI_UNKNOWN,
+                "Could not copy document contents from "
+                    + localSerializer.serialize(fromDocument.getDocumentReference()) + " to document "
+                    + localSerializer.serialize(toDocument.getDocumentReference()) + ". Caused by: "
+                    + exceptions.toString());
+        }
     }
 
     private void addTopPublicationData (DocumentReference targetTopReference,
@@ -1344,34 +1406,18 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
     }
 
-    private DocumentReference publishDocument(XWikiDocument originalPage, XWikiDocument contentPage,
-        Map<String, Object> configuration, String publicationComment)
+    private DocumentReference getPublishedReference(XWikiDocument originalPage, Map<String, Object> configuration)
         throws QueryException, XWikiException
     {
-        XWikiContext xcontext = this.getXWikiContext();
-        XWiki xwiki = xcontext.getWiki();
-
-        DocumentReference targetReference = (DocumentReference)
-            configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
+        DocumentReference targetReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
         DocumentReference originalReference = originalPage.getDocumentReference();
         DocumentReference collectionReference = getVersionedCollectionReference(originalReference);
         // the first getParent() gets the collection's space, the second the space above
         DocumentReference publishedReference =
             originalReference.replaceParent(collectionReference.getParent().getParent(),
             targetReference.getLastSpaceReference());
-        logger.info("[publishDocument] Publish page [{}] to [{}].", contentPage.getDocumentReference(),
-            publishedReference);
-
-        // Copy the document (force copy)
-        xwiki.copyDocument(contentPage.getDocumentReference(), publishedReference, null, true, true,
-            xcontext);
-        // Update data and metadata
-        XWikiDocument publishedDocument = xwiki.getDocument(publishedReference, xcontext);
-        publishedDocument.setTitle(originalPage.getTitle());
-        publishedDocument = removeObjectsForPublication(publishedDocument);
-        xwiki.saveDocument(publishedDocument, publicationComment, xcontext);
-
-        return publishedReference;
+        return  publishedReference;
     }
 
     private XWikiDocument removeObjectsForPublication(XWikiDocument publishedPage)
@@ -1382,12 +1428,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         return publishedPage;
     }
 
-    private XWikiDocument prepareForPublication(XWikiDocument contentPage, Map<String, Object> configuration)
+    private XWikiDocument prepareForPublication(XWikiDocument originalDocument, XWikiDocument publishedDocument,
+        Map<String, Object> configuration)
     {
         // Execute here all transformations on the document: change links, point to published library,
         logger.debug("[prepareForPublication] Apply changes on [{}] for publication.",
-            contentPage.getDocumentReference());
-        return contentPage;
+            publishedDocument.getDocumentReference());
+        publishedDocument.setTitle(originalDocument.getTitle());
+        return publishedDocument;
     }
 
     private DocumentReference getContentPage(XWikiDocument page, Map<String, Object> configuration)
