@@ -174,11 +174,6 @@ public interface BookVersionsConstants
     String PUBLICATIONCONFIGURATION_PROP_LANGUAGE = "language";
 
     /**
-     * The createSubSpace property of a publication configuration.
-     */
-    String PUBLICATIONCONFIGURATION_PROP_CREATESUBSPACE = "createSubSpace";
-
-    /**
      * The publishOnlyComplete property of a publication configuration.
      */
     String PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE = "publishOnlyComplete";

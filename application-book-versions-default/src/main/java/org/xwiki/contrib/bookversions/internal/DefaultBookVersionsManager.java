@@ -1180,8 +1180,6 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE,
             configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE));
-        configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_CREATESUBSPACE,
-            configurationObject.getIntValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_CREATESUBSPACE) != 0);
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE,
             configurationObject.getIntValue(BookVersionsConstants.
                 PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE) != 0);
@@ -1276,7 +1274,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         progressManager.popLevelProgress(this);
     }
 
-    // Adapted from org.xwiki.workflowpublication.internal (Publication Workflow Application)
+    // Adapted from org.xwiki.workflowpublication.internal.DefaultPublicationWorkflow (Publication Workflow Application)
     protected boolean copyContentsToNewVersion(XWikiDocument fromDocument, XWikiDocument toDocument, XWikiContext xcontext)
         throws XWikiException
     {
