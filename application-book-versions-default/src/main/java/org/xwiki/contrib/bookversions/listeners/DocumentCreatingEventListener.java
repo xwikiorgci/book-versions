@@ -104,14 +104,11 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
                     versionedContentDocument.setHidden(true);
                     updatedXDoc.setContent("");
 
-                    Map<String, Map<String, Object>> lanugageData =
+                    Map<String, Map<String, Object>> languageData =
                         bookVersionsManager.getLanguageData(versionedContentDocument);
-                    if (!lanugageData.isEmpty()) {
-                        bookVersionsManager.setLanguageData(versionedContentDocument, lanugageData);
-                        String title = bookVersionsManager.getTranslatedTitle(versionedContentDocument);
-                        versionedContentDocument
-                            .setTitle(title.isEmpty() ? BookVersionsConstants.MISSING_TRANSLATION_TITLE
-                                : BookVersionsConstants.DEFAULT_TRANSLATION_TITLE);
+                    if (!languageData.isEmpty()) {
+                        bookVersionsManager.setLanguageData(versionedContentDocument, languageData);
+                        versionedContentDocument.setTitle(BookVersionsConstants.DEFAULT_TRANSLATION_TITLE);
                     }
 
                     xcontext.getWiki().saveDocument(versionedContentDocument, xcontext);

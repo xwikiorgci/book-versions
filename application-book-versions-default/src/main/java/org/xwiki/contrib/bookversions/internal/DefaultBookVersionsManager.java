@@ -440,6 +440,27 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
+    public String getDefaultTranslation(DocumentReference documentReference) throws XWikiException, QueryException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+
+        return getDefaultTranslation(xcontext.getWiki().getDocument(documentReference, xcontext));
+    }
+
+    private String getDefaultTranslation(XWikiDocument document) throws XWikiException, QueryException
+    {
+        Map<String, Map<String, Object>> languageData = getLanguageData(document);
+
+        for (Entry<String, Map<String, Object>> languageDataEntry : languageData.entrySet()) {
+            if ((boolean) languageDataEntry.getValue().get(BookVersionsConstants.PAGETRANSLATION_ISDEFAULT)) {
+                return (String) languageDataEntry.getKey();
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public String getTranslatedTitle(DocumentReference documentReference) throws XWikiException, QueryException
     {
         XWikiContext xcontext = this.getXWikiContext();
@@ -453,17 +474,11 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         DocumentReference collectionRef = getVersionedCollectionReference(document.getDocumentReference());
         String selectedLanguage = getSelectedLanguage(collectionRef);
 
-        BaseObject translationObject = null;
-        for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
-            String languageEntry = tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_LANGUAGE);
-            if (!languageEntry.isEmpty() && languageEntry.equals(selectedLanguage)) {
-                translationObject = tObj;
-                break;
-            }
+        if (selectedLanguage == null) {
+            selectedLanguage = this.getDefaultTranslation(document);
         }
 
-        return translationObject != null ? translationObject.getStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE)
-            : null;
+        return selectedLanguage != null ? getTranslatedTitle(document, selectedLanguage) : null;
     }
 
     @Override

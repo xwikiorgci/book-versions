@@ -261,6 +261,19 @@ public class BookVersionsScriptService implements ScriptService
     }
 
     /**
+     * Get the default translation for the given reference.
+     *
+     * @param documentReference The document reference.
+     * @return The default translation.
+     * @throws XWikiException In case the system can't provide an answer.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    public String getDefaultTranslation(DocumentReference documentReference) throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getDefaultTranslation(documentReference);
+    }
+
+    /**
      * Get the translation title for the given reference, for the selected language.
      *
      * @param documentReference The document reference.

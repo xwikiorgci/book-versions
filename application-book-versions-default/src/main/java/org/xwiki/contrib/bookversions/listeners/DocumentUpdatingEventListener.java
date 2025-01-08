@@ -35,8 +35,6 @@ import org.xwiki.contrib.bookversions.BookVersionsManager;
 import org.xwiki.contrib.bookversions.internal.BookVersionsConstants;
 import org.xwiki.observation.event.AbstractLocalEventListener;
 import org.xwiki.observation.event.Event;
-import org.xwiki.query.QueryException;
-
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -82,12 +80,10 @@ public class DocumentUpdatingEventListener extends AbstractLocalEventListener
                 Map<String, Map<String, Object>> lanugageData = bookVersionsManager.getLanguageData(updatedXDoc);
                 if (!lanugageData.isEmpty()) {
                     bookVersionsManager.setLanguageData(updatedXDoc, lanugageData);
-                    String title = bookVersionsManager.getTranslatedTitle(updatedXDoc);
-                    updatedXDoc.setTitle(title.isEmpty() ? BookVersionsConstants.MISSING_TRANSLATION_TITLE
-                        : BookVersionsConstants.DEFAULT_TRANSLATION_TITLE);
+                    updatedXDoc.setTitle(BookVersionsConstants.DEFAULT_TRANSLATION_TITLE);
                 }
             }
-        } catch (XWikiException | QueryException e) {
+        } catch (XWikiException e) {
             logger.error("Could not handle the event listener.", e);
         }
     }
