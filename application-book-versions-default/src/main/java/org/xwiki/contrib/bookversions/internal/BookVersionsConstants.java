@@ -334,7 +334,7 @@ public interface BookVersionsConstants
     String MISSING_TRANSLATION_TITLE = "$!services.localization.render('BookVersions.languages.title.missing')";
 
     /**
-     * The list of objects to remove in published pages
+     * The list of objects to remove in published pages.
      */
     List<EntityReference> PUBLICATION_REMOVEDOBJECTS = Arrays.asList(
         BookVersionsConstants.BOOK_CLASS_REFERENCE,
@@ -354,4 +354,14 @@ public interface BookVersionsConstants
      * The separator of the publication job's ID
      */
     String PUBLICATION_JOBID_SEPARATOR = "_";
+
+    /**
+     * The ID of the variant macro.
+     */
+    String VARIANT_MACRO_ID = "variant";
+
+    /**
+     * The name property of a variant macro.
+     */
+    String VARIANT_MACRO_PROP_NAME = "name";
 }

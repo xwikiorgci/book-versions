@@ -20,6 +20,7 @@
 
 package org.xwiki.contrib.bookversions.internal;
 
+import java.io.StringReader;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,8 +36,11 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.contrib.bookversions.BookVersionsManager;
 import org.xwiki.contrib.bookversions.PageTranslationStatus;
 import org.xwiki.job.DefaultRequest;
@@ -59,6 +63,13 @@ import org.xwiki.rendering.block.Block;
 import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
+import org.xwiki.rendering.macro.Macro;
+import org.xwiki.rendering.macro.descriptor.ContentDescriptor;
+import org.xwiki.rendering.parser.ParseException;
+import org.xwiki.rendering.parser.Parser;
+import org.xwiki.rendering.renderer.BlockRenderer;
+import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
+import org.xwiki.rendering.renderer.printer.WikiPrinter;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -110,6 +121,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
     @Inject
     private JobProgressManager progressManager;
+
+    @Inject
+    @Named("context/root")
+    private Provider<ComponentManager> contextrootComponentManagerProvider;
+
+    @Inject
+    @Named("context")
+    private Provider<ComponentManager> componentManagerProvider;
 
     @Override
     public boolean isBook(DocumentReference documentReference) throws XWikiException
@@ -1216,7 +1235,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
-    public void publishInternal(DocumentReference configurationReference) throws XWikiException, QueryException
+    public void publishInternal(DocumentReference configurationReference)
+        throws XWikiException, QueryException, ComponentLookupException, ParseException
     {
         logger.debug("[publish] Publication required with configuration [{}]", configurationReference);
         logger.info("Starting publication job with configuration [{}].", configurationReference);
@@ -1448,13 +1468,85 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     private XWikiDocument prepareForPublication(XWikiDocument originalDocument, XWikiDocument publishedDocument,
-        Map<String, Object> configuration)
+        Map<String, Object> configuration) throws XWikiException, ComponentLookupException, ParseException
     {
         // Execute here all transformations on the document: change links, point to published library,
         logger.debug("[prepareForPublication] Apply changes on [{}] for publication.",
             publishedDocument.getDocumentReference());
+        // Work directly on the document
         publishedDocument.setTitle(originalDocument.getTitle());
+        // Work on the XDOM
+        XDOM xdom = publishedDocument.getXDOM();
+        String syntax = publishedDocument.getSyntax().toIdString();
+        transformXDOM(xdom, syntax, configuration);
+        // Set the modified XDOM
+        publishedDocument.setContent(xdom);
         return publishedDocument;
+    }
+
+    // Heavily inspired from "Bulk update links according to a TSV mapping using XDOM" on https://snippets.xwiki.org
+    boolean transformXDOM(XDOM xdom, String syntaxId, Map<String, Object>  configuration)
+        throws ComponentLookupException, ParseException
+    {
+        boolean hasXDOMChanged = false;
+        DocumentReference publishedVariantReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+
+        // First, update any document macro that could contain nested content (variant macro)
+
+        for (Block b : xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT_OR_SELF)) {
+            MacroBlock block = (MacroBlock) b;
+            String id = block.getId();
+            String content = block.getContent();
+            logger.debug("[transformXDOM] Checking macro [{}] - [{}]", id, block.getClass());
+            ComponentManager componentManager = contextrootComponentManagerProvider.get();
+            if (!componentManager.hasComponent(Macro.class, id)) {
+                continue;
+            }
+
+            // Check if the macro content is wiki syntax, in which case we'll also verify the contents of the macro
+            Macro<?> macro = componentManager.getInstance(Macro.class, id);
+            ContentDescriptor contentDescriptor = macro.getDescriptor().getContentDescriptor();
+
+            String variant = block.getParameter(BookVersionsConstants.VARIANT_MACRO_PROP_NAME);
+            if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID)
+                && !publishedVariantReference.equals(referenceResolver.resolve(variant))
+            ) {
+                logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content ", variant);
+                xdom.removeBlock(block);
+            } else if (contentDescriptor != null && contentDescriptor.getType().equals(Block.LIST_BLOCK_TYPE)
+                && StringUtils.isNotEmpty(content)
+            ) {
+                // We will take a quick shortcut here and directly parse the macro content with the syntax of the
+                // document
+                logger.debug("[transformXDOM] Calling parse on [{}] with syntax [{}]", id, syntaxId);
+                Parser parser = componentManagerProvider.get().getInstance(Parser.class, syntaxId);
+                XDOM contentXDOM = parser.parse(new StringReader(content));
+                boolean hasMacroContentChanged = transformXDOM(contentXDOM, syntaxId, configuration);
+                if (hasMacroContentChanged) {
+                    logger.debug("[transformXDOM] The content of macro [{}] has changed", id);
+                    WikiPrinter printer = new DefaultWikiPrinter();
+                    BlockRenderer renderer =
+                        this.componentManagerProvider.get().getInstance(BlockRenderer.class, syntaxId);
+                    renderer.render(block, printer);
+                    String newMacroContent = printer.toString();
+                    // Create a new macro block and swap it
+                    MacroBlock newMacroBlock =
+                        new MacroBlock(id, block.getParameters(), newMacroContent, block.isInline());
+                    block.getParent().replaceChild(newMacroBlock, block);
+                    hasXDOMChanged = true;
+                }
+                if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID)) {
+                    logger.debug("[transformXDOM] Variant macro is for [{}], it is replaced by its content ", variant);
+                    block.getParent().replaceChild(contentXDOM, block);
+                    hasXDOMChanged = true;
+                }
+            }
+        }
+
+        //TODO: add here other transformations (links, includeLibrary macro, ...)
+
+        return hasXDOMChanged;
     }
 
     private DocumentReference getContentPage(XWikiDocument page, Map<String, Object> configuration)
