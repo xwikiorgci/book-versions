@@ -660,4 +660,10 @@ public interface BookVersionsManager
      */
     boolean isDefaultLanguage(XWikiDocument document, String language) throws XWikiException, QueryException;
 
+    /**
+     * Remove all translation objects from the given document.
+     *
+     * @param document The XWiki document.
+     */
+    void resetTranslations(XWikiDocument document);
 }

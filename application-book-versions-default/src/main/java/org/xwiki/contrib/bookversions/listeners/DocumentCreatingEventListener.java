@@ -106,7 +106,7 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
 
                     Map<String, Map<String, Object>> languageData =
                         bookVersionsManager.getLanguageData(versionedContentDocument);
-                    if (!languageData.isEmpty()) {
+                    if (languageData != null && !languageData.isEmpty()) {
                         bookVersionsManager.setLanguageData(versionedContentDocument, languageData);
                         versionedContentDocument.setTitle(BookVersionsConstants.DEFAULT_TRANSLATION_TITLE);
                     }

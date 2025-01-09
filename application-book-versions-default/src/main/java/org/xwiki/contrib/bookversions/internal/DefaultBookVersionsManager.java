@@ -47,9 +47,6 @@ import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.JobException;
 import org.xwiki.job.JobExecutor;
 import org.xwiki.job.event.status.JobProgressManager;
-import org.xwiki.localization.LocaleUtils;
-import org.xwiki.localization.ContextualLocalizationManager;
-import org.xwiki.localization.Translation;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.model.EntityType;
@@ -115,9 +112,6 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Inject
     @Named("SlugEntityNameValidation")
     private Provider<EntityNameValidation> slugEntityNameValidationProvider;
-
-    @Inject
-    private Provider<ContextualLocalizationManager> localizationManagerProvider;
 
     @Inject
     private Logger logger;
@@ -528,10 +522,29 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
         }
 
-        String missingTitleString = localizationManagerProvider.get()
-            .getTranslationPlain(BookVersionsConstants.MISSING_TRANSLATION_TITLE_KEY, new ArrayList<String>());
+        return title != null && !title.isEmpty() ? title : getInheritedTitle(document);
+    }
 
-        return title != null && !title.isEmpty() ? title : missingTitleString;
+    private String getInheritedTitle(XWikiDocument document) throws XWikiException
+    {
+        if (isVersionedContent(document)) {
+
+            DocumentReference documentReference = document.getDocumentReference();
+            SpaceReference parentSpaceReference = getSpaceReference(documentReference);
+            if (parentSpaceReference != null) {
+                XWikiContext xcontext = this.getXWikiContext();
+
+                DocumentReference parentPageReference =
+                    new DocumentReference(xcontext.getWiki().DEFAULT_SPACE_HOMEPAGE, parentSpaceReference);
+                // The parent is a book page, so use its title.
+                if (isPage(parentPageReference)) {
+                    return xcontext.getWiki().getDocument(parentPageReference, xcontext).getTitle();
+                }
+            }
+
+        }
+
+        return document.getDocumentReference().getName();
     }
 
     @Override
@@ -1661,10 +1674,12 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     // Status
                     String statusParameterValue = macroBlock.getParameter(BookVersionsConstants.PAGETRANSLATION_STATUS);
                     PageTranslationStatus status = PageTranslationStatus.NOT_TRANSLATED;
-                    if (!statusParameterValue.isEmpty() && statusParameterValue.equals("TRANSLATED")) {
+                    if (statusParameterValue != null && !statusParameterValue.isEmpty()
+                        && statusParameterValue.equals("TRANSLATED")) {
                         status = PageTranslationStatus.TRANSLATED;
                     }
-                    if (!statusParameterValue.isEmpty() && statusParameterValue.equals("OUTDATED")) {
+                    if (statusParameterValue != null && !statusParameterValue.isEmpty()
+                        && statusParameterValue.equals("OUTDATED")) {
                         status = PageTranslationStatus.OUTDATED;
                     }
 
@@ -1677,7 +1692,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     currentLanguageData.put(BookVersionsConstants.PAGETRANSLATION_STATUS,
                         status != null ? status : PageTranslationStatus.NOT_TRANSLATED);
                     currentLanguageData.put(BookVersionsConstants.PAGETRANSLATION_ISDEFAULT,
-                        !isDefault.isEmpty() ? Boolean.valueOf(isDefault) : false);
+                        isDefault != null && !isDefault.isEmpty() ? Boolean.valueOf(isDefault) : false);
 
                     languageData.put(language, currentLanguageData);
                 }
@@ -1697,7 +1712,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
             for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
                 String languageEntry = tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_LANGUAGE);
-                if (!languageEntry.isEmpty() && languageEntry.equals(language)) {
+                if (languageEntry != null && !languageEntry.isEmpty() && languageEntry.equals(language)) {
                     translationObject = tObj;
                     break;
                 }
@@ -1716,8 +1731,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
 
             String title = (String) languageDataEntry.getValue().get(BookVersionsConstants.PAGETRANSLATION_TITLE);
-            translationObject.setStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE,
-                title != null ? title : "");
+            translationObject.setStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE, title != null ? title : "");
 
             PageTranslationStatus status =
                 (PageTranslationStatus) languageDataEntry.getValue().get(BookVersionsConstants.PAGETRANSLATION_STATUS);
@@ -1735,6 +1749,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             if (languageEntry == null || languageEntry.isEmpty() || !languageData.containsKey(languageEntry)) {
                 document.removeXObject(tObj);
             }
+        }
+    }
+
+    @Override
+    public void resetTranslations(XWikiDocument document)
+    {
+        for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
+            document.removeXObject(tObj);
         }
     }
 

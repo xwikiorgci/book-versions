@@ -78,9 +78,11 @@ public class DocumentUpdatingEventListener extends AbstractLocalEventListener
         try {
             if (bookVersionsManager.isPage(updatedXDoc) || bookVersionsManager.isVersionedContent(updatedXDoc)) {
                 Map<String, Map<String, Object>> lanugageData = bookVersionsManager.getLanguageData(updatedXDoc);
-                if (!lanugageData.isEmpty()) {
+                if (lanugageData != null && !lanugageData.isEmpty()) {
                     bookVersionsManager.setLanguageData(updatedXDoc, lanugageData);
                     updatedXDoc.setTitle(BookVersionsConstants.DEFAULT_TRANSLATION_TITLE);
+                } else {
+                    bookVersionsManager.resetTranslations(updatedXDoc);
                 }
             }
         } catch (XWikiException e) {
