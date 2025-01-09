@@ -47,6 +47,9 @@ import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.JobException;
 import org.xwiki.job.JobExecutor;
 import org.xwiki.job.event.status.JobProgressManager;
+import org.xwiki.localization.LocaleUtils;
+import org.xwiki.localization.ContextualLocalizationManager;
+import org.xwiki.localization.Translation;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.model.EntityType;
@@ -112,6 +115,9 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Inject
     @Named("SlugEntityNameValidation")
     private Provider<EntityNameValidation> slugEntityNameValidationProvider;
+
+    @Inject
+    private Provider<ContextualLocalizationManager> localizationManagerProvider;
 
     @Inject
     private Logger logger;
@@ -512,14 +518,20 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Override
     public String getTranslatedTitle(XWikiDocument document, String language) throws XWikiException, QueryException
     {
+        String title = null;
+
         for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
             String languageEntry = tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_LANGUAGE);
-            if (!languageEntry.isEmpty() && languageEntry.equals(language)) {
-                return tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE);
+            if (languageEntry != null && !languageEntry.isEmpty() && languageEntry.equals(language)) {
+                title = tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE);
+
             }
         }
 
-        return null;
+        String missingTitleString = localizationManagerProvider.get()
+            .getTranslationPlain(BookVersionsConstants.MISSING_TRANSLATION_TITLE_KEY, new ArrayList<String>());
+
+        return title != null && !title.isEmpty() ? title : missingTitleString;
     }
 
     @Override
@@ -1641,7 +1653,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             if (macroBlock.getId().equals(BookVersionsConstants.CONTENTTRANSLATION_MACRO_ID)) {
                 String language = macroBlock.getParameter(BookVersionsConstants.PAGETRANSLATION_LANGUAGE);
 
-                if (!language.isEmpty()) {
+                if (language != null && !language.isEmpty()) {
 
                     // Title
                     String title = macroBlock.getParameter(BookVersionsConstants.PAGETRANSLATION_TITLE);
@@ -1660,7 +1672,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     String isDefault = macroBlock.getParameter(BookVersionsConstants.PAGETRANSLATION_ISDEFAULT);
 
                     Map<String, Object> currentLanguageData = new HashMap<String, Object>();
-                    currentLanguageData.put(BookVersionsConstants.PAGETRANSLATION_TITLE, !title.isEmpty() ? title : "");
+                    currentLanguageData.put(BookVersionsConstants.PAGETRANSLATION_TITLE,
+                        title != null && !title.isEmpty() ? title : "");
                     currentLanguageData.put(BookVersionsConstants.PAGETRANSLATION_STATUS,
                         status != null ? status : PageTranslationStatus.NOT_TRANSLATED);
                     currentLanguageData.put(BookVersionsConstants.PAGETRANSLATION_ISDEFAULT,
@@ -1703,20 +1716,25 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
 
             String title = (String) languageDataEntry.getValue().get(BookVersionsConstants.PAGETRANSLATION_TITLE);
-            if (!title.isEmpty()) {
-                translationObject.setStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE, title);
-            }
+            translationObject.setStringValue(BookVersionsConstants.PAGETRANSLATION_TITLE,
+                title != null ? title : "");
 
             PageTranslationStatus status =
                 (PageTranslationStatus) languageDataEntry.getValue().get(BookVersionsConstants.PAGETRANSLATION_STATUS);
-            if (status != null) {
-                translationObject.setStringValue(BookVersionsConstants.PAGETRANSLATION_STATUS,
-                    status.getTranslationStatus());
-            }
+            translationObject.setStringValue(BookVersionsConstants.PAGETRANSLATION_STATUS,
+                status != null ? status.getTranslationStatus() : null);
 
             boolean isDefault =
                 (boolean) languageDataEntry.getValue().get(BookVersionsConstants.PAGETRANSLATION_ISDEFAULT);
             translationObject.setIntValue(BookVersionsConstants.PAGETRANSLATION_ISDEFAULT, isDefault ? 1 : 0);
+        }
+
+        // Now, remove translations that were deleted by the user or don't have a language defined
+        for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
+            String languageEntry = tObj.getStringValue(BookVersionsConstants.PAGETRANSLATION_LANGUAGE);
+            if (languageEntry == null || languageEntry.isEmpty() || !languageData.containsKey(languageEntry)) {
+                document.removeXObject(tObj);
+            }
         }
     }
 

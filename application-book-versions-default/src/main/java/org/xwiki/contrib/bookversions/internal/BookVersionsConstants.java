@@ -329,9 +329,9 @@ public interface BookVersionsConstants
     String DEFAULT_TRANSLATION_TITLE = "$!services.bookversions.getTranslatedTitle($doc.getDocumentReference())";
 
     /**
-     * The message about the missing title value for the selected translation.
+     * The message key about the missing title value for the selected translation.
      */
-    String MISSING_TRANSLATION_TITLE = "$!services.localization.render('BookVersions.languages.title.missing')";
+    String MISSING_TRANSLATION_TITLE_KEY = "BookVersions.languages.title.missing";
 
     /**
      * The list of objects to remove in published pages.
