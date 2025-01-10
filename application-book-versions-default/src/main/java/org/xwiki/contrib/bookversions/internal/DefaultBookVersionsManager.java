@@ -1545,11 +1545,16 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             Macro<?> macro = componentManager.getInstance(Macro.class, id);
             ContentDescriptor contentDescriptor = macro.getDescriptor().getContentDescriptor();
 
-            String variant = block.getParameter(BookVersionsConstants.VARIANT_MACRO_PROP_NAME);
+            String variants = block.getParameter(BookVersionsConstants.VARIANT_MACRO_PROP_NAME);
+            List<DocumentReference> variantReferences = new ArrayList<>();
+            for (String variant : variants.split(",")) {
+                variantReferences.add(referenceResolver.resolve(variant));
+            }
             if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID) && publishedVariantReference != null
-                && !publishedVariantReference.equals(referenceResolver.resolve(variant))
+                && !variantReferences.contains(publishedVariantReference)
             ) {
-                logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content ", variant);
+                logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content ",
+                    variantReferences);
                 xdom.removeBlock(block);
             } else if (contentDescriptor != null && contentDescriptor.getType().equals(Block.LIST_BLOCK_TYPE)
                 && StringUtils.isNotEmpty(content)
@@ -1574,7 +1579,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     hasXDOMChanged = true;
                 }
                 if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID)) {
-                    logger.debug("[transformXDOM] Variant macro is for [{}], it is replaced by its content ", variant);
+                    logger.debug("[transformXDOM] Variant macro is for [{}], it is replaced by its content ",
+                        variantReferences);
                     block.getParent().replaceChild(contentXDOM, block);
                     hasXDOMChanged = true;
                 }
