@@ -1555,7 +1555,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             ) {
                 logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content ",
                     variantReferences);
-                xdom.removeBlock(block);
+                block.getParent().removeBlock(block);
             } else if (contentDescriptor != null && contentDescriptor.getType().equals(Block.LIST_BLOCK_TYPE)
                 && StringUtils.isNotEmpty(content)
             ) {
