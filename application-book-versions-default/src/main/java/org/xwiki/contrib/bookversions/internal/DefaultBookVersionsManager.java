@@ -1502,6 +1502,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             publishedDocument.getDocumentReference());
         // Work directly on the document
         publishedDocument.setTitle(originalDocument.getTitle());
+        publishedDocument.setHidden(false);
         // Work on the XDOM
         XDOM xdom = publishedDocument.getXDOM();
         String syntax = publishedDocument.getSyntax().toIdString();
