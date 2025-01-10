@@ -1545,11 +1545,15 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             Macro<?> macro = componentManager.getInstance(Macro.class, id);
             ContentDescriptor contentDescriptor = macro.getDescriptor().getContentDescriptor();
 
+            // Get the possible variants from the variant macro
             String variants = block.getParameter(BookVersionsConstants.VARIANT_MACRO_PROP_NAME);
             List<DocumentReference> variantReferences = new ArrayList<>();
-            for (String variant : variants.split(",")) {
-                variantReferences.add(referenceResolver.resolve(variant));
+            if (variants != null) {
+                for (String variant : variants.split(",")) {
+                    variantReferences.add(referenceResolver.resolve(variant));
+                }
             }
+
             if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID) && publishedVariantReference != null
                 && !variantReferences.contains(publishedVariantReference)
             ) {
