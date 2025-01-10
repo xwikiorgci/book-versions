@@ -1546,7 +1546,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             ContentDescriptor contentDescriptor = macro.getDescriptor().getContentDescriptor();
 
             String variant = block.getParameter(BookVersionsConstants.VARIANT_MACRO_PROP_NAME);
-            if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID)
+            if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID) && publishedVariantReference != null
                 && !publishedVariantReference.equals(referenceResolver.resolve(variant))
             ) {
                 logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content ", variant);
