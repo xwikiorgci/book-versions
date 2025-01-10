@@ -1325,7 +1325,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             copyContentsToNewVersion(contentPage, publishedDocument, xcontext);
 
             logger.info("Transforming content for publication.");
-            prepareForPublication(page, publishedDocument, configuration);
+            prepareForPublication(contentPage, publishedDocument, collection, configuration);
 
             logger.debug("[publish] Publish page.");
             xwiki.saveDocument(publishedDocument, publicationComment, xcontext);
@@ -1504,7 +1504,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     private XWikiDocument prepareForPublication(XWikiDocument originalDocument, XWikiDocument publishedDocument,
-        Map<String, Object> configuration) throws XWikiException, ComponentLookupException, ParseException
+        XWikiDocument collection, Map<String, Object> configuration)
+        throws XWikiException, ComponentLookupException, ParseException
     {
         // Execute here all transformations on the document: change links, point to published library,
         logger.debug("[prepareForPublication] Apply changes on [{}] for publication.",
@@ -1515,14 +1516,15 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         // Work on the XDOM
         XDOM xdom = publishedDocument.getXDOM();
         String syntax = publishedDocument.getSyntax().toIdString();
-        transformXDOM(xdom, syntax, configuration);
+        transformXDOM(xdom, syntax, originalDocument, publishedDocument, collection, configuration);
         // Set the modified XDOM
         publishedDocument.setContent(xdom);
         return publishedDocument;
     }
 
     // Heavily inspired from "Bulk update links according to a TSV mapping using XDOM" on https://snippets.xwiki.org
-    private boolean transformXDOM(XDOM xdom, String syntaxId, Map<String, Object>  configuration)
+    private boolean transformXDOM(XDOM xdom, String syntaxId, XWikiDocument originalDocument,
+        XWikiDocument publishedDocument, XWikiDocument collection, Map<String, Object>  configuration)
         throws ComponentLookupException, ParseException
     {
         boolean hasXDOMChanged = false;
@@ -1568,7 +1570,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 logger.debug("[transformXDOM] Calling parse on [{}] with syntax [{}]", id, syntaxId);
                 Parser parser = componentManagerProvider.get().getInstance(Parser.class, syntaxId);
                 XDOM contentXDOM = parser.parse(new StringReader(content));
-                boolean hasMacroContentChanged = transformXDOM(contentXDOM, syntaxId, configuration);
+                boolean hasMacroContentChanged = transformXDOM(contentXDOM, syntaxId, originalDocument,
+                    publishedDocument, collection, configuration);
                 if (hasMacroContentChanged) {
                     logger.debug("[transformXDOM] The content of macro [{}] has changed", id);
                     WikiPrinter printer = new DefaultWikiPrinter();
@@ -1592,8 +1595,33 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
 
         //TODO: add here other transformations (links, includeLibrary macro, ...)
+        boolean transformedLibrary = transformLibrary(xdom, collection, configuration);
+        return hasXDOMChanged || transformedLibrary;
+    }
 
-        return hasXDOMChanged;
+    private boolean transformLibrary(XDOM xdom, XWikiDocument collection, Map<String, Object>  configuration)
+    {
+        logger.debug("[transformLibrary] Starting to transform includeLibrary macro reference");
+        boolean hasChanged = false;
+        List<MacroBlock> listBlock = xdom.getBlocks(
+            new ClassBlockMatcher(
+                new MacroBlock(BookVersionsConstants.INCLUDELIBRARY_MACRO_ID, Collections.emptyMap(), true).getClass()
+            ), Block.Axes.DESCENDANT_OR_SELF);
+        logger.debug("[transformLibrary] [{}] '{}' macros found in the passed XDOM", listBlock.size(),
+            BookVersionsConstants.INCLUDELIBRARY_MACRO_ID);
+
+        for (MacroBlock macroBlock : listBlock) {
+            //TODO: finish library transform
+            /*
+            logger.debug
+            DocumentReference library = getLibrary;
+            DocumentReference libraryVersion = getVersion(collectionReference, publishedVersion);
+            DocumentReference publishedLibrary = getPublishedCollection(library, libraryVersion);
+            replaceIncludeLibraryWithInclude(publishedLibrary);
+            block.getParent().replace
+             */
+        }
+        return hasChanged;
     }
 
     private DocumentReference getContentPage(XWikiDocument page, Map<String, Object> configuration)

@@ -364,4 +364,14 @@ public interface BookVersionsConstants
      * The name property of a variant macro.
      */
     String VARIANT_MACRO_PROP_NAME = "name";
+
+    /**
+     * The ID of the includeLibrary macro.
+     */
+    String INCLUDELIBRARY_MACRO_ID = "includeLibrary";
+
+    /**
+     * The keyReference property of an includeLibrary macro.
+     */
+    String INCLUDELIBRARY_MACRO_PROP_KEYREFERENCE = "keyReference";
 }
