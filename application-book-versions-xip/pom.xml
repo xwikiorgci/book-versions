@@ -40,6 +40,11 @@
       <type>xar</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>macro-job</artifactId>
+      <version>2.1</version>
+    </dependency>
   </dependencies>
   <build>
     <extensions>
@@ -70,5 +75,26 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.xwiki.contrib</groupId>
+        <artifactId>managed-dependencies-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>inject-managed-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- The configuration of the enforcer plugin will be inherited from parent POMs, but we need to refer
+      to this plugin here in order to make sure that the inject-managed-dependencies mojo is executed before
+      the enforcer -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+    </plugins>
   </build>
 </project>
