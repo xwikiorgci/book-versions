@@ -1272,12 +1272,12 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
         XWikiContext xcontext = this.getXWikiContext();
         XWiki xwiki = xcontext.getWiki();
-        DocumentReference sourceReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
+        DocumentReference sourceReference = (DocumentReference) configuration.get(
+                BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
         DocumentReference collectionReference = getVersionedCollectionReference(sourceReference);
         XWikiDocument collection = xwiki.getDocument(collectionReference, xcontext);
-        DocumentReference versionReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
+        DocumentReference versionReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
         XWikiDocument version = xwiki.getDocument(versionReference,xcontext);
         String publicationComment = "Published from [" + collection.getTitle()+ "], version [" + version.getTitle()
             + "].";
@@ -1334,6 +1334,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
 
         // Add metadata in the collection page (master) and top page (published space)
+        logger.debug("[publish] Adding metadata on master and published space top pages.");
         addMasterPublicationData(collection, configuration);
         addTopPublicationData(targetTopReference, publicationComment, collection, configuration);
 
@@ -1393,14 +1394,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         Map<String, Object> configuration) throws XWikiException
     {
         if (targetTopReference != null) {
+            logger.debug("[addTopPublicationData] Adding metadata to [{}]", targetTopReference);
             XWikiContext xcontext = this.getXWikiContext();
             XWiki xwiki = xcontext.getWiki();
-            DocumentReference versionReference =
-                (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
+            DocumentReference versionReference = (DocumentReference) configuration.get(
+                BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
             XWikiDocument version = xwiki.getDocument(versionReference, xcontext);
-            DocumentReference variantReference =
-                (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
-            XWikiDocument variant = xwiki.getDocument(variantReference, xcontext);
+            DocumentReference variantReference = (DocumentReference) configuration.get(
+                BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
 
             // Set metadata
             XWikiDocument targetTop = xwiki.getDocument(targetTopReference, xcontext).clone();
@@ -1410,8 +1411,11 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 xcontext);
             publicationObject.set(BookVersionsConstants.PUBLISHEDCOLLECTION_PROP_VERSIONNAME, version.getTitle(),
                 xcontext);
-            publicationObject.set(BookVersionsConstants.PUBLISHEDCOLLECTION_PROP_VARIANTNAME, variant.getTitle(),
-                xcontext);
+            if (variantReference != null) {
+                XWikiDocument variant = xwiki.getDocument(variantReference, xcontext);
+                publicationObject.set(BookVersionsConstants.PUBLISHEDCOLLECTION_PROP_VARIANTNAME, variant.getTitle(),
+                    xcontext);
+            }
             xwiki.saveDocument(targetTop, publicationComment, xcontext);
 
         }
@@ -1420,17 +1424,18 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     private void addMasterPublicationData (XWikiDocument collection, Map<String, Object> configuration)
         throws XWikiException
     {
+        logger.debug("[addMasterPublicationData] Adding metadata to [{}]", collection.getDocumentReference());
         XWikiContext xcontext = this.getXWikiContext();
         XWiki xwiki = xcontext.getWiki();
-        DocumentReference sourceReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
-        DocumentReference destinationReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
-        DocumentReference versionReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
+        DocumentReference sourceReference = (DocumentReference) configuration.get(
+                BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
+        DocumentReference destinationReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
+        DocumentReference versionReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
         XWikiDocument version = xwiki.getDocument(versionReference,xcontext);
-        DocumentReference variantReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+        DocumentReference variantReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
         XWikiDocument collectionClone = collection.clone();
 
         String publicationId;
@@ -1447,18 +1452,22 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
 
         // Check existing publication objects
+        logger.debug("[addMasterPublicationData] Checking if an object already exists for ID [{}] and source [{}].",
+            publicationId, sourceReference);
         BaseObject publicationObject = null;
         for (BaseObject XObject : collectionClone.getXObjects(BookVersionsConstants.PUBLICATION_CLASS_REFERENCE)) {
             String objectId = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_ID);
             String objectSource = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_SOURCE);
             if (publicationId.equals(objectId) && sourceReference.toString().equals(objectSource)) {
                 // Previous publication of the same space, with same version and variant found
+                logger.debug("[addMasterPublicationData] An object already exists.");
                 publicationObject = XObject;
                 break;
             }
         }
         if (publicationObject == null) {
             // No previous publication found, create a new one
+            logger.debug("[addMasterPublicationData] A new object is added.");
             publicationObject = collectionClone.newXObject(BookVersionsConstants.PUBLICATION_CLASS_REFERENCE,
                  xcontext);
         }
@@ -1475,8 +1484,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     private DocumentReference getPublishedReference(XWikiDocument originalPage, Map<String, Object> configuration)
         throws QueryException, XWikiException
     {
-        DocumentReference targetReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
+        DocumentReference targetReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
         DocumentReference originalReference = originalPage.getDocumentReference();
         DocumentReference collectionReference = getVersionedCollectionReference(originalReference);
         // the first getParent() gets the collection's space, the second the space above
@@ -1517,8 +1526,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         throws ComponentLookupException, ParseException
     {
         boolean hasXDOMChanged = false;
-        DocumentReference publishedVariantReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+        DocumentReference publishedVariantReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
 
         // First, update any document macro that could contain nested content (variant macro)
 
@@ -1596,8 +1605,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         String status = getPageStatus(page);
         boolean publishOnlyComplete =
             (boolean) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE);
-        DocumentReference variantReference =
-            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+        DocumentReference variantReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
         if (isMarkedDeleted(page)) {
             logger.debug("[isToBePublished] Page is ignored because it is marked as deleted.");
             logger.info("Page is ignored because it is marked as deleted.");
