@@ -1594,8 +1594,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         if (unversioned) {
             return page.getDocumentReference();
         } else {
-            return getInheritedContentReference(page.getDocumentReference(),
-                (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION));
+            return getInheritedContentReference(page.getDocumentReference(), (DocumentReference) configuration.get(
+                BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION));
         }
     }
 
