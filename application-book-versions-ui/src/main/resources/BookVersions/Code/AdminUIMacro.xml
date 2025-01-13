@@ -349,11 +349,9 @@
 #else
   $services.localization.render('BookVersions.adminMenu.librariesText')
   #set ($spaceReference = $services.bookversions.getVersionedCollectionReference($doc.getDocumentReference()))
-  #set ($spaceReferenceString = $services.model.serialize($spaceReference.getLastSpaceReference()))
-  #set ($query = $services.query.xwql("select distinct obj.libraryReference from Document doc, doc.object(BookVersions.Code.LibraryReferenceClass) as obj where doc.space like :space order by obj.libraryReference asc"))
-  #set ($query = $query.bindValue('space').literal("${spaceReferenceString}.").anyChars().query())
-  #foreach ($libRefString in $query.execute())
-    * $xwiki.getDocument($libRefString).getTitle()
+    #set ($libReferencesList = $services.bookversions.getUsedLibraries($spaceReference))
+  #foreach ($libRef in $libReferencesList)
+    * [[$libRef]]
   #end
 #end
 

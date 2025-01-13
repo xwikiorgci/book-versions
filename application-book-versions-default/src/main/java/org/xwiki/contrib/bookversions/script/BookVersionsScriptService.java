@@ -21,6 +21,7 @@
 package org.xwiki.contrib.bookversions.script;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -596,6 +597,34 @@ public class BookVersionsScriptService implements ScriptService
         DocumentReference keyReference) throws XWikiException, QueryException
     {
         return bookVersionsManagerProvider.get().getLinkedLibraryContentReference(bookReference, keyReference);
+    }
+
+    /**
+     * Get a list of used libraries in the given book.
+     * @param bookReference the reference of the book
+     * @return the list of used library references
+     * @throws XWikiException In case the isBook method has an issue.
+     * @throws QueryException If any exception occurs while querying the database.
+     */
+    public List<DocumentReference> getUsedLibraries(DocumentReference bookReference)
+        throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getUsedLibraries(bookReference);
+    }
+
+    /**
+     * Get the published space for each of the libraries used in the given book.
+     * @param bookReference the reference of the book
+     * @param versionReference the version of the book, which corresponds to a library's version in the book
+     * configuration
+     * @return the published space reference of each library used in the book
+     * @throws XWikiException In case a getDocument method or a check of type (isBook, ...) has an issue
+     * @throws QueryException If any exception occurs while querying the database for the used libraries in the book.
+     */
+    public Map<DocumentReference, DocumentReference> getUsedPublishedLibraries(DocumentReference bookReference,
+        DocumentReference versionReference) throws XWikiException, QueryException
+    {
+        return bookVersionsManagerProvider.get().getUsedPublishedLibraries(bookReference, versionReference);
     }
 
     /**
