@@ -1693,7 +1693,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 .createQuery(", BaseObject as obj where doc.fullName = obj.name and obj.className = :class "
                     + "and doc.space like :space escape '/' order by doc.fullName asc", Query.HQL)
                 .bindValue("class", localSerializer.serialize(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE))
-                .bindValue("space", spacePrefix).execute();
+                .bindValue("space", spacePrefix)
+                .setWiki(sourceReference.getWikiReference().getName()).execute();
             // add the source as first element, as it's given by the query
             result.add(0, sourceReference.toString());
 
