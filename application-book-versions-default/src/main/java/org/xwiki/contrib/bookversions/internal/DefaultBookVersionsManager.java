@@ -1232,16 +1232,17 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             return configuration;
         }
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE,
-            referenceResolver.resolve(sourceReferenceString));
+            referenceResolver.resolve(sourceReferenceString, configurationReference.getWikiReference()));
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE,
-            referenceResolver.resolve(destinationReferenceString));
+            referenceResolver.resolve(destinationReferenceString, configurationReference.getWikiReference()));
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION,
-            referenceResolver.resolve(versionReferenceString));
+            referenceResolver.resolve(versionReferenceString, configurationReference.getWikiReference()));
 
         String variantReferenceString =
             configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT,
-            variantReferenceString.isBlank() ? null : referenceResolver.resolve(variantReferenceString));
+            variantReferenceString.isBlank() ? null : referenceResolver.resolve(variantReferenceString,
+                configurationReference.getWikiReference()));
 
         configuration.put(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE,
             configurationObject.getStringValue(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_LANGUAGE));
