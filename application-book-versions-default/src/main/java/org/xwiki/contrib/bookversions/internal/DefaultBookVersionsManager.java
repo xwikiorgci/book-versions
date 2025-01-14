@@ -1354,6 +1354,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         XWikiDocument version = xwiki.getDocument(versionReference,xcontext);
         String publicationComment = "Published from [" + collection.getTitle()+ "], version [" + version.getTitle()
             + "].";
+        DocumentReference targetReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
         Map<DocumentReference, DocumentReference> publishedLibraries =
             getUsedPublishedLibraries(collection.getDocumentReference(), versionReference);
 
@@ -1363,7 +1365,6 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         int i = 1;
         int pageQuantity = pageReferenceTree.size();
         progressManager.pushLevelProgress(pageReferenceTree.size(), this);
-        DocumentReference targetTopReference = null;
         for (String pageStringReference : pageReferenceTree) {
             progressManager.startStep(this, pageStringReference);
             logger.info("Page publication {}/{}: [{}]", i, pageQuantity, pageStringReference);
@@ -1387,11 +1388,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 continue;
             }
 
-            // Get the target reference and keep the top page reference for setting its metadata later
+            // Get the published reference
             DocumentReference publishedReference = getPublishedReference(page, configuration);
-            if (collectionReference.equals(pageReference)) {
-                targetTopReference = publishedReference;
-            }
 
             // Create the published document
             logger.info("Copying page [{}] to [{}].", contentPage.getDocumentReference(),
@@ -1411,7 +1409,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         // Add metadata in the collection page (master) and top page (published space)
         logger.debug("[publish] Adding metadata on master and published space top pages.");
         addMasterPublicationData(collection, configuration);
-        addTopPublicationData(targetTopReference, publicationComment, collection, configuration);
+        addTopPublicationData(targetReference, publicationComment, collection, configuration);
 
         logger.debug("[publish] Publication ended.");
         logger.info("Publication finished");
@@ -1589,9 +1587,9 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
         DocumentReference originalReference = originalPage.getDocumentReference();
         DocumentReference collectionReference = getVersionedCollectionReference(originalReference);
-        // the first getParent() gets the collection's space, the second the space above
+        // getParent() gets the collection's space
         DocumentReference publishedReference =
-            originalReference.replaceParent(collectionReference.getParent().getParent(),
+            originalReference.replaceParent(collectionReference.getParent(),
             targetReference.getLastSpaceReference());
         return  publishedReference;
     }
