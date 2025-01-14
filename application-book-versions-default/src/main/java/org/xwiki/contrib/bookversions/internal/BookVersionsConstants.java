@@ -342,7 +342,8 @@ public interface BookVersionsConstants
         BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE,
         BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE,
         BookVersionsConstants.MARKEDDELETED_CLASS_REFERENCE,
-        BookVersionsConstants.VARIANTLIST_CLASS_REFERENCE
+        BookVersionsConstants.VARIANTLIST_CLASS_REFERENCE,
+        BookVersionsConstants.PUBLICATION_CLASS_REFERENCE
     );
 
     /**
