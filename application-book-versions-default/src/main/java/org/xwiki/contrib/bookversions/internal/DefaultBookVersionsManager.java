@@ -1203,7 +1203,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 .execute();
 
             for (String resultString : resultStrings) {
-                result.add(referenceResolver.resolve(resultString));
+                result.add(currentMixedReferenceResolver.resolve(resultString, bookReference));
             }
 
             logger.debug("[getUsedLibraries] Libraries used in book: [{}]", result);
