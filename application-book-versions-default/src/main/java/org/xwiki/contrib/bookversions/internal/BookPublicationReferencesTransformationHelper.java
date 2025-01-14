@@ -139,6 +139,40 @@ public class BookPublicationReferencesTransformationHelper
         boolean hasXDOMChanged = false;
 
         // Handle the transformation of links
+        hasXDOMChanged |= transformLinkBlocks(xdom, originalReference, spaceReferencesMap);
+
+        // Handle the transformation of images
+        hasXDOMChanged |= transformImageBlocks(xdom, originalReference, spaceReferencesMap);
+
+        // We assume that transformation of macro content is already handled through calls in #transformXDOM.
+        // Here we only care about updating the macro parameters which are declared as document references
+        for (Block block : xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT_OR_SELF)) {
+            MacroBlock macroBlock = (MacroBlock) block;
+
+            // Try to load the macro definition
+            if (componentManager.hasComponent(Macro.class, macroBlock.getId())) {
+                try {
+                    Macro macro = componentManager.getInstance(Macro.class, macroBlock.getId());
+                    Map<String, ParameterDescriptor> parameterDescriptors =
+                        macro.getDescriptor().getParameterDescriptorMap();
+
+                    hasXDOMChanged |= transformMacroBlock(macroBlock, parameterDescriptors, originalReference,
+                        spaceReferencesMap);
+                } catch (ComponentLookupException e) {
+                    // Should never happen
+                    logger.error("Failed to lookup macro definition for [{}]", macroBlock.getId(), e);
+                }
+            }
+        }
+
+        return hasXDOMChanged;
+    }
+
+    private boolean transformLinkBlocks(XDOM xdom, DocumentReference originalReference,
+        Map<SpaceReference, SpaceReference> spaceReferencesMap)
+    {
+        boolean hasXDOMChanged = false;
+
         for (Block block : xdom.getBlocks(new ClassBlockMatcher(LinkBlock.class), Block.Axes.DESCENDANT_OR_SELF)) {
             LinkBlock linkBlock = (LinkBlock) block;
             ResourceType resourceType = linkBlock.getReference().getType();
@@ -165,7 +199,14 @@ public class BookPublicationReferencesTransformationHelper
             }
         }
 
-        // Handle the transformation of images
+        return hasXDOMChanged;
+    }
+
+    private boolean transformImageBlocks(XDOM xdom, DocumentReference originalReference,
+        Map<SpaceReference, SpaceReference> spaceReferencesMap)
+    {
+        boolean hasXDOMChanged = false;
+
         for (Block block : xdom.getBlocks(new ClassBlockMatcher(ImageBlock.class), Block.Axes.DESCENDANT_OR_SELF)) {
             ImageBlock imageBlock = (ImageBlock) block;
             ResourceType resourceType = imageBlock.getReference().getType();
@@ -183,47 +224,38 @@ public class BookPublicationReferencesTransformationHelper
             }
         }
 
-        // We assume that transformation of macro content is already handled through calls in #transformXDOM.
-        // Here we only care about updating the macro parameters which are declared as document references
-        for (Block block : xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT_OR_SELF)) {
-            MacroBlock macroBlock = (MacroBlock) block;
+        return hasXDOMChanged;
+    }
 
-            // Try to load the macro definition
-            if (componentManager.hasComponent(Macro.class, macroBlock.getId())) {
-                try {
-                    Macro macro = componentManager.getInstance(Macro.class, macroBlock.getId());
-                    Map<String, ParameterDescriptor> parameterDescriptors =
-                        macro.getDescriptor().getParameterDescriptorMap();
-                    for (Map.Entry<String, ParameterDescriptor> parameterDescriptorEntry
-                        : parameterDescriptors.entrySet()) {
-                        if (DocumentReference.class.equals(parameterDescriptorEntry.getValue().getParameterType())
-                            || EntityReferenceString.class.equals(
-                                parameterDescriptorEntry.getValue().getDisplayType())) {
-                            String parameter = macroBlock.getParameter(parameterDescriptorEntry.getKey());
-                            if (StringUtils.isNotBlank(parameter)) {
-                                String equivalentReference = getEquivalentDocumentStringReference(parameter,
-                                    originalReference, spaceReferencesMap);
-                                if (equivalentReference != null) {
-                                    macroBlock.setParameter(parameterDescriptorEntry.getKey(), equivalentReference);
-                                    hasXDOMChanged = true;
-                                }
-                            }
-                        } else if (AttachmentReference.class.equals(
-                            parameterDescriptorEntry.getValue().getParameterType())) {
-                            String parameter = macroBlock.getParameter(parameterDescriptorEntry.getKey());
-                            if (StringUtils.isNotBlank(parameter)) {
-                                String equivalentReference = getEquivalentAttachmentStringReference(parameter,
-                                    originalReference, spaceReferencesMap);
-                                if (equivalentReference != null) {
-                                    macroBlock.setParameter(parameterDescriptorEntry.getKey(), equivalentReference);
-                                    hasXDOMChanged = true;
-                                }
-                            }
-                        }
+    private boolean transformMacroBlock(MacroBlock macroBlock, Map<String, ParameterDescriptor> parameterDescriptors,
+        DocumentReference originalReference, Map<SpaceReference, SpaceReference> spaceReferencesMap)
+    {
+        boolean hasXDOMChanged = false;
+
+        for (Map.Entry<String, ParameterDescriptor> parameterDescriptorEntry
+            : parameterDescriptors.entrySet()) {
+            if (DocumentReference.class.equals(parameterDescriptorEntry.getValue().getParameterType())
+                || EntityReferenceString.class.equals(
+                parameterDescriptorEntry.getValue().getDisplayType())) {
+                String parameter = macroBlock.getParameter(parameterDescriptorEntry.getKey());
+                if (StringUtils.isNotBlank(parameter)) {
+                    String equivalentReference = getEquivalentDocumentStringReference(parameter,
+                        originalReference, spaceReferencesMap);
+                    if (equivalentReference != null) {
+                        macroBlock.setParameter(parameterDescriptorEntry.getKey(), equivalentReference);
+                        hasXDOMChanged = true;
                     }
-                } catch (ComponentLookupException e) {
-                    // Should never happen
-                    logger.error("Failed to lookup macro definition for [{}]", macroBlock.getId(), e);
+                }
+            } else if (AttachmentReference.class.equals(
+                parameterDescriptorEntry.getValue().getParameterType())) {
+                String parameter = macroBlock.getParameter(parameterDescriptorEntry.getKey());
+                if (StringUtils.isNotBlank(parameter)) {
+                    String equivalentReference = getEquivalentAttachmentStringReference(parameter,
+                        originalReference, spaceReferencesMap);
+                    if (equivalentReference != null) {
+                        macroBlock.setParameter(parameterDescriptorEntry.getKey(), equivalentReference);
+                        hasXDOMChanged = true;
+                    }
                 }
             }
         }
