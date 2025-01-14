@@ -1338,13 +1338,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     {
         logger.debug("[publish] Publication required with configuration [{}]", configurationReference);
         logger.info("Starting publication job with configuration [{}].", configurationReference);
+        XWikiContext xcontext = this.getXWikiContext();
+        XWiki xwiki = xcontext.getWiki();
 
+        // Load Publication
         Map<String, Object> configuration = loadPublicationConfiguration(configurationReference);
         if (configuration.isEmpty()) {
             return;
         }
-        XWikiContext xcontext = this.getXWikiContext();
-        XWiki xwiki = xcontext.getWiki();
         DocumentReference sourceReference = (DocumentReference) configuration.get(
                 BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
         DocumentReference collectionReference = getVersionedCollectionReference(sourceReference);
@@ -1356,6 +1357,12 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             + "].";
         DocumentReference targetReference = (DocumentReference) configuration.get(
             BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
+        DocumentReference variantReference = (DocumentReference) configuration.get(
+            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+        XWikiDocument variant = null;
+        if (variantReference != null) {
+            variant = xwiki.getDocument(variantReference, xcontext);
+        }
         Map<DocumentReference, DocumentReference> publishedLibraries =
             getUsedPublishedLibraries(collection.getDocumentReference(), versionReference);
 
@@ -1382,7 +1389,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
             // Check if the content should be published
             XWikiDocument contentPage = xwiki.getDocument(contentPageReference, xcontext).clone();
-            if (!isToBePublished(contentPage, configuration)) {
+            if (!isToBePublished(contentPage, variant, configuration)) {
                 // TODO: page shouldn't be ignored if it contains ordering and publishPageOrder is true
                 //TODO: markedAsDeleted shouldn't be ignored if update behaviour
                 continue;
@@ -1694,7 +1701,6 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
         }
 
-        //TODO: add here other transformations (links, includeLibrary macro, ...)
         boolean transformedLibrary = transformLibrary(xdom, publishedLibraries);
         return hasXDOMChanged || transformedLibrary;
     }
@@ -1761,14 +1767,17 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
     }
 
-    private boolean isToBePublished(XWikiDocument page, Map<String, Object> configuration)
+    private boolean isToBePublished(XWikiDocument page, XWikiDocument variant, Map<String, Object> configuration)
     {
         List<DocumentReference> variants = getPageVariants(page);
         String status = getPageStatus(page);
         boolean publishOnlyComplete =
             (boolean) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_PUBLISHONLYCOMPLETE);
-        DocumentReference variantReference = (DocumentReference) configuration.get(
-            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+        boolean excludePagesOutsideVariant = false;
+        if (variant != null) {
+            excludePagesOutsideVariant = (variant.getXObject(BookVersionsConstants.VARIANT_CLASS_REFERENCE)
+                .getIntValue(BookVersionsConstants.VARIANT_PROP_EXCLUDE) == 1);
+        }
         if (isMarkedDeleted(page)) {
             logger.debug("[isToBePublished] Page is ignored because it is marked as deleted.");
             logger.info("Page is ignored because it is marked as deleted.");
@@ -1779,9 +1788,16 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 + "published.", status);
             logger.info("Page is ignored because its status is [{}] and only complete page are published.", status);
             return false;
-        } else if (!variants.isEmpty() && !variants.contains(variantReference)) {
-            logger.debug("[isToBePublished] Page is ignored because it is associated with other variants.");
-            logger.info("Page is ignored because it is associated with other variants.");
+        } else if (variant == null && !variants.isEmpty()) {
+            // No variant to be published AND page is associated with variant(s)
+            logger.debug("[isToBePublished] Page is ignored because it is associated with variants.");
+            logger.info("Page is ignored because it is associated with variants.");
+            return false;
+        } else if (variant != null && excludePagesOutsideVariant &&
+            !variants.contains(variant.getDocumentReference())) {
+            // A variant is to be published AND excludes pages outside itself AND page is not associated with variant(s)
+            logger.debug("[isToBePublished] Page is ignored because it is not associated with the published variant.");
+            logger.info("Page is ignored because it is not associated with the published variant.");
             return false;
         }
         return true;

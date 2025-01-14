@@ -229,6 +229,11 @@ public interface BookVersionsConstants
     String BOOKVERSIONEDCONTENT_PROP_STATUS_COMPLETE = "complete";
 
     /**
+     * The excludePagesOutsideVariant property of a variant page.
+     */
+    String VARIANT_PROP_EXCLUDE = "excludePagesOutsideVariant";
+
+    /**
      * The variantsList property of a book page.
      */
     String VARIANTLIST_PROP_VARIANTSLIST = "variantsList";
