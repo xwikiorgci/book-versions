@@ -748,6 +748,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     + "and doc.space like :space escape '/' order by doc.creationDate desc", Query.HQL)
                 .bindValue("class", localSerializer.serialize(classReference)).bindValue("space",
                     spacePrefix)
+                .setWiki(documentReference.getWikiReference().getName())
                 .execute();
 
             logger.debug("[queryPages] result : [{}]", result);
