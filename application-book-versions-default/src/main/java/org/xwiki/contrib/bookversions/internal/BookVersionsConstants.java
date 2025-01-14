@@ -374,4 +374,14 @@ public interface BookVersionsConstants
      * The keyReference property of an includeLibrary macro.
      */
     String INCLUDELIBRARY_MACRO_PROP_KEYREFERENCE = "keyReference";
+
+    /**
+     * The ID of the include macro.
+     */
+    String INCLUDE_MACRO_ID = "include";
+
+    /**
+     * The reference property of an include macro.
+     */
+    String INCLUDE_MACRO_PROP_REFERENCE = "reference";
 }

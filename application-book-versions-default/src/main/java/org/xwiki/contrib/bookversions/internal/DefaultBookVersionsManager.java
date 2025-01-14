@@ -1217,7 +1217,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     result.put(libraryReference, null);
                     continue;
                 }
-                DocumentReference publishedSpace = getCollectionPublishedSpace(bookReference,
+                DocumentReference publishedSpace = getCollectionPublishedSpace(libraryReference,
                     libraryVersionReference.getName(), libraryReference);
                 if (publishedSpace == null) {
                     logger.warn("Library [{}], configured in book [{}] to use version [{}]"
@@ -1399,7 +1399,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             copyContentsToNewVersion(contentPage, publishedDocument, xcontext);
 
             logger.info("Transforming content for publication.");
-            prepareForPublication(contentPage, publishedDocument, collection, publishedLibraries, configuration);
+            prepareForPublication(contentPage, publishedDocument, publishedLibraries, configuration);
 
             logger.debug("[publish] Publish page.");
             xwiki.saveDocument(publishedDocument, publicationComment, xcontext);
@@ -1604,7 +1604,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     private XWikiDocument prepareForPublication(XWikiDocument originalDocument, XWikiDocument publishedDocument,
-        XWikiDocument collection, Map<DocumentReference, DocumentReference> publishedLibraries,
+        Map<DocumentReference, DocumentReference> publishedLibraries,
         Map<String, Object> configuration)
         throws XWikiException, ComponentLookupException, ParseException, QueryException
     {
@@ -1617,16 +1617,15 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         // Work on the XDOM
         XDOM xdom = publishedDocument.getXDOM();
         String syntax = publishedDocument.getSyntax().toIdString();
-        transformXDOM(xdom, syntax, originalDocument, publishedDocument, collection, publishedLibraries, configuration);
+        transformXDOM(xdom, syntax, publishedLibraries, configuration);
         // Set the modified XDOM
         publishedDocument.setContent(xdom);
         return publishedDocument;
     }
 
     // Heavily inspired from "Bulk update links according to a TSV mapping using XDOM" on https://snippets.xwiki.org
-    private boolean transformXDOM(XDOM xdom, String syntaxId, XWikiDocument originalDocument,
-        XWikiDocument publishedDocument, XWikiDocument collection,
-        Map<DocumentReference, DocumentReference> publishedLibraries, Map<String, Object>  configuration)
+    private boolean transformXDOM(XDOM xdom, String syntaxId, Map<DocumentReference,
+        DocumentReference> publishedLibraries, Map<String, Object>  configuration)
         throws ComponentLookupException, ParseException, QueryException, XWikiException
     {
         boolean hasXDOMChanged = false;
@@ -1672,8 +1671,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 logger.debug("[transformXDOM] Calling parse on [{}] with syntax [{}]", id, syntaxId);
                 Parser parser = componentManagerProvider.get().getInstance(Parser.class, syntaxId);
                 XDOM contentXDOM = parser.parse(new StringReader(content));
-                boolean hasMacroContentChanged = transformXDOM(contentXDOM, syntaxId, originalDocument,
-                    publishedDocument, collection, publishedLibraries, configuration);
+                boolean hasMacroContentChanged = transformXDOM(contentXDOM, syntaxId, publishedLibraries,
+                    configuration);
                 if (hasMacroContentChanged) {
                     logger.debug("[transformXDOM] The content of macro [{}] has changed", id);
                     WikiPrinter printer = new DefaultWikiPrinter();
@@ -1697,12 +1696,11 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
 
         //TODO: add here other transformations (links, includeLibrary macro, ...)
-        boolean transformedLibrary = transformLibrary(xdom, collection, publishedLibraries, configuration);
+        boolean transformedLibrary = transformLibrary(xdom, publishedLibraries);
         return hasXDOMChanged || transformedLibrary;
     }
 
-    private boolean transformLibrary(XDOM xdom, XWikiDocument collection,
-        Map<DocumentReference, DocumentReference> publishedLibraries, Map<String, Object>  configuration)
+    private boolean transformLibrary(XDOM xdom, Map<DocumentReference, DocumentReference> publishedLibraries)
         throws QueryException, XWikiException
     {
         logger.debug("[transformLibrary] Starting to transform includeLibrary macro reference");
@@ -1715,7 +1713,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             BookVersionsConstants.INCLUDELIBRARY_MACRO_ID);
 
         for (MacroBlock macroBlock : listBlock) {
-            // Get the key reference
+            // Get the key reference (library page reference)
             String keyRefString = macroBlock.getParameter(BookVersionsConstants.INCLUDELIBRARY_MACRO_PROP_KEYREFERENCE);
             if (StringUtils.isEmpty(keyRefString)) {
                 logger.debug("[transformLibrary] {} macro found without {} parameter. Macro is ignored.",
@@ -1723,11 +1721,11 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     BookVersionsConstants.INCLUDELIBRARY_MACRO_PROP_KEYREFERENCE);
                 continue;
             }
-            DocumentReference keyReference = referenceResolver.resolve(keyRefString);
+            DocumentReference pageReference = referenceResolver.resolve(keyRefString);
             logger.debug("[transformLibrary] Updating {} macro referencing [{}].",
-                    BookVersionsConstants.INCLUDELIBRARY_MACRO_ID, keyReference);
+                    BookVersionsConstants.INCLUDELIBRARY_MACRO_ID, pageReference);
             // Get the library reference
-            DocumentReference libraryReference = getVersionedCollectionReference(keyReference);
+            DocumentReference libraryReference = getVersionedCollectionReference(pageReference);
             // Get the published library reference
             DocumentReference publishedLibraryReference = publishedLibraries.get(libraryReference);
             if (publishedLibraryReference == null) {
@@ -1735,12 +1733,18 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     libraryReference);
                 continue;
             }
-            /*
-            getPublishedPageReference
-            checkPublishedPageExistence
-            replaceIncludeLibraryWithInclude(publishedLibrary);
-            block.getParent().replace
-             */
+            // Compute the published page reference
+            // getParent is necessary to not remove the top page space
+            DocumentReference publishedPageReference =
+                pageReference.replaceParent(libraryReference.getLastSpaceReference().getParent(),
+                    publishedLibraryReference.getLastSpaceReference());
+            logger.debug("[transformLibrary] Page reference is changed to [{}].", publishedPageReference);
+            // Replace the macro by include macro and change to the published reference
+            MacroBlock newMacroBlock = new MacroBlock(BookVersionsConstants.INCLUDE_MACRO_ID,
+                Map.of(BookVersionsConstants.INCLUDE_MACRO_PROP_REFERENCE, publishedPageReference.toString()),
+                macroBlock.isInline());
+            macroBlock.getParent().replaceChild(newMacroBlock, macroBlock);
+            hasChanged = true;
         }
         return hasChanged;
     }
