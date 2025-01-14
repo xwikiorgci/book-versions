@@ -1,3 +1,4 @@
+org.xwiki.contrib.bookversions.internal.BookPublicationReferencesTransformationHelper
 org.xwiki.contrib.bookversions.internal.DefaultBookVersionsManager
 org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener
 org.xwiki.contrib.bookversions.listeners.DocumentUpdatingEventListener

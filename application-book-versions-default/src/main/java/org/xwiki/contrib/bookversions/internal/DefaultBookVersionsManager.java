@@ -21,8 +21,10 @@
 package org.xwiki.contrib.bookversions.internal;
 
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.crypto.Mac;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -60,11 +63,15 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.rendering.block.Block;
+import org.xwiki.rendering.block.ImageBlock;
+import org.xwiki.rendering.block.LinkBlock;
 import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
+import org.xwiki.rendering.listener.reference.ResourceType;
 import org.xwiki.rendering.macro.Macro;
 import org.xwiki.rendering.macro.descriptor.ContentDescriptor;
+import org.xwiki.rendering.macro.descriptor.ParameterDescriptor;
 import org.xwiki.rendering.parser.ParseException;
 import org.xwiki.rendering.parser.Parser;
 import org.xwiki.rendering.renderer.BlockRenderer;
@@ -129,6 +136,9 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Inject
     @Named("context")
     private Provider<ComponentManager> componentManagerProvider;
+
+    @Inject
+    private BookPublicationReferencesTransformationHelper publicationReferencesTransformationHelper;
 
     @Override
     public boolean isBook(DocumentReference documentReference) throws XWikiException
@@ -1469,7 +1479,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
     }
 
-    private void addTopPublicationData (DocumentReference targetTopReference,
+    private void addTopPublicationData(DocumentReference targetTopReference,
         String publicationComment, XWikiDocument collection,
         Map<String, Object> configuration) throws XWikiException
     {
@@ -1501,7 +1511,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
     }
 
-    private void addMasterPublicationData (XWikiDocument collection, Map<String, Object> configuration)
+    private void addMasterPublicationData(XWikiDocument collection, Map<String, Object> configuration)
         throws XWikiException
     {
         logger.debug("[addMasterPublicationData] Adding metadata to [{}]", collection.getDocumentReference());
@@ -1623,15 +1633,15 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         // Work on the XDOM
         XDOM xdom = publishedDocument.getXDOM();
         String syntax = publishedDocument.getSyntax().toIdString();
-        transformXDOM(xdom, syntax, publishedLibraries, configuration);
+        transformXDOM(xdom, syntax, originalDocument.getDocumentReference(), publishedLibraries, configuration);
         // Set the modified XDOM
         publishedDocument.setContent(xdom);
         return publishedDocument;
     }
 
     // Heavily inspired from "Bulk update links according to a TSV mapping using XDOM" on https://snippets.xwiki.org
-    private boolean transformXDOM(XDOM xdom, String syntaxId, Map<DocumentReference,
-        DocumentReference> publishedLibraries, Map<String, Object>  configuration)
+    private boolean transformXDOM(XDOM xdom, String syntaxId, DocumentReference originalDocumentReference,
+        Map<DocumentReference, DocumentReference> publishedLibraries, Map<String, Object> configuration)
         throws ComponentLookupException, ParseException, QueryException, XWikiException
     {
         boolean hasXDOMChanged = false;
@@ -1681,8 +1691,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 logger.debug("[transformXDOM] Calling parse on [{}] with syntax [{}]", id, syntaxId);
                 Parser parser = componentManagerProvider.get().getInstance(Parser.class, syntaxId);
                 XDOM contentXDOM = parser.parse(new StringReader(content));
-                boolean hasMacroContentChanged = transformXDOM(contentXDOM, syntaxId, publishedLibraries,
-                    configuration);
+                boolean hasMacroContentChanged = transformXDOM(contentXDOM, syntaxId, originalDocumentReference,
+                    publishedLibraries, configuration);
                 if (hasMacroContentChanged) {
                     logger.debug("[transformXDOM] The content of macro [{}] has changed", id);
                     WikiPrinter printer = new DefaultWikiPrinter();
@@ -1706,6 +1716,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
 
         boolean transformedLibrary = transformLibrary(xdom, publishedLibraries);
+        boolean transformedReferences = publicationReferencesTransformationHelper.transform(xdom,
+            originalDocumentReference, configuration);
         return hasXDOMChanged || transformedLibrary;
     }
 
