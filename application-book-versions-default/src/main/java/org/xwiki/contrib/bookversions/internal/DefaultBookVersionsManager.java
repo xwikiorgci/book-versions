@@ -1663,10 +1663,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 }
             }
 
-            if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID) && publishedVariantReference != null
-                && !variantReferences.contains(publishedVariantReference)
+            if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID) && (
+                    (publishedVariantReference == null) ||
+                    (publishedVariantReference != null && !variantReferences.contains(publishedVariantReference))
+                )
             ) {
-                logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content ",
+                // It's a macro variant AND ((no variant is published)) OR (variant is published but macro is not for
+                // the published variant)
+                logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content.",
                     variantReferences);
                 block.getParent().removeBlock(block);
             } else if (contentDescriptor != null && contentDescriptor.getType().equals(Block.LIST_BLOCK_TYPE)
