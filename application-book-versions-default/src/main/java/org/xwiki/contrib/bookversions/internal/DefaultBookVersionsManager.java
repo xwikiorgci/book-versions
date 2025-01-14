@@ -1717,8 +1717,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
         boolean transformedLibrary = transformLibrary(xdom, publishedLibraries);
         boolean transformedReferences = publicationReferencesTransformationHelper.transform(xdom,
-            originalDocumentReference, configuration);
-        return hasXDOMChanged || transformedLibrary;
+            originalDocumentReference, publishedLibraries, configuration);
+        return hasXDOMChanged || transformedLibrary || transformedReferences;
     }
 
     private boolean transformLibrary(XDOM xdom, Map<DocumentReference, DocumentReference> publishedLibraries)
