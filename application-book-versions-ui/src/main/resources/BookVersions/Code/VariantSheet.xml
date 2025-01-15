@@ -94,6 +94,7 @@
   #set ($resultsLinkedPages = $services.query.xwql($queryLinkedPages).bindValue('variant',"%${doc.fullName}%").execute())
   #set ($queryForVariantMacroPages = "where doc.content like :pattern and doc.fullName &lt;&gt; 'BookVersions.Code.VariantSheet'")
   #set ($resultsMacroPages = $services.query.xwql($queryForVariantMacroPages).bindValue('pattern',"%{{variant name=_${doc.fullName}%").execute())
+
   {{box}}
   === $services.localization.render("BookVersions.variants.linkedPagesListHeading") ===
   #if ($resultsLinkedPages.size() == 0 )
