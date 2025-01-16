@@ -757,7 +757,7 @@
   #if (!$selectedVariant)
     #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
   #end
-  #if (!$selectedVariant &amp;&amp; $isVersionedPage &amp;&amp; $variants.size() &gt; 0)
+  #if (!$selectedVariant &amp;&amp; ($isVersionedPage || $isUnversionedPage) &amp;&amp; $variants.size() &gt; 0)
     #set ($discard = $services.bookversions.setSelectedVariant($collectionRef, ""))
   #end
   #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
