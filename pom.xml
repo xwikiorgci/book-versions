@@ -31,8 +31,8 @@
   <artifactId>application-book-versions</artifactId>
   <name>Book Versions Application</name>
   <description>Application for managing and publishing documentation (a collection of pages) that is versioned (with inheritance of content or not), described by a status, that can be conditioned by variants, and using libraries of keywords/rich content dynamically filled in.</description>
- <packaging>pom</packaging>
- <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <version>1.0-SNAPSHOT</version>
   <properties>
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
     <xwiki.issueManagement.jira.id>BVERSION</xwiki.issueManagement.jira.id>
@@ -75,4 +75,213 @@
     <module>application-book-versions-ui</module>
     <module>application-book-versions-xip</module>
   </modules>
+  
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <configuration>
+            <arguments>-Pintegration-tests -DskipTests=true</arguments>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <analysisConfiguration combine.children="append">
+            <!-- Add ignores here using the following syntax. You can use a single <revapi.differences> entry but it
+                 cannot be empty. You can also use different <revapi.differences> entries if you wish to use a common
+                 justification for example (see example below).
+
+                 By default criticality is set to "error" if not specified.
+                 See https://revapi.org/revapi/configuration.html#_criticality for more.
+
+                 Note: you can use regexes by using the syntax: <regex>true</regex>
+                 Don't forget to '\'-escape dots and other special characters in this case ;)
+
+                 Common justification example:
+
+            <revapi.differences>
+              <justification>This change is necessary to fix bug #1234</justification>
+              <criticality>highlight</criticality>
+              <differences>
+                <item>
+                  <code>java.method.addToInterface</code>
+                  <fullQualifiedClassName>com.acme.ToolInterface</fullyQualifiedClassName>
+                  <new>method void com.acme.ToolInterface::setup()</new>
+                </item>
+                <item>
+                  <code>java.method.removed</code>
+                  <fullQualifiedClassName>com.acme.ToolInterface</fullyQualifiedClassName>
+                  <old>method void com.acme.ToolInterface::initialize()</old>
+                  <justification>...</justification>
+                </item>
+              </differences>
+            </revapi.differences>
+
+                 Single justification example:
+
+            <revapi.differences>
+              <differences>
+                <item>
+                  <code>java.method.removed</code>
+                  <old>method void org.xwiki.diff.xml.XMLDiff::xxx()</old>
+                  <justification>Unstable API added by mistake.</justification>
+                  <criticality>highlight</criticality>
+                </item>
+              </differences>
+            </revapi.differences>
+          -->
+          <revapi.differences>
+            <differences>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslationStatus(com.xpn.xwiki.doc.XWikiDocument) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Added new method in order to handle the status of a translations.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; org.xwiki.contrib.bookversions.BookVersionsManager::getLanguageData(com.xpn.xwiki.doc.XWikiDocument)</new>
+                <justification>Added new method in order to handle the translations.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method void org.xwiki.contrib.bookversions.BookVersionsManager::setLanguageData(com.xpn.xwiki.doc.XWikiDocument, java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt;)</new>
+                <justification>Added new method in order to handle the translations.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method boolean org.xwiki.contrib.bookversions.BookVersionsManager::isDefaultLanguage(com.xpn.xwiki.doc.XWikiDocument, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Added new method in order to handle the translations.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method boolean org.xwiki.contrib.bookversions.BookVersionsManager::isDefaultLanguage(org.xwiki.model.reference.DocumentReference, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed in order to check if a language is the default one.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslationStatus(com.xpn.xwiki.doc.XWikiDocument, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslationStatus(org.xwiki.model.reference.DocumentReference, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslatedTitle(com.xpn.xwiki.doc.XWikiDocument, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslatedTitle(org.xwiki.model.reference.DocumentReference, java.lang.String) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getTranslatedTitle(org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.removed</code>
+                <old>method void org.xwiki.contrib.bookversions.BookVersionsManager::executePublicationJob(org.xwiki.model.reference.DocumentReference, java.lang.String) throws org.xwiki.job.JobException</old>
+                <justification>Not needed anymore.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getDefaultTranslation(org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::getPageStatus(com.xpn.xwiki.doc.XWikiDocument)</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.util.List&lt;org.xwiki.model.reference.DocumentReference&gt; org.xwiki.contrib.bookversions.BookVersionsManager::getPageVariants(com.xpn.xwiki.doc.XWikiDocument)</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.util.List&lt;org.xwiki.model.reference.DocumentReference&gt; org.xwiki.contrib.bookversions.BookVersionsManager::getUsedLibraries(org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.util.Map&lt;org.xwiki.model.reference.DocumentReference, org.xwiki.model.reference.DocumentReference&gt; org.xwiki.contrib.bookversions.BookVersionsManager::getUsedPublishedLibraries(org.xwiki.model.reference.DocumentReference, org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method java.util.Map&lt;java.lang.String, java.lang.Object&gt; org.xwiki.contrib.bookversions.BookVersionsManager::loadPublicationConfiguration(org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.returnTypeChanged</code>
+                <old>method void org.xwiki.contrib.bookversions.BookVersionsManager::publish(org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException</old>
+                <new>method java.lang.String org.xwiki.contrib.bookversions.BookVersionsManager::publish(org.xwiki.model.reference.DocumentReference) throws org.xwiki.job.JobException</new>
+                <justification>Refactoring the method.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method void org.xwiki.contrib.bookversions.BookVersionsManager::publishInternal(org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException, org.xwiki.query.QueryException, org.xwiki.component.manager.ComponentLookupException, org.xwiki.rendering.parser.ParseException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method void org.xwiki.contrib.bookversions.BookVersionsManager::resetTranslations(com.xpn.xwiki.doc.XWikiDocument)</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.removed</code>
+                <old>method void org.xwiki.contrib.bookversions.script.BookVersionsScriptService::executePublicationJob(org.xwiki.model.reference.DocumentReference, java.lang.String) throws org.xwiki.job.JobException</old>
+                <justification>Not needed anymore.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.annotation.attributeValueChanged</code>
+                <old>class org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener</old>
+                <new>class org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener</new>
+                <annotationType>javax.inject.Named</annotationType>
+                <attribute>value</attribute>
+                <oldValue>"org.xwiki.contrib.bookversions.listeners.DocumentUpdatingEventListener"</oldValue>
+                <newValue>"org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener"</newValue>
+                <justification>Used the wrong name from the start.</justification>
+              </item>
+            </differences>
+          </revapi.differences>
+        </analysisConfiguration>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
 </project>
