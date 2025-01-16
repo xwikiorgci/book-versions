@@ -130,8 +130,15 @@
     const formToken = $('#form_token');
     const collectionRef = $('#collectionRef');
     const setAttributeURL = $('#setAttributeURL');
+    const unversioned = $('#unversioned');
     versionSelect.on("change", function() {
-      window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction) + '?force=1';
+      if (unversioned[0].value != "true") {
+        // Page is versioned, redirect to the content sub-page
+        window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction) + '?force=1';
+      } else {
+        // Page is unversioned, refresh the top page
+        location.reload();
+      }
     })
   })</code>
     </property>
@@ -855,6 +862,7 @@
 ## Handle case when no version is selected
 ##
 #macro(handleNoSelectedVersion)
+  $debuglogger.debug("Handle case when no version is selected")
   #set ($selectedVersion = $versions.get(0))
   #if ($selectedVersion)
     $services.bookversions.setSelectedVersion($collectionRef, $selectedVersion)
@@ -870,6 +878,7 @@
 ## Handle unexisting content case
 ##
 #macro(handleUnexistingContent)
+  $debuglogger.debug("Handle unexisting content case")
   #set ($contentRef = $services.model.resolveDocument($services.model.serialize($docRef.getParent(),'local')))
   #set ($versionRef = $services.bookversions.getVersionReference($collectionRef,$contentRef.getName()))
   #set ($versionedContentReference = $services.bookversions.getVersionedContentReference($contentRef, $services.model.serialize($versionRef)))
@@ -982,7 +991,7 @@
 ## Render the version and variant selectors
 ##
 #macro(renderSelectors)
-  #if ($isVersionedContent || $isVersionedPage)
+  #if ($isVersionedContent || $isVersionedPage || $isUnversionedPage)
     #setupVersionDisplay()
     #setupVariantDisplay()
     #setupLanguageDisplay()
@@ -997,13 +1006,22 @@
   #set ($currentDocName = $docRef.getName())
   #set ($selectedVersionName = $services.bookversions.getVersionName($services.model.resolveDocument($selectedVersion)))
   #set ($stateMessageKey = '')
-  #if ($selectedVersionName.equals($currentDocName))
-    #set ($stateMessageKey = 'BookVersions.navMenu.versioned')
+  #set ($selectedVersionTitle = '')
+  #set ($versionTitle = '')
+  #if ($isUnversionedPage)
+    ## Unversioned page
+    #set ($stateMessageKey = 'BookVersions.navMenu.unversioned')
+    #set ($versionTitle = $services.localization.render('BookVersions.navMenu.unversionedTitle'))
   #else
-    #set ($stateMessageKey = 'BookVersions.navMenu.inherited')
+    ## Versioned page
+    #if ($selectedVersionName.equals($currentDocName))
+      #set ($stateMessageKey = 'BookVersions.navMenu.versioned')
+    #else
+      #set ($stateMessageKey = 'BookVersions.navMenu.inherited')
+    #end
+    #set ($selectedVersionTitle = $xwiki.getDocument($services.bookversions.getVersionReference($collectionRef,$selectedVersionName)).displayTitle)
+    #set ($versionTitle = $xwiki.getDocument($services.bookversions.getVersionReference($collectionRef,$docRef.getName())).displayTitle)
   #end
-  #set ($selectedVersionTitle = $xwiki.getDocument($services.bookversions.getVersionReference($collectionRef,$selectedVersionName)).displayTitle)
-  #set ($versionTitle = $xwiki.getDocument($services.bookversions.getVersionReference($collectionRef,$docRef.getName())).displayTitle)
 #end
 
 ##
@@ -1071,6 +1089,7 @@
   &lt;div class="formContainer"&gt;
     &lt;form class="xformInline" id="changeArchiveStatus"&gt;
       &lt;input type="hidden" id="form_token" value="$escapetool.xml("$!services.csrf.token")"/&gt;
+      &lt;input type="hidden" id="unversioned" value="$isUnversionedPage"/&gt;
       &lt;label for="collectionVersion"&gt;$services.localization.render('BookVersions.navMenu.versionSelect')&lt;/label&gt;
       &lt;select name="collectionVersion" id="collectionVersion"&gt;
         #foreach($version in $versions)
@@ -1209,7 +1228,7 @@
 #initializeVariantVariables()
 #initializeLanguageVariables()
 ##
-#set ($discard = $debuglogger.debug("START Navigation menu for [$docRef], inheritedRedirFlag [$inheritedRedirFlag], collectionRef [$collectionRef], isVersionedPage [$isVersionedPage], isVersionedContent [$isVersionedContent], isUnexistingContent [$isUnexistingContent]"))
+#set ($discard = $debuglogger.debug("START Navigation menu for [$docRef], inheritedRedirFlag [$inheritedRedirFlag], collectionRef [$collectionRef], isVersionedPage [$isVersionedPage], isVersionedContent [$isVersionedContent], isUnversionedPage [$isUnversionedPage], isUnexistingContent [$isUnexistingContent]"))
 ##
 ## Handle variant and language-related actions
 #handleVariantActions()
@@ -1217,7 +1236,7 @@
 #handleLanguageSelection()
 ##
 ## Process version selection and handle redirections if needed
-#if ("$!collectionRef" != '' &amp;&amp; ($versions.size() &gt; 0 || $variants.size() &gt; 0) &amp;&amp; ($isVersionedPage || $isVersionedContent || $isUnexistingContent))
+#if ("$!collectionRef" != '' &amp;&amp; ($versions.size() &gt; 0 || $variants.size() &gt; 0) &amp;&amp; ($isVersionedPage || $isVersionedContent || $isUnexistingContent || $isUnversionedPage))
   #set ($discard = $xwiki.ssx.use('BookVersions.Code.NavigationMenu'))
   #set ($discard = $xwiki.jsx.use('BookVersions.Code.NavigationMenu'))
 ##
