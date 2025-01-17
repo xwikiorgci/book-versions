@@ -37,30 +37,37 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#set ($input = "")
+#set ($input = '')
 #if ($request.q)
  #set ($input = $!request.q.toLowerCase())
 #end
-#if ("$!input" == "")
+#if ("$!input" == '')
  #if ($request.text)
    #set ($input = $!request.text.toLowerCase())
  #end
 #end
-#set ($languages = [])
-#if ($request.book)
-  #set ($book = $xwiki.getDocument($services.model.resolveDocument($!request.book)))
-  #set ($languages = $services.bookversions.getConfiguredLanguages($services.model.resolveDocument($book)))
-#end
 #set ($json = [])
+#set ($locales = [])
 #set ($currentLocale = $services.localization.currentLocale)
-#foreach ($language in $languages)
-  #set ($locale = $services.localization.toLocale($language))
-  #set ($displayvalue = $escapetool.xml($stringtool.capitalize($locale.getDisplayName($locale)) +
-    ' (' + $stringtool.capitalize($locale.getDisplayName($currentLocale)) + ')'))
-  #set ($discard = $json.add({
-    'label': $displayvalue,
-    'value': "$language"
-  }))
+#set ($bookReference = $request.book)
+#if ("$!bookReference" != '')
+  #foreach ($language in $services.bookversions.getConfiguredLanguages($bookReference))
+    #set ($discard = $locales.add($services.localization.toLocale($language)))
+  #end
+#elseif("$!input" != '')
+  #set($locales = $services.localization.availableLocales)
+#end
+#foreach ($locale in $collectiontool.sort($locales, 'displayName'))
+  #if ("$!locale" != '')
+    #set ($displayvalue = $escapetool.xml($stringtool.capitalize($locale.getDisplayName($locale)) +
+      ' (' + $stringtool.capitalize($locale.getDisplayName($currentLocale)) + ')'))
+    #if ($stringtool.indexOf($displayvalue.toLowerCase(), $input) >= 0)
+      #set ($discard = $json.add({
+        'label': $displayvalue,
+        'value': "$locale"
+      }))
+    #end
+  #end
 #end
 #jsonResponse($json)
 {{/velocity}}</content>

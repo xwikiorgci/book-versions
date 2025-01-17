@@ -54,8 +54,6 @@
 #set ($xclass = $xobject.xWikiClass)
 ## Make sure the following display* method calls use the right object.
 #set ($discard = $doc.use($xobject))
-## Use the localization picker
-#set ($discard = $xwiki.jsx.use('BookVersions.Code.LanguageSelector'))
 ## Using the xform vertical form layout.
 &lt;div class="xform"&gt;
   &lt;dl&gt;
