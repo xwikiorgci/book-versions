@@ -61,7 +61,7 @@
   #if ("$!locale" != '')
     #set ($displayvalue = $escapetool.xml($stringtool.capitalize($locale.getDisplayName($locale)) +
       ' (' + $stringtool.capitalize($locale.getDisplayName($currentLocale)) + ')'))
-    #if ($stringtool.indexOf($displayvalue.toLowerCase(), $input) >= 0)
+    #if ($stringtool.indexOf($displayvalue.toLowerCase(), $input) &gt;= 0)
       #set ($discard = $json.add({
         'label': $displayvalue,
         'value': "$locale"
