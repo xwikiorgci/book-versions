@@ -19,7 +19,7 @@
 ## ---------------------------------------------------------------------------
 #set ($discard = $xwiki.jsx.use('BookVersions.Code.TranslationLanguageSuggestPicker'))
 #set ($parameters = {
-  'placeholder': $services.localization.render('select language'),
+  'placeholder': $services.localization.render('BookVersions.language.select'),
   'data-book': $services.model.serialize($services.bookversions.getVersionedCollectionReference($doc.documentReference))
 })
 #set ($discard = $parameters.putAll($displayer.parameters))
