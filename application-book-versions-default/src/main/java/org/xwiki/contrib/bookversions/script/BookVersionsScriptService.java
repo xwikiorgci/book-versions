@@ -673,4 +673,16 @@ public class BookVersionsScriptService implements ScriptService
     {
         return bookVersionsManagerProvider.get().isDefaultLanguage(documentReference, language);
     }
+
+    /**
+     * Get the list of languages configured for the given book.
+     *
+     * @param bookReference The document reference.
+     * @return the list of languages.
+     * @throws XWikiException In case the system can't provide an answer.
+     */
+    public List<String> getConfiguredLanguages(DocumentReference bookReference) throws XWikiException
+    {
+        return bookVersionsManagerProvider.get().getConfiguredLanguages(bookReference);
+    }
 }

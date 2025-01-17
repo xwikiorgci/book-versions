@@ -193,7 +193,8 @@ BookVersions.versions.LD.emptyvalue=
 
 # Multilingual
 BookVersions.languages.warning=There is no translation for the selected language.
-BookVersions.languages.title.missing=There is no translated title for the selected language.</content>
+BookVersions.languages.title.missing=There is no translated title for the selected language.
+BookVersions.language.select=Select language ...</content>
   <object>
     <name>BookVersions.Code.Translations</name>
     <number>0</number>

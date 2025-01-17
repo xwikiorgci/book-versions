@@ -89,6 +89,12 @@ public interface BookVersionsConstants
         new EntityReference("LibraryReferenceClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
+     * The reference of the multi-lingual class.
+     */
+    EntityReference BOOKLMULTILANGUAL_CLASS_REFERENCE =
+        new EntityReference("MultilingualClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
      * The reference of the library reference class.
      */
     EntityReference MARKEDDELETED_CLASS_REFERENCE =
@@ -282,6 +288,16 @@ public interface BookVersionsConstants
      * The location of variant definitions, in a book / library.
      */
     String VARIANTS_LOCATION = "Variants";
+
+    /**
+     * The location of language definitions, in a book / library.
+     */
+    String LANGUAGES_LOCATION = "Languages";
+
+    /**
+     * The location of language definitions, in a book / library.
+     */
+    String BOOKLMULTILANGUAL_PROP_LANGUAGES = "supportedLanguages";
 
     /**
      * The location of variant definitions, in a book / library.

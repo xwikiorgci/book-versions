@@ -21,10 +21,8 @@
 package org.xwiki.contrib.bookversions.internal;
 
 import java.io.StringReader;
-import java.lang.reflect.Type;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.crypto.Mac;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -63,15 +60,11 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.rendering.block.Block;
-import org.xwiki.rendering.block.ImageBlock;
-import org.xwiki.rendering.block.LinkBlock;
 import org.xwiki.rendering.block.MacroBlock;
 import org.xwiki.rendering.block.XDOM;
 import org.xwiki.rendering.block.match.ClassBlockMatcher;
-import org.xwiki.rendering.listener.reference.ResourceType;
 import org.xwiki.rendering.macro.Macro;
 import org.xwiki.rendering.macro.descriptor.ContentDescriptor;
-import org.xwiki.rendering.macro.descriptor.ParameterDescriptor;
 import org.xwiki.rendering.parser.ParseException;
 import org.xwiki.rendering.parser.Parser;
 import org.xwiki.rendering.renderer.BlockRenderer;
@@ -1963,6 +1956,33 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
             document.removeXObject(tObj);
         }
+    }
+
+    @Override
+    public List<String> getConfiguredLanguages(DocumentReference bookReference) throws XWikiException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+
+        XWikiDocument bookDocument = xcontext.getWiki().getDocument(bookReference, xcontext);
+        if (isBook(bookDocument)) {
+            // Go to the location where the Languages definition is stored
+            SpaceReference languagesParentSpaceReference =
+                new SpaceReference(new EntityReference(BookVersionsConstants.LANGUAGES_LOCATION, EntityType.SPACE,
+                    bookReference.getParent()));
+            DocumentReference languagesDocumentReference =
+                new DocumentReference(new EntityReference(this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE,
+                    EntityType.DOCUMENT, languagesParentSpaceReference));
+
+            XWikiDocument languagesDocument = xcontext.getWiki().getDocument(languagesDocumentReference, xcontext);
+            BaseObject multilingualObj =
+                languagesDocument.getXObject(BookVersionsConstants.BOOKLMULTILANGUAL_CLASS_REFERENCE);
+            if (multilingualObj != null) {
+                return (List<String>) multilingualObj
+                    .getListValue(BookVersionsConstants.BOOKLMULTILANGUAL_PROP_LANGUAGES);
+            }
+        }
+
+        return new ArrayList<String>();
     }
 
     /**

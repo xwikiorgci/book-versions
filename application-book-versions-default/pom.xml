@@ -60,6 +60,11 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-properties</artifactId>
+      <version>${commons.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

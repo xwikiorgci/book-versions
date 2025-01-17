@@ -385,7 +385,7 @@
       <name>language</name>
     </property>
     <property>
-      <type>Unknown</type>
+      <type>org.xwiki.contrib.bookversions.internal.displayers.PageTranslationLanguage</type>
     </property>
   </object>
   <object>

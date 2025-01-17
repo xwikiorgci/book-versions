@@ -688,4 +688,13 @@ public interface BookVersionsManager
      * @param document The XWiki document.
      */
     void resetTranslations(XWikiDocument document);
+
+    /**
+     * Get the list of languages configured for the given book.
+     *
+     * @param bookReference The document reference.
+     * @return the list of languages.
+     * @throws XWikiException In case the system can't provide an answer.
+     */
+    List<String> getConfiguredLanguages(DocumentReference bookReference) throws XWikiException;
 }
