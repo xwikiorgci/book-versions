@@ -48,7 +48,7 @@
 #end
 #set ($languages = [])
 #if ($request.book)
-  #set ($book = $xwiki.getDocument($!request.book))
+  #set ($book = $xwiki.getDocument($services.model.resolveDocument($!request.book)))
   #set ($languages = $services.bookversions.getConfiguredLanguages($services.model.resolveDocument($book)))
 #end
 #set ($json = [])
