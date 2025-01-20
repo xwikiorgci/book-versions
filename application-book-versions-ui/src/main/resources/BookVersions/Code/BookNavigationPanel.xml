@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.BookNavigation" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.BookNavigationPanel" locale="">
   <web>BookVersions.Code</web>
-  <name>BookNavigation</name>
+  <name>BookNavigationPanel</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -38,7 +38,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>BookVersions.Code.BookNavigation</name>
+    <name>BookVersions.Code.BookNavigationPanel</name>
     <number>0</number>
     <className>Panels.PanelClass</className>
     <guid>b19ad227-96bb-4914-a8e8-598ae0b0a01f</guid>
@@ -182,11 +182,15 @@
 #set ($bookRef = $services.bookversions.getVersionedCollectionReference($doc.getDocumentReference()))
 #if ("$!bookRef" != '')
   ## Get book title
-  #set ($bookTitle = $xwiki.getDocument($bookRef).title)
+  #set ($bookDoc = $xwiki.getDocument($bookRef))
+  #set ($bookTitle = $bookDoc.title)
   ## Get currently selected version
   #set ($selectedVersion = $services.bookversions.getSelectedVersion($bookRef))
   ## Create panel header
+  {{html clean="false"}}&lt;a href="$bookDoc.getURL()"&gt;{{/html}}
   #navigationPanelHeader($bookTitle)
+  {{html clean="false"}}&lt;/a&gt;{{/html}}
+
   ## Prepare the openTo parameter to highlight current page
   #set ($openToDoc = $doc.documentReference.toString().replaceAll('([~"])', '~$1'))
   ## Get book space reference

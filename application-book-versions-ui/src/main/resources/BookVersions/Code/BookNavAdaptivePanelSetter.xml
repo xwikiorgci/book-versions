@@ -49,7 +49,7 @@
   #set ($rightPanels = $prefsObj.getProperty('rightPanels').value)
   
   ## The panel we want to place
-  #set ($bookNavPanel = 'BookVersions.Code.BookNavigation')
+  #set ($bookNavPanel = 'BookVersions.Code.BookNavigationPanel')
   
   ## Check if panel already exists in either configuration
   #set ($isInLeft = $leftPanels.contains($bookNavPanel))
