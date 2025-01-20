@@ -1075,7 +1075,7 @@
     #if ($languages.size() &gt; 0)
       #renderLanguageSelector()
     #end
-    #if ($isVersionedContent)
+    #if ($isVersionedContent || $isUnversionedPage)
       #displayStatusProperty()
     #end
   &lt;/div&gt;
@@ -1154,7 +1154,7 @@
 ## Display status property
 ##
 #macro(displayStatusProperty)
-  #set ($xobject = $doc.getObject('BookVersions.Code.BookVersionedContentClass'))
+  #set ($xobject = $doc.getObject('BookVersions.Code.PageStatusClass'))
   #set ($statusProp = $xobject.getProperty('status').getPropertyClass())
   #set ($xclass = $xobject.xWikiClass)
   #set ($discard = $doc.use($xobject))

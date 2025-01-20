@@ -38,6 +38,9 @@
   <hidden>true</hidden>
   <content># Class
 BookVersions.Code.VersionClass_precedingVersionReference=Preceding version reference
+BookVersions.Code.PageStatusClass_status_draft=Draft
+BookVersions.Code.PageStatusClass_status_review=Review
+BookVersions.Code.PageStatusClass_status_complete=Complete
 
 # Library Reference Class
 BookVersions.Code.LibraryReferenceClass_libraryReference=Library Reference

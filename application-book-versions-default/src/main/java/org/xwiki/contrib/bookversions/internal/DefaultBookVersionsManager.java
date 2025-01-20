@@ -1792,7 +1792,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             logger.info("Page is ignored because it is marked as deleted.");
             return false;
         } else if (publishOnlyComplete &&
-            !status.equals(BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS_COMPLETE)) {
+            !status.equals(BookVersionsConstants.PAGESTATUS_PROP_STATUS_COMPLETE)) {
             logger.debug("[isToBePublished] Page is ignored because its status is [{}] and only complete page are "
                 + "published.", status);
             logger.info("Page is ignored because its status is [{}] and only complete page are published.", status);
@@ -1818,11 +1818,11 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         if (page == null) {
             return "";
         }
-        BaseObject statusObj = page.getXObject(BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE);
+        BaseObject statusObj = page.getXObject(BookVersionsConstants.PAGESTATUS_CLASS_REFERENCE);
         if (statusObj == null) {
             return "";
         }
-        return statusObj.getStringValue(BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS);
+        return statusObj.getStringValue(BookVersionsConstants.PAGESTATUS_PROP_STATUS);
     }
 
     private List<String> getPageReferenceTree(DocumentReference sourceReference) throws QueryException

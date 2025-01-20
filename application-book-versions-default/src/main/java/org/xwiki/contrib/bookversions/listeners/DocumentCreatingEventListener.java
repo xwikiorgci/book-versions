@@ -96,6 +96,8 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
                         xcontext.getWiki().getDocument(versionDocumentReference, xcontext);
                     versionedContentDocument.newXObject(BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE,
                         xcontext);
+                    versionedContentDocument.newXObject(BookVersionsConstants.PAGESTATUS_CLASS_REFERENCE,
+                        xcontext);
                     versionedContentDocument.setContent(updatedXDoc.getContent());
                     DocumentReference userReference = this.xcontextProvider.get().getUserReference();
                     versionedContentDocument.setCreatorReference(userReference);

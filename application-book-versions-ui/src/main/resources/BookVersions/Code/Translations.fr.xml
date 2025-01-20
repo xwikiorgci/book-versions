@@ -38,6 +38,9 @@
   <hidden>true</hidden>
   <content># Class
 ### Missing: BookVersions.Code.VersionClass_precedingVersionReference=Preceding version reference
+### Missing: BookVersions.Code.PageStatusClass_status_review=Review
+### Missing: BookVersions.Code.PageStatusClass_status_draft=Draft
+### Missing: BookVersions.Code.PageStatusClass_status_complete=Complete
 
 # Library Reference Class
 ### Missing: BookVersions.Code.LibraryReferenceClass_libraryReference=Library Reference

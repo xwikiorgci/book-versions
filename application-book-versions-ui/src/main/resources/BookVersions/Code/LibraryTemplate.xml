@@ -104,4 +104,48 @@
       <id/>
     </property>
   </object>
+  <object>
+    <name>BookVersions.Code.LibraryTemplate</name>
+    <number>0</number>
+    <className>BookVersions.Code.PageStatusClass</className>
+    <guid>c3ade15e-1100-4823-8a76-20798f2daf4c</guid>
+    <class>
+      <name>BookVersions.Code.PageStatusClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <status>
+        <cache>0</cache>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <freeText/>
+        <hint/>
+        <largeStorage>0</largeStorage>
+        <multiSelect>0</multiSelect>
+        <name>status</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>status</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <sort/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>draft|review|complete</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </status>
+    </class>
+    <property>
+      <status/>
+    </property>
+  </object>
 </xwikidoc>

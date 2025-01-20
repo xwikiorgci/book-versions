@@ -50,8 +50,9 @@ public class DefaultVersionedContent implements VersionedContent
         this.document = document;
         this.object = document.getXObject(BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE);
         this.defined = this.object != null;
+        BaseObject statusObject = document.getXObject(BookVersionsConstants.PAGESTATUS_CLASS_REFERENCE);
         this.status =
-            this.defined ? this.object.getStringValue(BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS) : null;
+            statusObject != null ? statusObject.getStringValue(BookVersionsConstants.PAGESTATUS_PROP_STATUS) : null;
     }
 
     @Override
@@ -75,18 +76,18 @@ public class DefaultVersionedContent implements VersionedContent
     @Override
     public boolean isDraft()
     {
-        return this.status != null && this.status == BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS_DRAFT;
+        return this.status != null && this.status == BookVersionsConstants.PAGESTATUS_PROP_STATUS_DRAFT;
     }
 
     @Override
     public boolean isInReview()
     {
-        return this.status != null && this.status == BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS_REVIEW;
+        return this.status != null && this.status == BookVersionsConstants.PAGESTATUS_PROP_STATUS_REVIEW;
     }
 
     @Override
     public boolean isComplete()
     {
-        return this.status != null && this.status == BookVersionsConstants.BOOKVERSIONEDCONTENT_PROP_STATUS_COMPLETE;
+        return this.status != null && this.status == BookVersionsConstants.PAGESTATUS_PROP_STATUS_COMPLETE;
     }
 }

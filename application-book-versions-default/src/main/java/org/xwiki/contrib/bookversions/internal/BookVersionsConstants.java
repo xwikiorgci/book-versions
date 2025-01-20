@@ -83,6 +83,12 @@ public interface BookVersionsConstants
         new EntityReference("BookVersionedContentClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
 
     /**
+     * The reference of the book page status class.
+     */
+    EntityReference PAGESTATUS_CLASS_REFERENCE =
+        new EntityReference("PageStatusClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
      * The reference of the library reference class.
      */
     EntityReference BOOKLIBRARYREFERENCE_CLASS_REFERENCE =
@@ -217,22 +223,22 @@ public interface BookVersionsConstants
     /**
      * The status property of a book page.
      */
-    String BOOKVERSIONEDCONTENT_PROP_STATUS = "status";
+    String PAGESTATUS_PROP_STATUS = "status";
 
     /**
      * The status property of a book page.
      */
-    String BOOKVERSIONEDCONTENT_PROP_STATUS_DRAFT = "draft";
+    String PAGESTATUS_PROP_STATUS_DRAFT = "draft";
 
     /**
      * The status property of a book page.
      */
-    String BOOKVERSIONEDCONTENT_PROP_STATUS_REVIEW = "review";
+    String PAGESTATUS_PROP_STATUS_REVIEW = "review";
 
     /**
      * The status property of a book page.
      */
-    String BOOKVERSIONEDCONTENT_PROP_STATUS_COMPLETE = "complete";
+    String PAGESTATUS_PROP_STATUS_COMPLETE = "complete";
 
     /**
      * The excludePagesOutsideVariant property of a variant page.
@@ -361,6 +367,7 @@ public interface BookVersionsConstants
         BookVersionsConstants.BOOK_CLASS_REFERENCE,
         BookVersionsConstants.LIBRARY_CLASS_REFERENCE,
         BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE,
+        BookVersionsConstants.PAGESTATUS_CLASS_REFERENCE,
         BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE,
         BookVersionsConstants.MARKEDDELETED_CLASS_REFERENCE,
         BookVersionsConstants.VARIANTLIST_CLASS_REFERENCE,

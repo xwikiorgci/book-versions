@@ -20,30 +20,65 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.BookPageTemplate" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.PageStatusClass" locale="">
   <web>BookVersions.Code</web>
-  <name>BookPageTemplate</name>
+  <name>PageStatusClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <parent>WebHome</parent>
+  <parent>XWiki.XWikiClasses</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <version>1.1</version>
-  <title>Book Page Template</title>
+  <title>Page Status Class</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content/>
+  <class>
+    <name>BookVersions.Code.PageStatusClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <status>
+      <cache>0</cache>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <freeText/>
+      <hint/>
+      <largeStorage>0</largeStorage>
+      <multiSelect>0</multiSelect>
+      <name>status</name>
+      <number>1</number>
+      <picker>1</picker>
+      <prettyName>status</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>1</size>
+      <sort/>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>draft|review|complete</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </status>
+  </class>
   <object>
-    <name>BookVersions.Code.BookPageTemplate</name>
+    <name>BookVersions.Code.PageStatusClass</name>
     <number>0</number>
-    <className>BookVersions.Code.BookPageClass</className>
-    <guid>84969af5-29b6-4733-a2ed-8965699d88b3</guid>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>77abdda6-22fa-458a-9b49-690efa7e09a2</guid>
     <class>
-      <name>BookVersions.Code.BookPageClass</name>
+      <name>XWiki.DocumentSheetBinding</name>
       <customClass/>
       <customMapping/>
       <defaultViewSheet/>
@@ -51,68 +86,34 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
-      <unversioned>
-        <customDisplay/>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
-        <displayType/>
-        <hint/>
-        <name>unversioned</name>
-        <number>2</number>
-        <prettyName>unversioned</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </unversioned>
-    </class>
-    <property>
-      <unversioned/>
-    </property>
-  </object>
-  <object>
-    <name>BookVersions.Code.BookPageTemplate</name>
-    <number>0</number>
-    <className>BookVersions.Code.PageStatusClass</className>
-    <guid>fdc5abb8-4def-4c2e-ad7e-062c6618aff8</guid>
-    <class>
-      <name>BookVersions.Code.PageStatusClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <status>
+      <sheet>
         <cache>0</cache>
+        <classname/>
         <customDisplay/>
-        <defaultValue/>
         <disabled>0</disabled>
-        <displayType>select</displayType>
-        <freeText/>
+        <displayType>input</displayType>
         <hint/>
-        <largeStorage>0</largeStorage>
+        <idField/>
         <multiSelect>0</multiSelect>
-        <name>status</name>
+        <name>sheet</name>
         <number>1</number>
         <picker>1</picker>
-        <prettyName>status</prettyName>
+        <prettyName>Sheet</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <sort/>
+        <separators/>
+        <size>30</size>
+        <sort>none</sort>
+        <sql/>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>draft|review|complete</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </status>
+        <valueField/>
+        <classType>com.xpn.xwiki.objects.classes.PageClass</classType>
+      </sheet>
     </class>
     <property>
-      <status/>
+      <sheet>XWiki.ClassSheet</sheet>
     </property>
   </object>
 </xwikidoc>

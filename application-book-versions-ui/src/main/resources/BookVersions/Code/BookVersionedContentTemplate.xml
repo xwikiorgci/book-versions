@@ -51,6 +51,35 @@
       <defaultWeb/>
       <nameField/>
       <validationScript/>
+      <discard>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <hint/>
+        <name>discard</name>
+        <number>1</number>
+        <prettyName>discard</prettyName>
+        <script/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+      </discard>
+    </class>
+  </object>
+  <object>
+    <name>BookVersions.Code.BookVersionedContentTemplate</name>
+    <number>0</number>
+    <className>BookVersions.Code.PageStatusClass</className>
+    <guid>796e09c8-caf4-43b3-aa39-144191568542</guid>
+    <class>
+      <name>BookVersions.Code.PageStatusClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
       <status>
         <cache>0</cache>
         <customDisplay/>

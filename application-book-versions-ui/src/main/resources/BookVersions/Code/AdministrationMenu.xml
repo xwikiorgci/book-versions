@@ -648,6 +648,7 @@
       #set ($discard = $versionedContentDoc.setContent($doc.content))
       #if($versionedContentDoc.isNew())
         #set($discard = $versionedContentDoc.createNewObject("BookVersions.Code.BookVersionedContentClass"))
+        #set($discard = $versionedContentDoc.createNewObject("BookVersions.Code.PageStatusClass"))
       #end
       #set ($discard = $versionedContentDoc.save())
     #else
@@ -659,6 +660,7 @@
       #set ($discard = $versionedContentDoc.setContent($doc.content))
       #if($versionedContentDoc.isNew())
         #set($discard = $versionedContentDoc.createNewObject("BookVersions.Code.BookVersionedContentClass"))
+        #set($discard = $versionedContentDoc.createNewObject("BookVersions.Code.PageStatusClass"))
       #end
       #set ($discard = $versionedContentDoc.save())
     #end

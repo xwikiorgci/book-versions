@@ -364,7 +364,7 @@
     id="statuses"
     properties="doc.title,doc.location,doc.name,status,doc.creationDate,doc.date"
     source="liveTable"
-    sourceParameters="className=BookVersions.Code.BookVersionedContentClass&amp;translationPrefix=BookVersions.versions.LD."
+    sourceParameters="className=BookVersions.Code.PageStatusClass&amp;translationPrefix=BookVersions.versions.LD."
     filters="doc.location=${bookMainSpace}"
   }}{
     "meta": {

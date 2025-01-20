@@ -46,31 +46,19 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
-    <status>
-      <cache>0</cache>
+    <discard>
       <customDisplay/>
-      <defaultValue/>
       <disabled>0</disabled>
-      <displayType>select</displayType>
-      <freeText/>
       <hint/>
-      <largeStorage>0</largeStorage>
-      <multiSelect>0</multiSelect>
-      <name>status</name>
+      <name>discard</name>
       <number>1</number>
-      <picker>1</picker>
-      <prettyName>status</prettyName>
-      <relationalStorage>0</relationalStorage>
-      <separator> </separator>
-      <separators>|, </separators>
-      <size>1</size>
-      <sort/>
+      <prettyName>discard</prettyName>
+      <script/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>draft=Draft|review=Review|complete=Complete</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </status>
+      <classType>com.xpn.xwiki.objects.classes.ComputedFieldClass</classType>
+    </discard>
   </class>
   <object>
     <name>BookVersions.Code.BookVersionedContentClass</name>
