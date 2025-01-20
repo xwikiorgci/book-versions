@@ -347,7 +347,8 @@
     }
   }}{{/liveData}}
 #else
-  $services.localization.render('BookVersions.adminMenu.librariesText')
+  #set ($versionAdminPageRef = $services.model.serialize($services.model.createDocumentReference("Versions", $doc.documentReference.lastSpaceReference)))
+  $services.localization.render('BookVersions.adminMenu.librariesText', ['[[', "&gt;&gt;$versionAdminPageRef]]"])
   #set ($spaceReference = $services.bookversions.getVersionedCollectionReference($doc.getDocumentReference()))
     #set ($libReferencesList = $services.bookversions.getUsedLibraries($spaceReference))
   #foreach ($libRef in $libReferencesList)
