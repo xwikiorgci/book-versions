@@ -806,23 +806,22 @@
 ## Handle variant actions (link/unlink)
 ##
 #macro(handleVariantActions)
-  #if("$!request.variantAction" != '')
-    #set ($variantsObj = $doc.getObject("BookVersions.Code.VariantsListClass"))
-    #if(!$variantsObj)
-      #set ($variantsObj = $doc.newObject("BookVersions.Code.VariantsListClass"))
-      #set ($associatedVariants = [])
-    #else
-      #set ($associatedVariants = $variantsObj.getProperty('variantsList').getValue())
-    #end
+  #if ("$!request.variantAction" != '')
+    #set ($variantsObj = $doc.getObject("BookVersions.Code.VariantsListClass", true))
+    #set ($associatedVariants = $variantsObj.getProperty('variantsList').getValue())
     #set ($selectedVariant = "$!request.selectedVariant")
-    #if($selectedVariant != '')
-      #if($request.variantAction == 'link' &amp;&amp; !$associatedVariants.contains($selectedVariant))
+    #if ($selectedVariant != '')
+      #if ($request.variantAction == 'link' &amp;&amp; !$associatedVariants.contains($selectedVariant))
         $associatedVariants.add($selectedVariant)
         $variantsObj.set('variantsList', $associatedVariants)
         $doc.save('Added variant association')
-      #elseif($request.variantAction == 'unlink' &amp;&amp; $associatedVariants.contains($selectedVariant))
+      #elseif ($request.variantAction == 'unlink' &amp;&amp; $associatedVariants.contains($selectedVariant))
         $associatedVariants.remove($selectedVariant)
-        $variantsObj.set('variantsList', $associatedVariants)
+        #if ($associatedVariants.size() &gt; 0)
+          $variantsObj.set('variantsList', $associatedVariants)
+        #else
+          $doc.removeObject($variantsObj)
+        #end
         $doc.save('Removed variant association')
       #end
     #end
@@ -1034,20 +1033,17 @@
   #if ($variantsObj)
     #set ($associatedVariants = $variantsObj.getProperty('variantsList').getValue())
   #end
+  #set ($selectedVariantName = "")
+  #set ($variantTitle = "")
+  #set ($msgAssociateVariantName = "")
   #if("$!selectedVariant" != "")
     #set ($selectedVariantName = $services.bookversions.getVariantName($services.model.resolveDocument($selectedVariant)))
     #set ($variantTitle = $xwiki.getDocument($services.bookversions.getVariantReference($collectionRef,$selectedVariantName)).displayTitle)
     #if ($associatedVariants &amp;&amp; $associatedVariants.size() &gt; 0 &amp;&amp; $associatedVariants.contains($selectedVariant))
       #set ($msgAssociateVariantName = "unlink")
-    #elseif ($associatedVariants &amp;&amp; $associatedVariants.size() &gt; 0 &amp;&amp; !$associatedVariants.contains($selectedVariant))
-      #set ($msgAssociateVariantName = "link")
     #else
-      #set ($msgAssociateVariantName = "")
+      #set ($msgAssociateVariantName = "link")
     #end
-  #else
-    #set ($selectedVariantName = "")
-	#set ($variantTitle = "")
-    #set ($msgAssociateVariantName = "")
   #end
   #if ($associatedVariants &amp;&amp; $associatedVariants.size() &gt; 0 )
     #set ($variantStateMessageKey = 'BookVersions.navMenu.pageRestrictedTo')
