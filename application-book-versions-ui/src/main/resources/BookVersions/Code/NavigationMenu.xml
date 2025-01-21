@@ -136,8 +136,8 @@
         // Page is versioned, redirect to the content sub-page
         window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction) + '?force=1';
       } else {
-        // Page is unversioned, refresh the top page
-        location.reload();
+        // Page is unversioned, refresh the page and provide the targeted version select
+        window.location = window.location + '?unVersion=' + versionSelect.val();
       }
     })
   })</code>
@@ -743,6 +743,10 @@
   #if ($request.force)
     ## If link comes from select list. Forcing selected Version
     $services.bookversions.setSelectedVersion($collectionRef, $services.model.serialize($docRef,'local'))
+  #end
+  #if ($request.unVersion)
+    ## If link comes from select list of an unversioned page. Forcing selected Version
+    $services.bookversions.setSelectedVersion($collectionRef, $services.model.resolveDocument($request.unVersion))
   #end
   #set ($selectedVersion = $services.bookversions.getSelectedVersion($collectionRef))
   #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
