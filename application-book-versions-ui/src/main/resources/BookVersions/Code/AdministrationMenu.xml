@@ -569,7 +569,7 @@
               &lt;/ul&gt;
           #end
         #end
-        #if($isVersionedContent &amp;&amp; $variants.size() &gt; 0)
+        #if(($isVersionedContent || $isUnVersionedPage) &amp;&amp; $variants.size() &gt; 0)
           &lt;ul&gt;
             &lt;li&gt;
               #if("$!{msgAssociateVariantName}" == 'link')

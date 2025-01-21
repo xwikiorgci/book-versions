@@ -816,6 +816,9 @@
     #set ($selectedVariant = "$!request.selectedVariant")
     #if ($selectedVariant != '')
       #if ($request.variantAction == 'link' &amp;&amp; !$associatedVariants.contains($selectedVariant))
+        #if(!$associatedVariants)
+          #set ($associatedVariants = [])
+        #end
         $associatedVariants.add($selectedVariant)
         $variantsObj.set('variantsList', $associatedVariants)
         $doc.save('Added variant association')
