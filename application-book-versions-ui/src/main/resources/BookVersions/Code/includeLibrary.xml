@@ -255,11 +255,8 @@
     </property>
     <property>
       <code>{{velocity}}
-#set ($bookReference = $services.bookversions.getVersionedCollectionReference($doc.getDocumentReference()))
-#if ($bookReference)
-  #set ($contentRef = $services.bookversions.getLinkedLibraryContentReference($bookReference,$wikimacro.parameters.keyReference))
-  {{display reference="$contentRef" /}}
-#end
+#set ($contentRef = $services.bookversions.getLinkedLibraryContentReference($doc.documentReference, $wikimacro.parameters.keyReference))
+{{display reference="$contentRef" /}}
 {{/velocity}}</code>
     </property>
     <property>

@@ -587,16 +587,16 @@ public class BookVersionsScriptService implements ScriptService
      * Get the reference of the library content for the given key, depending on the configured library version in the
      * given book and the current selected book version.
      *
-     * @param bookReference the reference of the book
+     * @param documentReference the reference of the book or the page
      * @param keyReference the reference of the key (library page)
      * @return the reference of the content of the library
      * @throws XWikiException
      * @throws QueryException
      */
-    public DocumentReference getLinkedLibraryContentReference(DocumentReference bookReference,
+    public DocumentReference getLinkedLibraryContentReference(DocumentReference documentReference,
         DocumentReference keyReference) throws XWikiException, QueryException
     {
-        return bookVersionsManagerProvider.get().getLinkedLibraryContentReference(bookReference, keyReference);
+        return bookVersionsManagerProvider.get().getLinkedLibraryContentReference(documentReference, keyReference);
     }
 
     /**

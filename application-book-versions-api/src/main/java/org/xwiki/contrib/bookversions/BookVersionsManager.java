@@ -569,14 +569,14 @@ public interface BookVersionsManager
      * Get the reference of the library content for the given key, depending on the configured library version in the
      * given book and the current selected book version.
      * 
-     * @param bookReference the reference of the book
+     * @param documentReference the reference of the book or the page
      * @param keyReference the reference of the key (library page)
      * @return the reference of the content of the library
      * @throws XWikiException In case the system can't provide an answer.
      * @throws QueryException If any exception occurs while querying the database.
      */
-    DocumentReference getLinkedLibraryContentReference(DocumentReference bookReference, DocumentReference keyReference)
-        throws XWikiException, QueryException;
+    DocumentReference getLinkedLibraryContentReference(DocumentReference documentReference,
+        DocumentReference keyReference) throws XWikiException, QueryException;
 
     /**
      * Get a list of used libraries in the given book.

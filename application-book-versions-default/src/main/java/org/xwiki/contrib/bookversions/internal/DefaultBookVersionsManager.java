@@ -1119,17 +1119,26 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
-    public DocumentReference getConfiguredLibraryVersion(DocumentReference bookReference,
+    public DocumentReference getConfiguredLibraryVersion(DocumentReference documentReference,
         DocumentReference libraryReference) throws XWikiException, QueryException
     {
-        if (isBook(bookReference) && isLibrary(libraryReference)) {
-            String selectedVersionStringRef = getSelectedVersion(bookReference);
+        if (isLibrary(libraryReference)) {
+            DocumentReference collectionRef = getVersionedCollectionReference(documentReference);
+            String selectedVersionStringRef = getSelectedVersion(documentReference);
+            if (isVersionedContent(documentReference)) {
+                SpaceReference versionParentSpaceReference =
+                    new SpaceReference(new EntityReference(BookVersionsConstants.VERSIONS_LOCATION, EntityType.SPACE,
+                        collectionRef.getParent()));
+                DocumentReference versionDocumentReference = new DocumentReference(
+                    new EntityReference(documentReference.getName(), EntityType.DOCUMENT, versionParentSpaceReference));
+                selectedVersionStringRef = localSerializer.serialize(versionDocumentReference);
+            }
             if (selectedVersionStringRef == null || selectedVersionStringRef.isEmpty()) {
                 // in case no version has been selected yet, get the most recent one
-                selectedVersionStringRef = getCollectionVersions(bookReference).get(0);
+                selectedVersionStringRef = getCollectionVersions(collectionRef).get(0);
             }
-            DocumentReference selectedVersionRef = referenceResolver.resolve(selectedVersionStringRef, bookReference);
-            return  getConfiguredLibraryVersion(bookReference, libraryReference, selectedVersionRef);
+            DocumentReference selectedVersionRef = referenceResolver.resolve(selectedVersionStringRef, collectionRef);
+            return getConfiguredLibraryVersion(collectionRef, libraryReference, selectedVersionRef);
         }
         return null;
     }
@@ -1156,7 +1165,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     @Override
-    public DocumentReference getLinkedLibraryContentReference(DocumentReference bookReference,
+    public DocumentReference getLinkedLibraryContentReference(DocumentReference documentReference,
         DocumentReference keyReference) throws XWikiException, QueryException
     {
         DocumentReference libraryRef = getVersionedCollectionReference(keyReference);
@@ -1164,7 +1173,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             // the passed reference is part of a library
             if (isVersionedPage(keyReference)) {
                 // versioned page => get the content depending on the book configuration
-                DocumentReference libraryVersionRef = getConfiguredLibraryVersion(bookReference, libraryRef);
+                DocumentReference libraryVersionRef = getConfiguredLibraryVersion(documentReference, libraryRef);
                 return getInheritedContentReference(keyReference, libraryVersionRef);
             } else {
                 // unversioned page
