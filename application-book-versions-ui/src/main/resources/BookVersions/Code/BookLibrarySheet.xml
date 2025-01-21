@@ -102,6 +102,7 @@
 #if (!$xwiki.exists($versionsFullName))
     #set ($versionsDoc = $xwiki.getDocument($versionsFullName))
     #set ($discard = $versionsDoc.setContent('{{admin-interface type="Versions" /}}'))
+    #set ($discard = $versionsDoc.setHidden(true))
     #set ($discard = $versionsDoc.save())
 #end
 
@@ -110,6 +111,7 @@
     #set ($versionsDoc = $xwiki.getDocument($languagesFullName))
     #set ($discard = $versionsDoc.setContent('{{admin-interface type="Languages" /}}'))
     #set ($discard = $versionsDoc.newObject('BookVersions.Code.MultilingualClass'))
+    #set ($discard = $versionsDoc.setHidden(true))
     #set ($discard = $versionsDoc.save())
 #end
 
@@ -117,6 +119,7 @@
 #if (!$xwiki.exists($publicationFullName))
     #set ($publicationDoc = $xwiki.getDocument($publicationFullName))
     #set ($discard = $publicationDoc.setContent('{{admin-interface type="PublicationConfiguration" /}}'))
+    #set ($discard = $publicationDoc.setHidden(true))
     #set ($discard = $publicationDoc.save())
 #end
 
@@ -126,6 +129,7 @@
   #if (!$xwiki.exists($variantsFullName))
       #set ($variantsDoc = $xwiki.getDocument($variantsFullName))
       #set ($discard = $variantsDoc.setContent('{{admin-interface type="Variants" /}}'))
+      #set ($discard = $variantsDoc.setHidden(true))
       #set ($discard = $variantsDoc.save())
   #end
 
@@ -133,6 +137,7 @@
   #if (!$xwiki.exists($librariesFullName))
       #set ($librariesDoc = $xwiki.getDocument($librariesFullName))
       #set ($discard = $librariesDoc.setContent('{{admin-interface type="Libraries" /}}'))
+      #set ($discard = $librariesDoc.setHidden(true))
       #set ($discard = $librariesDoc.save())
   #end
 #end
