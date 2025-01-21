@@ -131,14 +131,24 @@
     const collectionRef = $('#collectionRef');
     const setAttributeURL = $('#setAttributeURL');
     const unversioned = $('#unversioned');
+    const restURL = new XWiki.Document(new XWiki.DocumentReference(this.wiki, ['BookVersions','Code'], 'SetSelectedVersionService')).getURL();
     versionSelect.on("change", function() {
-      if (unversioned[0].value != "true") {
-        // Page is versioned, redirect to the content sub-page
-        window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction) + '?force=1';
-      } else {
-        // Page is unversioned, refresh the page and provide the targeted version select
-        window.location = window.location + '?unVersion=' + versionSelect.val();
-      }
+      $.getJSON(restURL, {
+          currentPageReference: XWiki.Model.serialize(XWiki.Document.currentDocumentReference),
+          versionedPageReference: versionSelect.val(),
+      })
+      .done(data =&gt; {
+        if( data.size() &gt; 0 &amp;&amp; data[0].versionReference) {
+          if (unversioned[0].value != "true") {
+            // Page is versioned, redirect to the content sub-page
+            window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction) + '?force=1';
+          } else {
+            // Page is unversioned, refresh the page and provide the targeted version select
+            window.location = window.location + '?unVersion=' + versionSelect.val();
+          }
+        }
+      })
+      .fail(function(){});
     })
   })</code>
     </property>
@@ -742,7 +752,10 @@
 #macro(initializeVersionVariables)
   #if ($request.force)
     ## If link comes from select list. Forcing selected Version
-    $services.bookversions.setSelectedVersion($collectionRef, $services.model.serialize($docRef,'local'))
+    #set ($versionReference = $services.bookversions.getVersionReference($collectionRef, $docRef.name))
+    #if ($versionReference)
+      $services.bookversions.setSelectedVersion($collectionRef, $services.model.serialize($versionReference,'local'))
+    #end
   #end
   #if ($request.unVersion)
     ## If link comes from select list of an unversioned page. Forcing selected Version
