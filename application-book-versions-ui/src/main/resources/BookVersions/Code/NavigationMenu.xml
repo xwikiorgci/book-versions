@@ -1194,10 +1194,14 @@
         &lt;input type="hidden" name="selectedLanguage" id="selectedLanguageInput" value="$!selectedLanguage"/&gt;
         &lt;label for="collectionLanguage"&gt;$services.localization.render('BookVersions.navMenu.languageSelect')&lt;/label&gt;
         &lt;select name="collectionLanguage" id="collectionLanguage"&gt;
+          #set ($currentLocale = $services.localization.currentLocale)
           #foreach($language in $languages)
             #if ($language)
+              #set ($locale = $services.localization.toLocale($language))
+              #set ($displayvalue = $escapetool.xml($stringtool.capitalize($locale.getDisplayName($locale)) +
+      ' (' + $stringtool.capitalize($locale.getDisplayName($currentLocale)) + ')'))
               #set ($isSelected = $language &amp;&amp; $selectedLanguage &amp;&amp; $language.equals($selectedLanguage))
-              &lt;option value="$language" #if($isSelected)selected#end&gt;$language&lt;/option&gt;
+              &lt;option value="$language" #if($isSelected)selected#end&gt;$escapetool.xml($displayvalue)&lt;/option&gt;
             #end
           #end
         &lt;/select&gt;
