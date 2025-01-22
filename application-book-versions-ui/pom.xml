@@ -44,6 +44,11 @@
       <artifactId>application-book-versions-default</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.contrib</groupId>
+      <artifactId>macro-job</artifactId>
+      <version>2.1</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
