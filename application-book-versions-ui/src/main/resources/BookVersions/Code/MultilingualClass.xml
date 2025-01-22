@@ -63,7 +63,13 @@
     </enabled>
     <supportedLanguages>
       <cache>0</cache>
-      <customDisplay/>
+      <customDisplay>{{velocity}}
+#set ($mode = $type)
+#if ($mode != 'edit')
+  #set ($mode = 'view')
+#end
+$services.display.html.display('org.xwiki.contrib.bookversions.internal.displayers.PageTranslationLanguageList', $value, {}, $mode)
+{{/velocity}}</customDisplay>
       <defaultValue/>
       <disabled>0</disabled>
       <displayType>input</displayType>
