@@ -1671,7 +1671,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             List<DocumentReference> variantReferences = new ArrayList<>();
             if (variants != null) {
                 for (String variant : variants.split(",")) {
-                    variantReferences.add(referenceResolver.resolve(variant));
+                    variantReferences.add(referenceResolver.resolve(variant, originalDocumentReference));
                 }
             }
 
@@ -1717,13 +1717,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
         }
 
-        boolean transformedLibrary = transformLibrary(xdom, publishedLibraries);
+        boolean transformedLibrary = transformLibrary(xdom, originalDocumentReference, publishedLibraries);
         boolean transformedReferences = publicationReferencesTransformationHelper.transform(xdom,
             originalDocumentReference, publishedLibraries, configuration);
         return hasXDOMChanged || transformedLibrary || transformedReferences;
     }
 
-    private boolean transformLibrary(XDOM xdom, Map<DocumentReference, DocumentReference> publishedLibraries)
+    private boolean transformLibrary(XDOM xdom, DocumentReference originalDocumentReference,
+        Map<DocumentReference, DocumentReference> publishedLibraries)
         throws QueryException, XWikiException
     {
         logger.debug("[transformLibrary] Starting to transform includeLibrary macro reference");
@@ -1744,7 +1745,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                     BookVersionsConstants.INCLUDELIBRARY_MACRO_PROP_KEYREFERENCE);
                 continue;
             }
-            DocumentReference pageReference = referenceResolver.resolve(keyRefString);
+            DocumentReference pageReference = referenceResolver.resolve(keyRefString, originalDocumentReference);
             logger.debug("[transformLibrary] Updating {} macro referencing [{}].",
                     BookVersionsConstants.INCLUDELIBRARY_MACRO_ID, pageReference);
             // Get the library reference
