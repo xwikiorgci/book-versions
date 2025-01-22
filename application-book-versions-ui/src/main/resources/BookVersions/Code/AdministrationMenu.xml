@@ -538,7 +538,7 @@
                 &lt;a id="convert-to-unversioned" href="#" data-page="$doc"&gt;
                   $services.localization.render('BookVersions.navMenu.convertToUnversioned')
                 &lt;/a&gt;
-              #elseif($isUnVersionedPage)
+              #elseif($isUnVersionedPage &amp;&amp; $services.bookversions.getCollectionVersions($docRef).size() > 0)
                 &lt;a id="convert-to-versioned" href="#" data-page="$doc"&gt;
                   $services.localization.render('BookVersions.navMenu.convertToVersioned')
                 &lt;/a&gt;
