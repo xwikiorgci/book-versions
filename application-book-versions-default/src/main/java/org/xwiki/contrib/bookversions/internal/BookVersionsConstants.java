@@ -35,6 +35,11 @@ import org.xwiki.model.reference.EntityReference;
 public interface BookVersionsConstants
 {
     /**
+     * The reference of the XWiki location.
+     */
+    EntityReference XWIKI_REFERENCE = new EntityReference("XWiki", org.xwiki.model.EntityType.SPACE);
+
+    /**
      * The reference of the code location.
      */
     EntityReference BOOKVERSIONS_CODE_REFERENCE = new EntityReference("Code", EntityType.SPACE,
@@ -129,6 +134,12 @@ public interface BookVersionsConstants
      */
     EntityReference PUBLISHEDCOLLECTION_CLASS_REFERENCE =
         new EntityReference("PublishedBookClass", EntityType.DOCUMENT, BOOKVERSIONS_CODE_REFERENCE);
+
+    /**
+     * The XWiki comments class.
+     */
+    EntityReference XWIKICOMMENTS_CLASS_REFERENCE =
+        new EntityReference("XWikiComments", EntityType.DOCUMENT, XWIKI_REFERENCE);
 
     /**
      * The masterName property of a published collection data.
@@ -371,7 +382,8 @@ public interface BookVersionsConstants
         BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE,
         BookVersionsConstants.MARKEDDELETED_CLASS_REFERENCE,
         BookVersionsConstants.VARIANTLIST_CLASS_REFERENCE,
-        BookVersionsConstants.PUBLICATION_CLASS_REFERENCE
+        BookVersionsConstants.PUBLICATION_CLASS_REFERENCE,
+        BookVersionsConstants.XWIKICOMMENTS_CLASS_REFERENCE
     );
 
     /**
