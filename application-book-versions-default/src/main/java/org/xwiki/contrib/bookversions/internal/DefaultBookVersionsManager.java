@@ -1408,7 +1408,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
 
             // Get the published reference
-            DocumentReference publishedReference = getPublishedReference(page, configuration);
+            DocumentReference publishedReference = getPublishedReference(pageReference, collectionReference, targetReference);
 
             // Create the published document
             logger.info("Copying page [{}] to [{}].", contentPage.getDocumentReference(),
@@ -1599,18 +1599,13 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         return null;
     }
 
-    private DocumentReference getPublishedReference(XWikiDocument originalPage, Map<String, Object> configuration)
-        throws QueryException, XWikiException
+    private static DocumentReference getPublishedReference(DocumentReference originalReference,
+        DocumentReference collectionReference, DocumentReference targetReference)
     {
-        DocumentReference targetReference = (DocumentReference) configuration.get(
-            BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
-        DocumentReference originalReference = originalPage.getDocumentReference();
-        DocumentReference collectionReference = getVersionedCollectionReference(originalReference);
-        // getParent() gets the collection's space
         DocumentReference publishedReference =
             originalReference.replaceParent(collectionReference.getParent(),
             targetReference.getLastSpaceReference());
-        return  publishedReference;
+        return publishedReference;
     }
 
     private XWikiDocument removeObjectsForPublication(XWikiDocument publishedPage)
@@ -1758,10 +1753,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 continue;
             }
             // Compute the published page reference
-            // getParent is necessary to not remove the top page space
-            DocumentReference publishedPageReference =
-                pageReference.replaceParent(libraryReference.getLastSpaceReference().getParent(),
-                    publishedLibraryReference.getLastSpaceReference());
+            DocumentReference publishedPageReference = getPublishedReference(pageReference, libraryReference,
+                publishedLibraryReference);
             logger.debug("[transformLibrary] Page reference is changed to [{}].", publishedPageReference);
             // Replace the macro by include macro and change to the published reference
             MacroBlock newMacroBlock = new MacroBlock(BookVersionsConstants.INCLUDE_MACRO_ID,
