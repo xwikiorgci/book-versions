@@ -39,6 +39,10 @@
   <content>{{include reference="BookVersions.Code.BookNavAdaptivePanelSetter"/}}
 
 {{velocity}}
+#if ($services.bookversions.isMarkedDeleted($doc.document))
+  {{include reference="BookVersions.Code.DeletedContentSheet"/}}
+  #stop
+#end
 #set ($xobject = $doc.getObject('BookVersions.Code.BookClass'))
 #set ($isLibrary = false)
 #if (!$xobject)
