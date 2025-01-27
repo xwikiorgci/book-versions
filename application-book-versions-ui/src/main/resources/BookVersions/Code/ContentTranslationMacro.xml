@@ -260,9 +260,9 @@
   ## Get the current selected language
   #set ($selectedLanguage = $services.bookversions.getSelectedLanguage($collectionRef))
   ## Get parameters
-  #set ($contentLanguage = $wikimacro.parameters.language)
+  #set ($contentLanguage = $context.macro.params.language)
   #if ($contentLanguage &amp;&amp; !$selectedLanguage)
-    #set($isDefaultLanguage = $contentLanguage == $services.bookversions.getDefaultTranslation($docRef))
+    #set ($isDefaultLanguage = $contentLanguage == $services.bookversions.getDefaultTranslation($docRef))
   #end
   ## Display content only if the selected language is the one set as parameter
   #if ($selectedLanguage == $contentLanguage || (!$selectedLanguage &amp;&amp; $isDefaultLanguage))

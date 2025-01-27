@@ -253,7 +253,7 @@
     </property>
     <property>
       <code>{{velocity}}
-#set ($type = $wikimacro.parameters.type)
+#set ($type = $!context.macro.params.type)
 #set ($typeSingular = "")
 #if ($type == "Variants")
     #set ($typeSingular = "Variant")

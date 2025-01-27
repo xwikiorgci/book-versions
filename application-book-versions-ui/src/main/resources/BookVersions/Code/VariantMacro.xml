@@ -260,13 +260,18 @@
   ## Get the current selected variant
   #set ($selectedVariant = $services.bookversions.getSelectedVariant($collectionRef))
   ## Display content only if the seleceted variant is the one set as parameter
-  #if($selectedVariant=="")
-    #set($isVariant = true)
+  #if ($selectedVariant=="")
+    #set ($isVariant = true)
   #else
-    #set($isVariant = false)
+    #set ($isVariant = false)
   #end
-  #foreach($variant in $wikimacro.parameters.name)
-    #set($variantLocalRef = $services.model.serialize($variant, 'local'))
+  ## Workaround for https://jira.xwiki.org/browse/XWIKI-18965
+  ## When the issue gets fixed, the following lines of code 
+  ## should be replaced by
+  ## #foreach($variant in $!wikimacro.params.name)
+  #set ($variantList = "$!context.macro.params.name")
+  #foreach ($variant in $variantList.split(','))
+    #set ($variantLocalRef = $services.model.serialize($variant, 'local'))
     #if ($variantLocalRef == $selectedVariant)
       #set($isVariant = true)
     #end
