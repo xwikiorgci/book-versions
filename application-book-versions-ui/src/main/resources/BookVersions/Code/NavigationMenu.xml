@@ -127,9 +127,6 @@
     <property>
       <code>require(['jquery', 'xwiki-selectize'], function($) {
     const versionSelect = $('#collectionVersion');
-    const formToken = $('#form_token');
-    const collectionRef = $('#collectionRef');
-    const setAttributeURL = $('#setAttributeURL');
     const unversioned = $('#unversioned');
     const restURL = new XWiki.Document(new XWiki.DocumentReference(this.wiki, ['BookVersions','Code'], 'SetSelectedVersionService')).getURL();
     versionSelect.on("change", function() {
@@ -141,7 +138,7 @@
         if( data.size() &gt; 0 &amp;&amp; data[0].versionReference) {
           if (unversioned[0].value != "true") {
             // Page is versioned, redirect to the content sub-page
-            window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction) + '?force=1';
+            window.location = (new XWiki.Document(XWiki.Model.resolve(versionSelect.val(), XWiki.EntityType.DOCUMENT))).getURL(XWiki.contextaction);
           } else {
             // Page is unversioned, just refresh the page
             window.location.reload()
@@ -750,13 +747,6 @@
 ## Initialize version-related variables
 ##
 #macro(initializeVersionVariables)
-  #if ($request.force)
-    ## If link comes from select list. Forcing selected Version
-    #set ($versionReference = $services.bookversions.getVersionReference($collectionRef, $docRef.name))
-    #if ($versionReference)
-      $services.bookversions.setSelectedVersion($collectionRef, $services.model.serialize($versionReference,'local'))
-    #end
-  #end
   #set ($selectedVersion = $services.bookversions.getSelectedVersion($collectionRef))
   #set ($versions = $services.bookversions.getCollectionVersions($collectionRef))
   #set ($inheritedRedirFlag = $request.getSession().getAttribute('BookVersions.versionInheritedRedirFlag'))
