@@ -261,8 +261,11 @@
   #set ($selectedLanguage = $services.bookversions.getSelectedLanguage($collectionRef))
   ## Get parameters
   #set ($contentLanguage = $wikimacro.parameters.language)
+  #if ($contentLanguage &amp;&amp; !$selectedLanguage)
+    #set($isDefaultLanguage = $contentLanguage == $services.bookversions.getDefaultTranslation($docRef))
+  #end
   ## Display content only if the selected language is the one set as parameter
-  #if ($selectedLanguage == $contentLanguage)
+  #if ($selectedLanguage == $contentLanguage || (!$selectedLanguage &amp;&amp; $isDefaultLanguage))
     $wikimacro.content
   #end
 {{/velocity}}</code>
