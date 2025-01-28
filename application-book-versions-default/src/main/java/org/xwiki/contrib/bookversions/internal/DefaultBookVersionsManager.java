@@ -725,10 +725,9 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             variantDocumentReference =
                 new DocumentReference(new EntityReference(this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE,
                     EntityType.DOCUMENT, versionNonTerminalParentSpaceReference));
-            return this.isVariant(variantDocumentReference) ? variantDocumentReference : null;
         }
 
-        return null;
+        return isVariant(variantDocumentReference) ? variantDocumentReference : null;
     }
 
     @Override
