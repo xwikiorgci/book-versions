@@ -124,7 +124,17 @@
       <separators/>
       <size>1</size>
       <sort/>
-      <sql/>
+      <sql>select distinct doc.fullName
+from XWikiDocument doc,
+     BaseObject libraryObj,
+     BaseObject versionObj,
+     XWikiDocument libraryDoc
+where doc.space = concat(libraryDoc.space, '.Versions')
+  and versionObj.name = doc.fullName
+  and versionObj.className = 'BookVersions.Code.VersionClass'
+  and libraryObj.name = libraryDoc.fullName
+  and libraryObj.className = 'BookVersions.Code.LibraryClass'
+order by doc.fullName</sql>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
