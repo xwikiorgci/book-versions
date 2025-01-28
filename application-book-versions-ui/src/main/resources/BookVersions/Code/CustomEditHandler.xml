@@ -303,31 +303,33 @@
     <property>
       <content>{{velocity}}
 #set ($selectedVersionReference = $services.bookversions.getSelectedVersion($doc.documentReference))
-#set ($selectedVersion = $services.bookversions.getVersionName($selectedVersionReference))
 #set ($inheritedVersionReference = $services.bookversions.getInheritedVersionedContentReference($doc.documentReference))
-#set ($inheritedVersion = $services.bookversions.getVersionName($inheritedVersionReference))
-#if ($selectedVersionReference != $inheritedVersionReference)
-  #set ($discard = $xwiki.jsx.use('BookVersions.Code.CustomEditHandler'))
-  {{html clean="false"}}
-    &lt;div class="modal fade" tabindex="-1" role="dialog" id="inheritedVersionEditModal"&gt;
-      &lt;div class="modal-dialog" role="document"&gt;
-        &lt;div class="modal-content"&gt;
-          &lt;div class="modal-header"&gt;
-            &lt;button type="button" class="close" data-dismiss="modal" aria-label="Close"&gt;&lt;span aria-hidden="true"&gt;&amp;times;&lt;/span&gt;&lt;/button&gt;
-            &lt;h4 class="modal-title"&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupTitle', [$selectedVersion]))&lt;/h4&gt;
-          &lt;/div&gt;
-          &lt;div class="modal-body"&gt;
-            &lt;p&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupDescription', [$selectedVersion, $inheritedVersion]))&lt;/p&gt;
-          &lt;/div&gt;
-          &lt;div class="modal-footer"&gt;
-            &lt;button type="button" class="btn btn-default" data-dismiss="modal"&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupCancel'))&lt;/button&gt;
-            &lt;button type="button" class="btn btn-default" data-dismiss="modal" id="inheritedVersionEditModalSwitchBtn"&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupSwitchVersion', [$inheritedVersion]))&lt;/button&gt;
-            &lt;button type="button" class="btn btn-primary" id="inheritedVersionEditModalCreateBtn"&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupCreateContentForVersion', [$selectedVersion]))&lt;/button&gt;
+#if ($selectedVersionReference != $NULL &amp;&amp; $inheritedVersionReference != $NULL)
+  #set ($selectedVersion = $services.bookversions.getVersionName($selectedVersionReference))
+  #set ($inheritedVersion = $services.bookversions.getVersionName($inheritedVersionReference))
+  #if ($selectedVersionReference != $inheritedVersionReference)
+    #set ($discard = $xwiki.jsx.use('BookVersions.Code.CustomEditHandler'))
+    {{html clean="false"}}
+      &lt;div class="modal fade" tabindex="-1" role="dialog" id="inheritedVersionEditModal"&gt;
+        &lt;div class="modal-dialog" role="document"&gt;
+          &lt;div class="modal-content"&gt;
+            &lt;div class="modal-header"&gt;
+              &lt;button type="button" class="close" data-dismiss="modal" aria-label="Close"&gt;&lt;span aria-hidden="true"&gt;&amp;times;&lt;/span&gt;&lt;/button&gt;
+              &lt;h4 class="modal-title"&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupTitle', [$selectedVersion]))&lt;/h4&gt;
+            &lt;/div&gt;
+            &lt;div class="modal-body"&gt;
+              &lt;p&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupDescription', [$selectedVersion, $inheritedVersion]))&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="modal-footer"&gt;
+              &lt;button type="button" class="btn btn-default" data-dismiss="modal"&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupCancel'))&lt;/button&gt;
+              &lt;button type="button" class="btn btn-default" data-dismiss="modal" id="inheritedVersionEditModalSwitchBtn"&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupSwitchVersion', [$inheritedVersion]))&lt;/button&gt;
+              &lt;button type="button" class="btn btn-primary" id="inheritedVersionEditModalCreateBtn"&gt;$escapetool.xml($services.localization.render('BookVersions.Code.CustomEditHandler.popupCreateContentForVersion', [$selectedVersion]))&lt;/button&gt;
+            &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
-    &lt;/div&gt;
-  {{/html}}
+    {{/html}}
+  #end
 #end
 {{/velocity}}</content>
     </property>
