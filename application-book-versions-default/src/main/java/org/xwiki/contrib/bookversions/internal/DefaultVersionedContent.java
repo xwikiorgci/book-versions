@@ -48,7 +48,8 @@ public class DefaultVersionedContent implements VersionedContent
     public DefaultVersionedContent(XWikiDocument document)
     {
         this.document = document;
-        this.object = document.getXObject(BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE);
+        this.object = this.document != null
+            ? document.getXObject(BookVersionsConstants.BOOKVERSIONEDCONTENT_CLASS_REFERENCE) : null;
         this.defined = this.object != null;
         BaseObject statusObject = document.getXObject(BookVersionsConstants.PAGESTATUS_CLASS_REFERENCE);
         this.status =

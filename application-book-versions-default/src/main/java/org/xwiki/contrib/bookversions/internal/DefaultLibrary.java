@@ -46,6 +46,6 @@ public class DefaultLibrary implements Library
     @Override
     public boolean isDefined()
     {
-        return this.document.getXObject(BookVersionsConstants.LIBRARY_CLASS_REFERENCE) != null;
+        return this.document != null && this.document.getXObject(BookVersionsConstants.LIBRARY_CLASS_REFERENCE) != null;
     }
 }

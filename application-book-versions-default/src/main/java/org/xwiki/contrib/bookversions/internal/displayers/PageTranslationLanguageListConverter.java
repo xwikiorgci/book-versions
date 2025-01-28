@@ -60,6 +60,6 @@ public class PageTranslationLanguageListConverter extends AbstractConverter<Page
     @Override
     protected String convertToString(PageTranslationLanguageList value)
     {
-        return value.toString();
+        return value != null ? value.toString() : null;
     }
 }

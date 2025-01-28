@@ -47,6 +47,6 @@ public class DefaultVersion implements Version
     @Override
     public boolean isDefined()
     {
-        return this.document.getXObject(BookVersionsConstants.VERSION_CLASS_REFERENCE) != null;
+        return this.document != null && this.document.getXObject(BookVersionsConstants.VERSION_CLASS_REFERENCE) != null;
     }
 }

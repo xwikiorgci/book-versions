@@ -47,6 +47,6 @@ public class DefaultVariant implements Variant
     @Override
     public boolean isDefined()
     {
-        return this.document.getXObject(BookVersionsConstants.VARIANT_CLASS_REFERENCE) != null;
+        return this.document != null && this.document.getXObject(BookVersionsConstants.VARIANT_CLASS_REFERENCE) != null;
     }
 }

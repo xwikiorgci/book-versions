@@ -68,6 +68,6 @@ public class PageTranslationLanguageList
     @Override
     public String toString()
     {
-        return languageIds.toString();
+        return languageIds != null ? languageIds.toString() : null;
     }
 }

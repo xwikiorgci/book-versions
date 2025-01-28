@@ -72,7 +72,6 @@ public class DocumentUpdatingEventListener extends AbstractLocalEventListener
     public void processLocalEvent(Event event, Object source, Object data)
     {
         XWikiDocument updatedXDoc = (XWikiDocument) source;
-        updatedXDoc.getOriginalDocument();
         BookVersionsManager bookVersionsManager = bookVersionsManagerProvider.get();
 
         try {

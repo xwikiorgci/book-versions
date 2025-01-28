@@ -49,7 +49,8 @@ public class DefaultPage implements Page
     public DefaultPage(XWikiDocument document)
     {
         this.document = document;
-        this.object = document.getXObject(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE);
+        this.object =
+            this.document != null ? document.getXObject(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE) : null;
         this.defined = this.object != null;
         this.unversioned =
             this.defined ? this.object.getIntValue(BookVersionsConstants.BOOKPAGE_PROP_UNVERSIONED) == 1 : false;

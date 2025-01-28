@@ -82,7 +82,6 @@ public class DocumentCreatingEventListener extends AbstractLocalEventListener
         XWikiContext xcontext = xcontextProvider.get();
 
         XWikiDocument updatedXDoc = (XWikiDocument) source;
-        updatedXDoc.getOriginalDocument();
         BookVersionsManager bookVersionsManager = bookVersionsManagerProvider.get();
 
         try {
