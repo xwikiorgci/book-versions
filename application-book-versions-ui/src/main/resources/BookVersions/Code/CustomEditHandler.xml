@@ -302,9 +302,9 @@
     </property>
     <property>
       <content>{{velocity}}
-#set ($selectedVersionReference = $services.bookversions.getSelectedVersion($doc.documentReference))
-#set ($inheritedVersionReference = $services.bookversions.getInheritedVersionedContentReference($doc.documentReference))
-#if ($selectedVersionReference != $NULL &amp;&amp; $inheritedVersionReference != $NULL)
+#if ($services.bookversions.isVersionedContent($doc.documentReference))
+  #set ($selectedVersionReference = $services.bookversions.getSelectedVersion($doc.documentReference))
+  #set ($inheritedVersionReference = $services.bookversions.getInheritedVersionedContentReference($doc.documentReference))
   #set ($selectedVersion = $services.bookversions.getVersionName($selectedVersionReference))
   #set ($inheritedVersion = $services.bookversions.getVersionName($inheritedVersionReference))
   #if ($selectedVersionReference != $inheritedVersionReference)
