@@ -187,9 +187,7 @@
   ## Get currently selected version
   #set ($selectedVersion = $services.bookversions.getSelectedVersion($bookRef))
   ## Create panel header
-  {{html clean="false"}}&lt;a href="$bookDoc.getURL()"&gt;{{/html}}
-  #navigationPanelHeader($bookTitle)
-  {{html clean="false"}}&lt;/a&gt;{{/html}}
+  #navigationPanelHeader("&lt;a href=$bookDoc.getURL()&gt;$bookTitle&lt;/a&gt;")
 
   ## Prepare the openTo parameter to highlight current page
   #set ($openToDoc = $doc.documentReference.toString().replaceAll('([~"])', '~$1'))
@@ -208,8 +206,8 @@
     #set($bookPages = $query2.execute())
     #foreach($page in $bookPages)
       #set($pageRef = $services.model.resolveDocument($page))
-      ## Only exclude if it's a versioned page AND doesn't have content for selected version
-      #if($services.bookversions.isVersionedPage($pageRef) &amp;&amp; !$services.bookversions.hasContentForVersion($pageRef, $selectedVersion))
+      ## Only exclude if it's a versioned page AND doesn't have content for selected version OR inherited content
+      #if($services.bookversions.isVersionedPage($pageRef) &amp;&amp; !($services.bookversions.hasContentForVersion($pageRef, $selectedVersion) || $services.bookversions.getInheritedContentReference($pageRef, $selectedVersion)))
         #set($discard = $exclusions.add("document:${page}"))
       #end
     #end
