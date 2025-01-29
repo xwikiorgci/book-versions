@@ -79,6 +79,7 @@ BookVersions.Code.VersionClassSheet.librariesConfiguration=Libraries Configurati
 BookVersions.Code.VersionClassSheet.newConfiguration=New configuration
 BookVersions.Code.VariantClassSheet.associatedPages=Associated Pages
 BookVersions.Code.VariantClassSheet.variantConfiguration=Variant Configuration
+BookVersions.Code.VersionClassSheet.deleteLibrairieConfiguration=Delete
 BookVersions.Code.DeletedContentClassSheet.titlePrefix=DELETED: 
 BookVersions.Code.DeletedContentClassSheet.warning=This content has been marked as deleted. It won't be published.
 BookVersions.Code.PublicationConfigurationSheet.nextButton=Publish
