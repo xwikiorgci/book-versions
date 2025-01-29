@@ -136,25 +136,8 @@
     ----
   #end
   #if ($hasEdit)
-    #set ($objIndex = $xobjects.size())
-    #set ($xclass = $xwiki.getClass('BookVersions.Code.LibraryReferenceClass'))
-    &lt;h2&gt;$services.localization.render('BookVersions.Code.VersionClassSheet.newConfiguration')&lt;/h2&gt;
-    &lt;div class="xform"&gt;
-      &lt;dl&gt;
-        #foreach ($property in $xclass.properties)
-          #set ($propertyName = $property.name)
-          &lt;dt class="editableProperty"
-              data-property="BookVersions.Code.LibraryReferenceClass[$objIndex].${propertyName}"
-              data-property-type="object"
-              data-object-policy="updateOrCreate"&gt;
-            &lt;label for="BookVersions.Code.LibraryReferenceClass_${objIndex}_${propertyName}"&gt;$escapetool.xml($property.translatedPrettyName)&lt;/label&gt;
-          &lt;/dt&gt;
-          &lt;dd&gt;
-            $escapetool.xml($services.localization.render("BookVersions.Code.LibraryReferenceClass_${propertyName}_"))
-          &lt;/dd&gt;
-        #end
-      &lt;/dl&gt;
-    &lt;/div&gt;
+  &lt;button type="button" class="btn btn-primary" id="addNewConfigurationBtn" href="#"
+          data-doc-reference="$escapetool.xml($services.model.serialize($doc.documentReference, 'local'))"&gt;Add new configuration&lt;/button&gt;
   #end
   {{/html}}
 #end
@@ -248,16 +231,15 @@
     </property>
     <property>
       <code>document.querySelectorAll('.delete-configuration-btn').forEach((el, i) =&gt; {
-  const objectNumber = el.dataset.objectNumber
-  const docReference = el.dataset.docReference
-  el.addEventListener('click', () =&gt; {
-    fetch("$xwiki.getURL('BookVersions.Code.VersionSheetService')?action=remove&amp;reference=" + encodeURIComponent(docReference) + "&amp;number=" + objectNumber, {
+  el.addEventListener('click', (event) =&gt; {
+    fetch("$xwiki.getURL('BookVersions.Code.VersionSheetService')?action=remove&amp;reference=" + encodeURIComponent(el.dataset.docReference) + "&amp;number=" + el.dataset.objectNumber, {
       method: 'get'
     })
       .then(response =&gt; response.json())
       .then(data =&gt; {
         if (data.success) {
           window.location.reload()
+          event.preventDefault()
         } else {
           console.error(data.message)
           throw new Error("Can't delete object")
@@ -267,7 +249,27 @@
         console.log(err);
       });
   })
-})</code>
+})
+
+document.querySelector('#addNewConfigurationBtn')
+  .addEventListener('click', (event) =&gt; {
+    fetch("$xwiki.getURL('BookVersions.Code.VersionSheetService')?action=addNewObject&amp;reference=" + encodeURIComponent(event.target.dataset.docReference), {
+      method: 'get'
+    })
+      .then(response =&gt; response.json())
+      .then(data =&gt; {
+        if (data.success) {
+          window.location.reload()
+          event.preventDefault()
+        } else {
+          console.error(data.message)
+          throw new Error("Can't create object")
+        }
+      })
+      .catch(err =&gt; {
+        console.log(err);
+      });
+  })</code>
     </property>
     <property>
       <name/>

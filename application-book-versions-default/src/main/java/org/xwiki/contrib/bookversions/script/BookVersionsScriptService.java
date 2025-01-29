@@ -685,4 +685,28 @@ public class BookVersionsScriptService implements ScriptService
     {
         return bookVersionsManagerProvider.get().getConfiguredLanguages(bookReference);
     }
+
+    /**
+     * Add a new Library reference class object into the specified version document.
+     *
+     * @param versionReference the document reference to add the object.
+     * @throws XWikiException could occur if we can't load the referenced document.
+     */
+    public void addLibraryReferenceClassObject(DocumentReference versionReference) throws XWikiException
+    {
+        bookVersionsManagerProvider.get().addLibraryReferenceClassObject(versionReference);
+    }
+
+    /**
+     * Remove the specific library reference class object into the specified version document.
+     *
+     * @param versionReference the document reference to remove the object.
+     * @param objectNumber the object number to remove.
+     * @throws XWikiException could occur if we can't load the referenced document.
+     */
+    public void removeLibraryReferenceClassObject(DocumentReference versionReference, int objectNumber)
+        throws XWikiException
+    {
+        bookVersionsManagerProvider.get().removeLibraryReferenceClassObject(versionReference, objectNumber);
+    }
 }

@@ -2050,6 +2050,30 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         return new ArrayList<String>();
     }
 
+    @Override
+    public void addLibraryReferenceClassObject(DocumentReference versionReference) throws XWikiException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+        DocumentReference libraryReferenceClassRef =
+            referenceResolver.resolve("BookVersions.Code.LibraryReferenceClass");
+        XWikiDocument versionDocument = xcontext.getWiki().getDocument(versionReference, xcontext).clone();
+        versionDocument.createXObject(libraryReferenceClassRef, xcontext);
+        xcontext.getWiki().saveDocument(versionDocument, xcontext);
+    }
+
+    @Override
+    public void removeLibraryReferenceClassObject(DocumentReference versionReference, int objectNumber)
+        throws XWikiException
+    {
+        XWikiContext xcontext = this.getXWikiContext();
+        DocumentReference libraryReferenceClassRef =
+            referenceResolver.resolve("BookVersions.Code.LibraryReferenceClass");
+        XWikiDocument versionDocument = xcontext.getWiki().getDocument(versionReference, xcontext).clone();
+        List<BaseObject> objects = versionDocument.getXObjects(libraryReferenceClassRef);
+        versionDocument.removeXObject(objects.get(objectNumber));
+        xcontext.getWiki().saveDocument(versionDocument, xcontext);
+    }
+
     /**
      * Get the XWiki context.
      *

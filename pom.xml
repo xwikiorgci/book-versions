@@ -283,6 +283,18 @@
                 <newValue>"org.xwiki.contrib.bookversions.listeners.DocumentCreatingEventListener"</newValue>
                 <justification>Used the wrong name from the start.</justification>
               </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method void org.xwiki.contrib.bookversions.BookVersionsManager::addLibraryReferenceClassObject(org.xwiki.model.reference.DocumentReference) throws com.xpn.xwiki.XWikiException</new>
+                <justification>Needed for new features.</justification>
+              </item>
+              <item>
+                <ignore>true</ignore>
+                <code>java.method.addedToInterface</code>
+                <new>method void org.xwiki.contrib.bookversions.BookVersionsManager::removeLibraryReferenceClassObject(org.xwiki.model.reference.DocumentReference, int) throws com.xpn.xwiki.XWikiException</new>
+                <justification>Needed for new features.</justification>
+              </item>
             </differences>
           </revapi.differences>
         </analysisConfiguration>

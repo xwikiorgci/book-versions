@@ -73,8 +73,10 @@
   {{html clean=false}}
   $MySelectList
   {{/html}}
-#elseif (($type == 'view') &amp;&amp; ($!value!=''))
-  [[$xwiki.getDocument($value).getTitle()&gt;&gt;$value||rel="_blank"]]
+#elseif ($type == 'view')
+  #if ("$!value" != '')
+    [[$xwiki.getDocument($value).getTitle()>>$!value||rel="_blank"]]
+  #end
 #else
   $value
 #end

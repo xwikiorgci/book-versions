@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc xmlns:xwiki="http://www.xwiki.org" version="1.5" reference="BookVersions.Code.VersionSheetService" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.VersionSheetService" locale="">
   <web>BookVersions.Code</web>
   <name>VersionSheetService</name>
   <language/>
@@ -37,17 +37,19 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#if ($request.action == 'remove')
-  #set($docReference = $services.model.resolveDocument($request.reference))
-  #set($documentToEdit = $xwiki.XWiki.getDocument($docReference, $xcontext.context))
-  #if ($services.security.authorization.hasAccess('EDIT', $docReference))
-    #set($objects = $documentToEdit.getXObjects($services.model.resolveDocument("BookVersions.Code.LibraryReferenceClass")))
-    #set($discard = $documentToEdit.removeXObject($objects.get($request.number)))
-    #set($discard = $xwiki.XWiki.saveDocusment($documentToEdit, $xcontext.context))
+#set($docReference = $services.model.resolveDocument($request.reference))
+#if ($services.security.authorization.hasAccess('EDIT', $docReference))
+  #if ($request.action == 'addNewObject')
+    #set($discard = $services.bookversions.addLibraryReferenceClassObject($docReference))
+    #jsonResponse({"success": true})
+  #elseif($request.action == 'remove')
+    #set($discard = $services.bookversions.removeLibraryReferenceClassObject($docReference, $request.number))
     #jsonResponse({"success": true})
   #else
-    #jsonResponse({"success": true, "message": "You don't have the right to edit this page"})
+    #jsonResponse({"success": false, "message": "Unknown action"})
   #end
+#else
+  #jsonResponse({"success": false, "message": "You don't have the right to edit this page"})
 #end
 {{/velocity}}</content>
 </xwikidoc>

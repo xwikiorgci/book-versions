@@ -697,4 +697,21 @@ public interface BookVersionsManager
      * @throws XWikiException In case the system can't provide an answer.
      */
     List<String> getConfiguredLanguages(DocumentReference bookReference) throws XWikiException;
+
+    /**
+     * Add a new Library reference class object into the specified version document.
+     *
+     * @param versionReference the document reference to add the object.
+     * @throws XWikiException could occur if we can't load the referenced document.
+     */
+    void addLibraryReferenceClassObject(DocumentReference versionReference) throws XWikiException;
+
+    /**
+     * Remove the specific library reference class object into the specified version document.
+     *
+     * @param versionReference the document reference to remove the object.
+     * @param objectNumber the object number to remove.
+     * @throws XWikiException could occur if we can't load the referenced document.
+     */
+    void removeLibraryReferenceClassObject(DocumentReference versionReference, int objectNumber) throws XWikiException;
 }
