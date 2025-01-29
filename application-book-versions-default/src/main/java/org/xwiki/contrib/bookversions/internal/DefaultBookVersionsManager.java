@@ -957,6 +957,43 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             : null;
     }
 
+    private List<DocumentReference> getVersionsAscending(DocumentReference collectionReference,
+        DocumentReference versionReference)
+        throws XWikiException, QueryException
+    {
+        List<DocumentReference> result = new ArrayList<>();
+        if (versionReference == null || !isVersion(versionReference)) {
+            return result;
+        }
+
+        int versionQuantity = getCollectionVersions(collectionReference).size();
+
+        String versionName = getVersionName(versionReference);
+        DocumentReference previousVersionReference = versionReference;
+        int i = 0;
+        result.add(versionReference);
+
+        logger.debug("[getVersionsAscending] get versions before : [{}]", versionName);
+        while (i < getCollectionVersions(collectionReference).size() + 1) {
+            previousVersionReference = getPreviousVersion(previousVersionReference);
+            if (previousVersionReference == null) {
+                logger.debug("[getVersionsAscending] no more previous versions.");
+                break;
+            } else {
+                versionName = getVersionName(previousVersionReference);
+                logger.debug("[getVersionsAscending] previous version is [{}]", versionName);
+                result.add(previousVersionReference);
+            }
+            i++;
+        }
+
+        if (i > versionQuantity) {
+            logger.error("[getVersionsAscending] Infinite loop detected in versions preceding [{}].", versionName);
+            return Collections.emptyList();
+        }
+        return result;
+    }
+
     @Override
     public DocumentReference getInheritedVersionedContentReference(DocumentReference documentReference)
         throws XWikiException, QueryException
@@ -1043,7 +1080,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
         String previousVersion = versionObject.getStringValue(BookVersionsConstants.VERSION_PROP_PRECEDINGVERSION);
         return previousVersion != null && !previousVersion.isBlank()
-            ? referenceResolver.resolve(previousVersion).setWikiReference(this.getXWikiContext().getWikiReference())
+            ? referenceResolver.resolve(previousVersion, versionReference)
             : null;
     }
 
@@ -1295,6 +1332,53 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         return result;
     }
 
+    /**
+     * Get the published space for each of the libraries used in the given book, for the current version and the
+     * preceding ones.
+     * @param bookReference the reference of the book
+     * @param versionReference the version of the book, which corresponds to a library's version in the book
+     * configuration
+     * @return the published space reference of each library used in the book as a map of {bookVersionName, {
+     * libraryReference, publishedSpaceReference}}
+     * @throws XWikiException In case a getDocument method or a check of type (isBook, ...) has an issue
+     * @throws QueryException If any exception occurs while querying the database for the used libraries in the book.
+     */
+    private Map<String, Map<DocumentReference, DocumentReference>> getUsedPublishedLibrariesWithInheritance(
+        DocumentReference bookReference, DocumentReference versionReference) throws XWikiException, QueryException
+    {
+        Map<String, Map<DocumentReference, DocumentReference>> result = new HashMap<>();
+        if (bookReference != null && isBook(bookReference)) {
+            List<DocumentReference> versions = getVersionsAscending(bookReference, versionReference);
+            List<DocumentReference> usedLibraries = getUsedLibraries(bookReference);
+            for (DocumentReference ascendingVersionReference : versions) {
+                Map<DocumentReference, DocumentReference> libResult = new HashMap<>();
+                String versionName = getVersionName(ascendingVersionReference);
+                for (DocumentReference libraryReference : usedLibraries) {
+                    DocumentReference libraryVersionReference =
+                        getConfiguredLibraryVersion(bookReference, libraryReference, ascendingVersionReference);
+                    if (libraryVersionReference == null) {
+                        logger.warn("Library [{}] is used in book [{}] but no library's version has been configured "
+                            + "for book's version [{}].", libraryReference, bookReference, ascendingVersionReference);
+                        libResult.put(libraryReference, null);
+                        continue;
+                    }
+                    DocumentReference publishedSpace =
+                        getCollectionPublishedSpace(libraryReference, libraryVersionReference.getName(), libraryReference);
+                    if (publishedSpace == null) {
+                        logger.warn(
+                            "Library [{}], configured in book [{}] to use version [{}]" + " doesn't seem to be published.",
+                            libraryReference, bookReference, libraryVersionReference);
+                        libResult.put(libraryReference, null);
+                        continue;
+                    }
+                    libResult.put(libraryReference, publishedSpace);
+                }
+                result.put(versionName, libResult);
+            }
+        }
+        return result;
+    }
+
     @Override
     public void switchDeletedMark(DocumentReference documentReference) throws XWikiException
     {
@@ -1440,8 +1524,9 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
         XWikiDocument variant = variantReference != null ? xwiki.getDocument(variantReference, xcontext) : null;
 
-        Map<DocumentReference, DocumentReference> publishedLibraries = collection != null && versionReference != null
-            ? getUsedPublishedLibraries(collection.getDocumentReference(), versionReference) : null;
+        Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries =
+        collection != null && versionReference != null && isBook(collectionReference)
+            ? getUsedPublishedLibrariesWithInheritance(collection.getDocumentReference(), versionReference) : null;
 
         // Execute publication job
         logger.info("Start publication.");
@@ -1687,7 +1772,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     }
 
     private XWikiDocument prepareForPublication(XWikiDocument originalDocument, XWikiDocument publishedDocument,
-        Map<DocumentReference, DocumentReference> publishedLibraries, Map<String, Object> configuration)
+        Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries, Map<String, Object> configuration)
         throws XWikiException, ComponentLookupException, ParseException, QueryException
     {
         // Execute here all transformations on the document: change links, point to published library,
@@ -1707,12 +1792,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
     // Heavily inspired from "Bulk update links according to a TSV mapping using XDOM" on https://snippets.xwiki.org
     private boolean transformXDOM(XDOM xdom, String syntaxId, DocumentReference originalDocumentReference,
-        Map<DocumentReference, DocumentReference> publishedLibraries, Map<String, Object> configuration)
+        Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries, Map<String, Object> configuration)
         throws ComponentLookupException, ParseException, QueryException, XWikiException
     {
         boolean hasXDOMChanged = false;
         DocumentReference publishedVariantReference =
             (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
+        DocumentReference versionReference =
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION);
 
         // First, update any document macro that could contain nested content (variant macro)
 
@@ -1777,14 +1864,19 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
         }
 
-        boolean transformedLibrary = transformLibrary(xdom, originalDocumentReference, publishedLibraries);
+        boolean transformedLibrary = transformLibrary(xdom, originalDocumentReference, publishedLibraries,
+            versionReference);
+        Map<DocumentReference, DocumentReference> currentPublishedLibraries = publishedLibraries != null ?
+            publishedLibraries.get(getVersionName(versionReference)) : new HashMap<>();
         boolean transformedReferences = publicationReferencesTransformationHelper.transform(xdom,
-            originalDocumentReference, publishedLibraries, configuration);
+            originalDocumentReference, currentPublishedLibraries, configuration);
         return hasXDOMChanged || transformedLibrary || transformedReferences;
     }
 
     private boolean transformLibrary(XDOM xdom, DocumentReference originalDocumentReference,
-        Map<DocumentReference, DocumentReference> publishedLibraries) throws QueryException, XWikiException
+        Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries,
+        DocumentReference versionReference)
+        throws QueryException, XWikiException
     {
         logger.debug("[transformLibrary] Starting to transform includeLibrary macro reference");
         boolean hasChanged = false;
@@ -1794,6 +1886,14 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             Block.Axes.DESCENDANT_OR_SELF);
         logger.debug("[transformLibrary] [{}] '{}' macros found in the passed XDOM", listBlock.size(),
             BookVersionsConstants.INCLUDELIBRARY_MACRO_ID);
+
+        String versionName = getVersionName(versionReference);
+        if (isVersionedContent(originalDocumentReference)) {
+            // If versioned page is published, use the inherited version, provided by the document to be published.
+            // This allows to use library version corresponding to the inherited content version instead of the
+            // selected version for publication.
+            versionName = originalDocumentReference.getName();
+        }
 
         for (MacroBlock macroBlock : listBlock) {
             // Get the key reference (library page reference)
@@ -1805,12 +1905,13 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 continue;
             }
             DocumentReference pageReference = referenceResolver.resolve(keyRefString, originalDocumentReference);
+            DocumentReference libraryPageReference = referenceResolver.resolve(keyRefString, originalDocumentReference);
             logger.debug("[transformLibrary] Updating {} macro referencing [{}].",
-                BookVersionsConstants.INCLUDELIBRARY_MACRO_ID, pageReference);
+                BookVersionsConstants.INCLUDELIBRARY_MACRO_ID, libraryPageReference);
             // Get the library reference
-            DocumentReference libraryReference = getVersionedCollectionReference(pageReference);
+            DocumentReference libraryReference = getVersionedCollectionReference(libraryPageReference);
             // Get the published library reference
-            DocumentReference publishedLibraryReference = publishedLibraries.get(libraryReference);
+            DocumentReference publishedLibraryReference = publishedLibraries.get(versionName).get(libraryReference);
             if (publishedLibraryReference == null) {
                 logger.error("[transformLibrary] The library [{}] has not been published. Macro is ignored.",
                     libraryReference);
@@ -1818,7 +1919,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
             // Compute the published page reference
             DocumentReference publishedPageReference =
-                getPublishedReference(pageReference, libraryReference, publishedLibraryReference);
+                getPublishedReference(libraryPageReference, libraryReference, publishedLibraryReference);
             logger.debug("[transformLibrary] Page reference is changed to [{}].", publishedPageReference);
             // Replace the macro by include macro and change to the published reference
             MacroBlock newMacroBlock = new MacroBlock(BookVersionsConstants.INCLUDE_MACRO_ID,
