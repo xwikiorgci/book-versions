@@ -23,6 +23,7 @@ package org.xwiki.contrib.bookversions.internal;
 import java.io.StringReader;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,6 +55,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.model.reference.LocalDocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.validation.EntityNameValidation;
 import org.xwiki.query.Query;
@@ -2159,8 +2161,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     public void addLibraryReferenceClassObject(DocumentReference versionReference) throws XWikiException
     {
         XWikiContext xcontext = this.getXWikiContext();
-        DocumentReference libraryReferenceClassRef =
-            referenceResolver.resolve("BookVersions.Code.LibraryReferenceClass");
+        LocalDocumentReference libraryReferenceClassRef =
+            new LocalDocumentReference(Arrays.asList("BookVersions", "Code"), "LibraryReferenceClass");
         XWikiDocument versionDocument = xcontext.getWiki().getDocument(versionReference, xcontext).clone();
         versionDocument.createXObject(libraryReferenceClassRef, xcontext);
         xcontext.getWiki().saveDocument(versionDocument, xcontext);
@@ -2171,8 +2173,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         throws XWikiException
     {
         XWikiContext xcontext = this.getXWikiContext();
-        DocumentReference libraryReferenceClassRef =
-            referenceResolver.resolve("BookVersions.Code.LibraryReferenceClass");
+        LocalDocumentReference libraryReferenceClassRef =
+            new LocalDocumentReference(Arrays.asList("BookVersions", "Code"), "LibraryReferenceClass");
         XWikiDocument versionDocument = xcontext.getWiki().getDocument(versionReference, xcontext).clone();
         List<BaseObject> objects = versionDocument.getXObjects(libraryReferenceClassRef);
         versionDocument.removeXObject(objects.get(objectNumber));
