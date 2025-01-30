@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.AdministrationMenu" locale="">
+<xwikidoc version="1.6" reference="BookVersions.Code.AdministrationMenu" locale="">
   <web>BookVersions.Code</web>
   <name>AdministrationMenu</name>
   <language/>
@@ -633,13 +633,18 @@
 ##Handle switch version/unversion action
 #if("$!{request.switchUnversonedAction}" != '')
   #if("${request.switchUnversonedAction}" == "unversion")
-    ## Handle unversion
+    ## Handle switch to unversion
     #set ($selectedVersionName = $services.bookversions.getVersionName($xwiki.getDocument($selectedVersion).getDocumentReference()))
     ## Store original title
     #set ($originalTitle = $doc.title)
+    ## Get the proper parent reference
+    #set ($parentReference = $doc.getDocumentReference().getParent())
+    #if ("WebHome" == $doc.getName())
+      #set ($parentReference = $parentReference.getParent())
+    #end
     ## Copy the full document using the API
-    #set ($discard = $xwiki.copyDocument($doc.documentReference, $parentDoc.documentReference, '', false, true))
-    #set ($tempDoc = $xwiki.getDocument($parentDoc.documentReference))
+    #set ($discard = $xwiki.copyDocument($doc.documentReference, $parentReference, '', false, true))
+    #set ($tempDoc = $xwiki.getDocument($parentReference))
     ## Remove BookVersionedContentClass object and update BookPageClass object
     #set ($discard = $tempDoc.removeObjects('BookVersions.Code.BookVersionedContentClass'))
     #set ($bookPageObj = $tempDoc.getObject('BookVersions.Code.BookPageClass', true))
@@ -649,7 +654,7 @@
     #set ($discard = $tempDoc.setTitle($originalTitle))
     ## Save with version change message
     #set ($discard = $tempDoc.save("Changed to unversioned from Version ${selectedVersionName}"))
-    $response.sendRedirect($xwiki.getURL($parentDoc, $xcontext.action))
+    $response.sendRedirect($xwiki.getURL($parentReference, $xcontext.action))
   #elseif("${request.switchUnversonedAction}" == "version")
     ## Handle version
     #set ($templateRef = $services.model.createDocumentReference('', ['BookVersions', 'Code'],'BookPageTemplate'))
@@ -657,10 +662,10 @@
       #set ($selectedVersionRef = $xwiki.getDocument($selectedVersion).getDocumentReference())
       #set ($selectedVersionName = $services.bookversions.getVersionName($selectedVersionRef))
       #set ($versionedContentDoc = $xwiki.getDocument($services.bookversions.getVersionedContentReference($doc.documentReference, $selectedVersionName)))
-      
+
       ## Store original title
       #set ($originalTitle = $doc.title)
-      
+
       ## Copy the full document to versioned content doc
       #set ($discard = $xwiki.copyDocument($doc.documentReference, $versionedContentDoc.documentReference, '', false, true))
       #set ($tempDoc = $xwiki.getDocument($versionedContentDoc.documentReference))
@@ -674,13 +679,13 @@
       #set ($discard = $tempDoc.setHidden(true))
       #set ($discard = $tempDoc.setTitle($originalTitle))
       #set ($discard = $tempDoc.save("Created versioned content for Version ${selectedVersionName}"))
-      
+
       ## Reset root page using template
-      
       #set ($discard = $xwiki.copyDocument($templateRef, $doc.documentReference, $xcontext.getLocale(), true, true))
       ## Restore original title and set unversioned status
       #set ($updatedDoc = $xwiki.getDocument($doc.documentReference))
       #set ($discard = $updatedDoc.setTitle($originalTitle))
+      #set ($discard = $updatedDoc.setHidden(false))
       #set ($bookPageObj = $updatedDoc.getObject('BookVersions.Code.BookPageClass'))
       #set ($discard = $bookPageObj.set('unversioned', 0))
       #set ($discard = $updatedDoc.save("Changed to versioned in Version ${selectedVersionName} $xcontext.getLocale()"))
@@ -689,10 +694,10 @@
       #set ($lastVersionString = $services.bookversions.getCollectionVersions($bookRef)[0])
       #set ($lastVersionName = $services.bookversions.getVersionName($xwiki.getDocument($lastVersionString).getDocumentReference()))
       #set ($versionedContentDoc = $xwiki.getDocument($services.bookversions.getVersionedContentReference($doc.documentReference, $lastVersionName)))
-      
+
       ## Store original title
       #set ($originalTitle = $doc.title)
-      
+
       ## Copy the full document to versioned content doc
       #set ($discard = $xwiki.copyDocument($doc.documentReference, $versionedContentDoc.documentReference, '', false, true))
       #set ($tempDoc = $xwiki.getDocument($versionedContentDoc.documentReference))
@@ -706,7 +711,7 @@
       #set ($discard = $tempDoc.setHidden(true))
       #set ($discard = $tempDoc.setTitle($originalTitle))
       #set ($discard = $tempDoc.save("Created versioned content for Version ${lastVersionName}"))
-      
+
       ## Reset root page using template
       #set ($discard = $xwiki.copyDocument($templateRef, $doc.documentReference, '', true, true))
       ## Restore original title and set unversioned status
@@ -716,7 +721,7 @@
       #set ($discard = $bookPageObj.set('unversioned', 0))
       #set ($discard = $updatedDoc.save("Changed to versioned in Version ${lastVersionName}"))
     #end
-    
+
     $response.sendRedirect($xwiki.getURL($doc, $xcontext.action))
   #end
 #end
