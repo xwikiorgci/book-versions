@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.5" reference="BookVersions.Code.CreateBookResource" locale="">
+<xwikidoc version="1.6" reference="BookVersions.Code.CreateBookResource" locale="">
   <web>BookVersions.Code</web>
   <name>CreateBookResource</name>
   <language/>
@@ -122,7 +122,7 @@
       </use>
     </class>
     <property>
-      <cache>long</cache>
+      <cache>forbid</cache>
     </property>
     <property>
       <code>var XWiki = (function (XWiki) {
