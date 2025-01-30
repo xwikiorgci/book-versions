@@ -1218,6 +1218,10 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
         if (selectedVersionStringRef == null || selectedVersionStringRef.isEmpty()) {
             // in case no version has been selected yet, get the most recent one
+            List<String> versions = getCollectionVersions(collectionRef);
+            if (versions.size() == 0) {
+                return null;
+            }
             selectedVersionStringRef = getCollectionVersions(collectionRef).get(0);
         }
         DocumentReference selectedVersionRef = referenceResolver.resolve(selectedVersionStringRef, collectionRef);
