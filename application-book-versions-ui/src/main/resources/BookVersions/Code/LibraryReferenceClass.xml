@@ -75,7 +75,7 @@
   {{/html}}
 #elseif ($type == 'view')
   #if ("$!value" != '')
-    [[$xwiki.getDocument($value).getTitle()>>$!value||rel="_blank"]]
+    [[$xwiki.getDocument($value).getTitle()&gt;&gt;$!value||rel="_blank"]]
   #end
 #else
   $value
