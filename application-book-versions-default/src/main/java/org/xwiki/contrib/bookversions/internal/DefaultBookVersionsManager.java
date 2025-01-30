@@ -383,7 +383,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
         for (String referenceString : (List<String>) variantListObj
             .getListValue(BookVersionsConstants.VARIANTLIST_PROP_VARIANTSLIST)) {
-            result.add(referenceResolver.resolve(referenceString));
+            result.add(referenceResolver.resolve(referenceString, page.getDocumentReference()));
         }
         return result;
     }
@@ -1834,8 +1834,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
             if (id.equals(BookVersionsConstants.VARIANT_MACRO_ID) && ((publishedVariantReference == null)
                 || (publishedVariantReference != null && !variantReferences.contains(publishedVariantReference)))) {
-                // It's a macro variant AND ((no variant is published)) OR (variant is published but macro is not for
-                // the published variant)
+                // The macro is removed if it's a macro variant AND ((no variant is published)) OR (variant is
+                // published but macro is not for the published variant)
                 logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content.",
                     variantReferences);
                 block.getParent().removeBlock(block);
@@ -1975,9 +1975,12 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             logger.debug("[isToBePublished] Page is ignored because it is associated with variants.");
             logger.info("Page is ignored because it is associated with variants.");
             return false;
-        } else if (variant != null && excludePagesOutsideVariant
-            && !variants.contains(variant.getDocumentReference())) {
-            // A variant is to be published AND excludes pages outside itself AND page is not associated with variant(s)
+        } else if (variant != null && !variants.contains(variant.getDocumentReference())
+            && ( excludePagesOutsideVariant || (!excludePagesOutsideVariant && !variants.isEmpty()))
+        ) {
+            // A variant is to be published AND the page is associated with other variant(s) AND
+            // (pages outside the variant are excluded
+            // OR pages outside the variant are excluded but the page is associated to the published variant)
             logger.debug("[isToBePublished] Page is ignored because it is not associated with the published variant.");
             logger.info("Page is ignored because it is not associated with the published variant.");
             return false;
