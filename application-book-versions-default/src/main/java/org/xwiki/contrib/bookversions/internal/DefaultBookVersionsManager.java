@@ -1514,6 +1514,19 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         }
         DocumentReference sourceReference =
             (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_SOURCE);
+        if (sourceReference == null) {
+            logger.error("[publish] Could not read the source from [{}]", configurationReference);
+            return;
+        }
+
+        // The source is store as page, but we need a complete location.WebHome reference
+        if (sourceReference.getName() != this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE) {
+            SpaceReference sourceParentSpaceReference = new SpaceReference(
+                new EntityReference(sourceReference.getName(), EntityType.SPACE, sourceReference.getParent()));
+            sourceReference =
+                new DocumentReference(new EntityReference(this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE,
+                    EntityType.DOCUMENT, sourceParentSpaceReference));
+        }
         DocumentReference collectionReference = getVersionedCollectionReference(sourceReference);
         XWikiDocument collection =
             collectionReference != null ? xwiki.getDocument(collectionReference, xcontext) : null;
@@ -1526,25 +1539,41 @@ public class DefaultBookVersionsManager implements BookVersionsManager
 
         DocumentReference targetReference =
             (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_DESTINATIONSPACE);
+        if (targetReference.getName() != this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE) {
+            SpaceReference targetParentSpaceReference = new SpaceReference(
+                new EntityReference(targetReference.getName(), EntityType.SPACE, targetReference.getParent()));
+            targetReference =
+                new DocumentReference(new EntityReference(this.getXWikiContext().getWiki().DEFAULT_SPACE_HOMEPAGE,
+                    EntityType.DOCUMENT, targetParentSpaceReference));
+        }
+
         DocumentReference variantReference =
             (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
         XWikiDocument variant = variantReference != null ? xwiki.getDocument(variantReference, xcontext) : null;
 
         Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries =
-        collection != null && versionReference != null && isBook(collectionReference)
-            ? getUsedPublishedLibrariesWithInheritance(collection.getDocumentReference(), versionReference) : null;
+            collection != null && versionReference != null && isBook(collectionReference)
+                ? getUsedPublishedLibrariesWithInheritance(collection.getDocumentReference(), versionReference) : null;
 
         // Execute publication job
         logger.info("Start publication.");
         List<String> pageReferenceTree = getPageReferenceTree(sourceReference);
         int i = 1;
-        int pageQuantity = pageReferenceTree.size();
-        progressManager.pushLevelProgress(pageReferenceTree.size(), this);
+        int pageQuantity = pageReferenceTree != null ? pageReferenceTree.size() : 0;
+        progressManager.pushLevelProgress(pageQuantity, this);
         for (String pageStringReference : pageReferenceTree) {
+            if (pageStringReference == null) {
+                continue;
+            }
+
             progressManager.startStep(this, pageStringReference);
             logger.info("Page publication {}/{}: [{}]", i, pageQuantity, pageStringReference);
             i++;
             DocumentReference pageReference = referenceResolver.resolve(pageStringReference, configurationReference);
+
+            if (!isPage(pageReference)) {
+                continue;
+            }
             XWikiDocument page = xwiki.getDocument(pageReference, xcontext);
 
             // Get the relevant content for the page
@@ -1566,6 +1595,9 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             // Get the published reference
             DocumentReference publishedReference =
                 getPublishedReference(pageReference, collectionReference, targetReference);
+            if (publishedReference == null) {
+                continue;
+            }
 
             // Create the published document
             logger.info("Copying page [{}] to [{}].", contentPage.getDocumentReference(), publishedReference);
@@ -1579,6 +1611,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             xwiki.saveDocument(publishedDocument, publicationComment, xcontext);
             logger.debug("[publish] End working on page [{}].", pageStringReference);
             progressManager.endStep(this);
+
         }
 
         // Add metadata in the collection page (master) and top page (published space)
@@ -1644,7 +1677,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     private void addTopPublicationData(DocumentReference targetTopReference, String publicationComment,
         XWikiDocument collection, Map<String, Object> configuration) throws XWikiException
     {
-        if (targetTopReference == null) {
+        if (targetTopReference == null || collection == null || configuration == null) {
             return;
         }
 
@@ -1669,7 +1702,7 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             publicationObject.set(BookVersionsConstants.PUBLISHEDCOLLECTION_PROP_VARIANTNAME, variant.getTitle(),
                 xcontext);
         }
-        xwiki.saveDocument(targetTop, publicationComment, xcontext);
+        xwiki.saveDocument(targetTop, publicationComment != null ? publicationComment : "", xcontext);
     }
 
     private void addMasterPublicationData(XWikiDocument collection, Map<String, Object> configuration)
@@ -1693,6 +1726,12 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
         XWikiDocument collectionClone = collection.clone();
 
+        if (sourceReference == null || versionReference == null || version == null) {
+            logger.error(
+                "Couldn't read the publication configuration when atempting to add metadata in the master and published locations.");
+            return;
+        }
+
         String publicationId;
         String publicationComment;
         if (variantReference == null) {
@@ -1713,7 +1752,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         for (BaseObject XObject : collectionClone.getXObjects(BookVersionsConstants.PUBLICATION_CLASS_REFERENCE)) {
             String objectId = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_ID);
             String objectSource = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_SOURCE);
-            if (publicationId.equals(objectId) && sourceReference.toString().equals(objectSource)) {
+            if (publicationId != null && publicationId.equals(objectId) && objectSource != null
+                && sourceReference.toString().equals(objectSource)) {
                 // Previous publication of the same space, with same version and variant found
                 logger.debug("[addMasterPublicationData] An object already exists.");
                 publicationObject = XObject;
@@ -1732,48 +1772,61 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         publicationObject.set(BookVersionsConstants.PUBLICATION_PROP_PUBLISHEDSPACE, destinationReference.toString(),
             xcontext);
         xwiki.saveDocument(collectionClone, publicationComment, xcontext);
-
     }
 
     private DocumentReference getCollectionPublishedSpace(DocumentReference collectionReference, String publicationId,
         DocumentReference sourceReference) throws XWikiException
     {
-        if (collectionReference != null && (isBook(collectionReference) || isLibrary(collectionReference))) {
-            logger.debug("[getCollectionPublishedSpace] Search the published space for collection [{}], id [{}] and "
-                + "source [{}].", collectionReference, publicationId, sourceReference);
-            XWikiContext xcontext = this.getXWikiContext();
-            XWiki xwiki = xcontext.getWiki();
-            XWikiDocument collection = xwiki.getDocument(collectionReference, xcontext);
-            DocumentReference publishedSpaceReference = null;
-            for (BaseObject XObject : collection.getXObjects(BookVersionsConstants.PUBLICATION_CLASS_REFERENCE)) {
-                String objectId = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_ID);
-                String objectSource = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_SOURCE);
-                if (publicationId.equals(objectId) && sourceReference.toString().equals(objectSource)) {
-                    publishedSpaceReference = referenceResolver
-                        .resolve(XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_PUBLISHEDSPACE));
-                    logger.debug("[getCollectionPublishedSpace] The collection was published in [{}]",
-                        publishedSpaceReference);
-                    break;
-                }
-            }
-            return publishedSpaceReference;
+        if (publicationId == null || collectionReference == null || sourceReference == null
+            || !(isBook(collectionReference) && !isLibrary(collectionReference))) {
+            return null;
         }
-        return null;
+
+        logger.debug("[getCollectionPublishedSpace] Search the published space for collection [{}], id [{}] and "
+            + "source [{}].", collectionReference, publicationId, sourceReference);
+        XWikiContext xcontext = this.getXWikiContext();
+        XWiki xwiki = xcontext.getWiki();
+        XWikiDocument collection = xwiki.getDocument(collectionReference, xcontext);
+        DocumentReference publishedSpaceReference = null;
+        for (BaseObject XObject : collection.getXObjects(BookVersionsConstants.PUBLICATION_CLASS_REFERENCE)) {
+            String objectId = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_ID);
+            String objectSource = XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_SOURCE);
+            if (objectId != null && publicationId.equals(objectId) && objectSource != null
+                && sourceReference.toString().equals(objectSource)) {
+                publishedSpaceReference = referenceResolver
+                    .resolve(XObject.getStringValue(BookVersionsConstants.PUBLICATION_PROP_PUBLISHEDSPACE));
+                logger.debug("[getCollectionPublishedSpace] The collection was published in [{}]",
+                    publishedSpaceReference);
+                break;
+            }
+        }
+
+        return publishedSpaceReference;
     }
 
     private static DocumentReference getPublishedReference(DocumentReference originalReference,
         DocumentReference collectionReference, DocumentReference targetReference)
     {
+        if (originalReference == null || collectionReference == null || targetReference == null) {
+            return null;
+        }
+
         DocumentReference publishedReference =
             originalReference.replaceParent(collectionReference.getParent(), targetReference.getLastSpaceReference());
+
         return publishedReference;
     }
 
     private XWikiDocument removeObjectsForPublication(XWikiDocument publishedPage)
     {
+        if(publishedPage == null) {
+            return null;
+        }
+
         for (EntityReference objectRef : BookVersionsConstants.PUBLICATION_REMOVEDOBJECTS) {
             publishedPage.removeXObjects(objectRef);
         }
+
         return publishedPage;
     }
 
@@ -1781,6 +1834,10 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries, Map<String, Object> configuration)
         throws XWikiException, ComponentLookupException, ParseException, QueryException
     {
+        if (originalDocument == null || publishedDocument == null || configuration == null) {
+            return null;
+        }
+
         // Execute here all transformations on the document: change links, point to published library,
         logger.debug("[prepareForPublication] Apply changes on [{}] for publication.",
             publishedDocument.getDocumentReference());
@@ -1801,6 +1858,10 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries, Map<String, Object> configuration)
         throws ComponentLookupException, ParseException, QueryException, XWikiException
     {
+        if (xdom == null || syntaxId == null || originalDocumentReference == null || configuration == null) {
+            return false;
+        }
+
         boolean hasXDOMChanged = false;
         DocumentReference publishedVariantReference =
             (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VARIANT);
@@ -1812,6 +1873,12 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         for (Block b : xdom.getBlocks(new ClassBlockMatcher(MacroBlock.class), Block.Axes.DESCENDANT_OR_SELF)) {
             MacroBlock block = (MacroBlock) b;
             String id = block.getId();
+
+            // Should never happen.
+            if (id == null) {
+                continue;
+            }
+
             String content = block.getContent();
             logger.debug("[transformXDOM] Checking macro [{}] - [{}]", id, block.getClass());
             ComponentManager componentManager = contextrootComponentManagerProvider.get();
@@ -1839,7 +1906,8 @@ public class DefaultBookVersionsManager implements BookVersionsManager
                 logger.debug("[transformXDOM] Variant macro is for [{}], it is removed from content.",
                     variantReferences);
                 block.getParent().removeBlock(block);
-            } else if (contentDescriptor != null && contentDescriptor.getType().equals(Block.LIST_BLOCK_TYPE)
+            } else if (contentDescriptor != null && contentDescriptor.getType() != null
+                && contentDescriptor.getType().equals(Block.LIST_BLOCK_TYPE) && content != null
                 && StringUtils.isNotEmpty(content)) {
                 // We will take a quick shortcut here and directly parse the macro content with the syntax of the
                 // document
@@ -1870,20 +1938,23 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             }
         }
 
-        boolean transformedLibrary = transformLibrary(xdom, originalDocumentReference, publishedLibraries,
-            versionReference);
-        Map<DocumentReference, DocumentReference> currentPublishedLibraries = publishedLibraries != null ?
-            publishedLibraries.get(getVersionName(versionReference)) : new HashMap<>();
+        boolean transformedLibrary =
+            transformLibrary(xdom, originalDocumentReference, publishedLibraries, versionReference);
+        Map<DocumentReference, DocumentReference> currentPublishedLibraries =
+            publishedLibraries != null ? publishedLibraries.get(getVersionName(versionReference)) : new HashMap<>();
         boolean transformedReferences = publicationReferencesTransformationHelper.transform(xdom,
             originalDocumentReference, currentPublishedLibraries, configuration);
         return hasXDOMChanged || transformedLibrary || transformedReferences;
     }
 
     private boolean transformLibrary(XDOM xdom, DocumentReference originalDocumentReference,
-        Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries,
-        DocumentReference versionReference)
+        Map<String, Map<DocumentReference, DocumentReference>> publishedLibraries, DocumentReference versionReference)
         throws QueryException, XWikiException
     {
+        if (xdom == null || originalDocumentReference == null || versionReference == null) {
+            return false;
+        }
+
         logger.debug("[transformLibrary] Starting to transform includeLibrary macro reference");
         boolean hasChanged = false;
         List<MacroBlock> listBlock = xdom.getBlocks(
@@ -1904,54 +1975,64 @@ public class DefaultBookVersionsManager implements BookVersionsManager
         for (MacroBlock macroBlock : listBlock) {
             // Get the key reference (library page reference)
             String keyRefString = macroBlock.getParameter(BookVersionsConstants.INCLUDELIBRARY_MACRO_PROP_KEYREFERENCE);
-            if (StringUtils.isEmpty(keyRefString)) {
+            if (keyRefString == null || StringUtils.isEmpty(keyRefString)) {
                 logger.debug("[transformLibrary] {} macro found without {} parameter. Macro is ignored.",
                     BookVersionsConstants.INCLUDELIBRARY_MACRO_ID,
                     BookVersionsConstants.INCLUDELIBRARY_MACRO_PROP_KEYREFERENCE);
                 continue;
             }
-            DocumentReference pageReference = referenceResolver.resolve(keyRefString, originalDocumentReference);
+
             DocumentReference libraryPageReference = referenceResolver.resolve(keyRefString, originalDocumentReference);
             logger.debug("[transformLibrary] Updating {} macro referencing [{}].",
                 BookVersionsConstants.INCLUDELIBRARY_MACRO_ID, libraryPageReference);
             // Get the library reference
             DocumentReference libraryReference = getVersionedCollectionReference(libraryPageReference);
             // Get the published library reference
-            DocumentReference publishedLibraryReference = publishedLibraries.get(versionName).get(libraryReference);
+            DocumentReference publishedLibraryReference =
+                publishedLibraries != null && versionName != null && libraryReference != null
+                    ? publishedLibraries.get(versionName).get(libraryReference) : null;
             if (publishedLibraryReference == null) {
                 logger.error("[transformLibrary] The library [{}] has not been published. Macro is ignored.",
                     libraryReference);
                 continue;
             }
+
             // Compute the published page reference
             DocumentReference publishedPageReference =
                 getPublishedReference(libraryPageReference, libraryReference, publishedLibraryReference);
-            logger.debug("[transformLibrary] Page reference is changed to [{}].", publishedPageReference);
-            // Replace the macro by include macro and change to the published reference
-            MacroBlock newMacroBlock = new MacroBlock(BookVersionsConstants.INCLUDE_MACRO_ID,
-                Map.of(BookVersionsConstants.INCLUDE_MACRO_PROP_REFERENCE, publishedPageReference.toString()),
-                macroBlock.isInline());
-            macroBlock.getParent().replaceChild(newMacroBlock, macroBlock);
-            hasChanged = true;
+            if (publishedPageReference != null) {
+                logger.debug("[transformLibrary] Page reference is changed to [{}].", publishedPageReference);
+                // Replace the macro by include macro and change to the published reference
+                MacroBlock newMacroBlock = new MacroBlock(BookVersionsConstants.INCLUDE_MACRO_ID,
+                    Map.of(BookVersionsConstants.INCLUDE_MACRO_PROP_REFERENCE, publishedPageReference.toString()),
+                    macroBlock.isInline());
+                macroBlock.getParent().replaceChild(newMacroBlock, macroBlock);
+                hasChanged = true;
+            }
         }
+
         return hasChanged;
     }
 
     private DocumentReference getContentPage(XWikiDocument page, Map<String, Object> configuration)
         throws QueryException, XWikiException
     {
+        if (page == null || configuration == null) {
+            return null;
+        }
+
         boolean unversioned = (page.getXObject(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE)
             .getIntValue(BookVersionsConstants.BOOKPAGE_PROP_UNVERSIONED) == 1);
-        if (unversioned) {
-            return page.getDocumentReference();
-        } else {
-            return getInheritedContentReference(page.getDocumentReference(),
-                (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION));
-        }
+        return unversioned ? page.getDocumentReference() : getInheritedContentReference(page.getDocumentReference(),
+            (DocumentReference) configuration.get(BookVersionsConstants.PUBLICATIONCONFIGURATION_PROP_VERSION));
     }
 
     private boolean isToBePublished(XWikiDocument page, XWikiDocument variant, Map<String, Object> configuration)
     {
+        if (page == null || configuration == null) {
+            return false;
+        }
+
         List<DocumentReference> variants = getPageVariants(page);
         String status = getPageStatus(page);
         boolean publishOnlyComplete =
@@ -1965,19 +2046,19 @@ public class DefaultBookVersionsManager implements BookVersionsManager
             logger.debug("[isToBePublished] Page is ignored because it is marked as deleted.");
             logger.info("Page is ignored because it is marked as deleted.");
             return false;
-        } else if (publishOnlyComplete && !status.equals(BookVersionsConstants.PAGESTATUS_PROP_STATUS_COMPLETE)) {
+        } else if (publishOnlyComplete && status != null
+            && !status.equals(BookVersionsConstants.PAGESTATUS_PROP_STATUS_COMPLETE)) {
             logger.debug("[isToBePublished] Page is ignored because its status is [{}] and only complete page are "
                 + "published.", status);
             logger.info("Page is ignored because its status is [{}] and only complete page are published.", status);
             return false;
-        } else if (variant == null && !variants.isEmpty()) {
+        } else if (variant == null && variants != null && !variants.isEmpty()) {
             // No variant to be published AND page is associated with variant(s)
             logger.debug("[isToBePublished] Page is ignored because it is associated with variants.");
             logger.info("Page is ignored because it is associated with variants.");
             return false;
-        } else if (variant != null && !variants.contains(variant.getDocumentReference())
-            && ( excludePagesOutsideVariant || (!excludePagesOutsideVariant && !variants.isEmpty()))
-        ) {
+        } else if (variant != null && variants != null && !variants.contains(variant.getDocumentReference())
+            && (excludePagesOutsideVariant || (!excludePagesOutsideVariant && !variants.isEmpty()))) {
             // A variant is to be published AND the page is associated with other variant(s) AND
             // (pages outside the variant are excluded
             // OR pages outside the variant are excluded but the page is associated to the published variant)
@@ -2004,34 +2085,39 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     private List<String> getPageReferenceTree(DocumentReference sourceReference) throws QueryException
     {
         // Can be refactored with queryPages
-        if (sourceReference != null) {
-            SpaceReference spaceReference = sourceReference.getLastSpaceReference();
-            String spaceSerialized = localSerializer.serialize(spaceReference);
-            String spacePrefix = spaceSerialized.replaceAll("([%_/])", "/$1").concat(".%");
-
-            logger.debug("[getPageReferenceTree] spaceSerialized : [{}]", spaceSerialized);
-            logger.debug("[getPageReferenceTree] spacePrefix : [{}]", spacePrefix);
-
-            // Query inspired from getDocumentReferences of DefaultModelBridge.java in xwiki-platform
-            List<String> result = this.queryManagerProvider.get()
-                .createQuery(", BaseObject as obj where doc.fullName = obj.name and obj.className = :class "
-                    + "and doc.space like :space escape '/' order by doc.fullName asc", Query.HQL)
-                .bindValue("class", localSerializer.serialize(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE))
-                .bindValue("space", spacePrefix).setWiki(sourceReference.getWikiReference().getName()).execute();
-            // add the source as first element, as it's given by the query
-            result.add(0, sourceReference.toString());
-
-            logger.debug("[getPageReferenceTree] result : [{}]", result);
-
-            return result;
+        if (sourceReference == null) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+        SpaceReference spaceReference = sourceReference.getLastSpaceReference();
+        String spaceSerialized = localSerializer.serialize(spaceReference);
+        String spacePrefix = spaceSerialized.replaceAll("([%_/])", "/$1").concat(".%");
+
+        logger.debug("[getPageReferenceTree] spaceSerialized : [{}]", spaceSerialized);
+        logger.debug("[getPageReferenceTree] spacePrefix : [{}]", spacePrefix);
+
+        // Query inspired from getDocumentReferences of DefaultModelBridge.java in xwiki-platform
+        List<String> result = this.queryManagerProvider.get()
+            .createQuery(", BaseObject as obj where doc.fullName = obj.name and obj.className = :class "
+                + "and doc.space like :space escape '/' order by doc.fullName asc", Query.HQL)
+            .bindValue("class", localSerializer.serialize(BookVersionsConstants.BOOKPAGE_CLASS_REFERENCE))
+            .bindValue("space", spacePrefix).setWiki(sourceReference.getWikiReference().getName()).execute();
+        // add the source as first element, as it's given by the query
+        result.add(0, sourceReference.toString());
+
+        logger.debug("[getPageReferenceTree] result : [{}]", result);
+
+        return result;
     }
 
     @Override
     public Map<String, Map<String, Object>> getLanguageData(XWikiDocument document)
     {
+
         Map<String, Map<String, Object>> languageData = new HashMap<String, Map<String, Object>>();
+        if (document == null) {
+            return languageData;
+        }
+
         XDOM xdom = document.getXDOM();
 
         List<MacroBlock> macros = xdom.getBlocks(MACRO_MATCHER, Block.Axes.DESCENDANT_OR_SELF);
@@ -2078,8 +2164,15 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Override
     public void setLanguageData(XWikiDocument document, Map<String, Map<String, Object>> languageData)
     {
+        if (document == null || languageData == null) {
+            return;
+        }
+
         for (Entry<String, Map<String, Object>> languageDataEntry : languageData.entrySet()) {
             String language = languageDataEntry.getKey();
+            if (languageDataEntry == null || language == null) {
+                continue;
+            }
 
             BaseObject translationObject = null;
 
@@ -2128,6 +2221,10 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Override
     public void resetTranslations(XWikiDocument document)
     {
+        if(document == null) {
+            return;
+        }
+
         for (BaseObject tObj : document.getXObjects(BookVersionsConstants.PAGETRANSLATION_CLASS_REFERENCE)) {
             document.removeXObject(tObj);
         }
@@ -2136,6 +2233,10 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Override
     public List<String> getConfiguredLanguages(DocumentReference bookReference) throws XWikiException
     {
+        if (bookReference == null) {
+            return new ArrayList<String>();
+        }
+
         XWikiContext xcontext = this.getXWikiContext();
 
         XWikiDocument bookDocument = xcontext.getWiki().getDocument(bookReference, xcontext);
@@ -2163,6 +2264,10 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     @Override
     public void addLibraryReferenceClassObject(DocumentReference versionReference) throws XWikiException
     {
+        if(versionReference == null) {
+            return;
+        }
+
         XWikiContext xcontext = this.getXWikiContext();
         LocalDocumentReference libraryReferenceClassRef =
             new LocalDocumentReference(Arrays.asList("BookVersions", "Code"), "LibraryReferenceClass");
@@ -2175,13 +2280,20 @@ public class DefaultBookVersionsManager implements BookVersionsManager
     public void removeLibraryReferenceClassObject(DocumentReference versionReference, int objectNumber)
         throws XWikiException
     {
+        if (versionReference == null) {
+            return;
+        }
+
         XWikiContext xcontext = this.getXWikiContext();
         LocalDocumentReference libraryReferenceClassRef =
             new LocalDocumentReference(Arrays.asList("BookVersions", "Code"), "LibraryReferenceClass");
         XWikiDocument versionDocument = xcontext.getWiki().getDocument(versionReference, xcontext).clone();
-        List<BaseObject> objects = versionDocument.getXObjects(libraryReferenceClassRef);
-        versionDocument.removeXObject(objects.get(objectNumber));
-        xcontext.getWiki().saveDocument(versionDocument, xcontext);
+
+        if (!versionDocument.isNew()) {
+            List<BaseObject> objects = versionDocument.getXObjects(libraryReferenceClassRef);
+            versionDocument.removeXObject(objects.get(objectNumber));
+            xcontext.getWiki().saveDocument(versionDocument, xcontext);
+        }
     }
 
     /**
