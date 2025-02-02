@@ -81,7 +81,7 @@
       'title': {
         'label': 'BookVersions.Code.PublicationConfigurationClass.destinationSpaceLabel',
         'hint': 'BookVersions.Code.PublicationConfigurationClass.destinationSpaceHint',
-        'name': 'title',
+        'name': 'destinationSpaceTitle',
         'value': $selectedDocument.plainTitle,
         'placeholder': 'core.create.name.placeholder'
       },
