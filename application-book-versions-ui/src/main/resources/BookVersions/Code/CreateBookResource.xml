@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.6" reference="BookVersions.Code.CreateBookResource" locale="">
+<xwikidoc version="1.5" reference="BookVersions.Code.CreateBookResource" locale="">
   <web>BookVersions.Code</web>
   <name>CreateBookResource</name>
   <language/>
@@ -187,7 +187,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
   _onAdd : function() {
     if (this.titleInput.value != '') {
       // Transform the page name accorring to the slug name strategy
-      fetch("$xwiki.getURL('BookVersions.Code.CreateEntityRequest')" + '?action=transformNameUsingSlug&amp;name=' + this.titleInput.value, {
+      fetch("$xwiki.getURL('BookVersions.Code.CreateEntityRequest')" + '?action=transformNameUsingSlug&amp;name=' + encodeURIComponent(this.titleInput.value), {
         method: 'get'
       })
         .then(response =&gt; response.json())
@@ -199,7 +199,7 @@ XWiki.EntryNamePopup = Class.create(XWiki.widgets.ModalPopup, {
           if($('bookPageUnversioned') &amp;&amp; $('bookPageUnversioned').checked &amp;&amp; this.urlUnversionedTemplate) {
             this.urlTemplate = this.urlUnversionedTemplate;
           }
-          window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)).replace(/__entryTitle__/g, this.titleInput.value)  + '&amp;form_token=$!{services.csrf.getToken()}';
+          window.self.location = this.urlTemplate.replace(/__entryName__/g, encodeURIComponent(transformedName)).replace(/__entryTitle__/g, encodeURIComponent(this.titleInput.value))  + '&amp;form_token=$!{services.csrf.getToken()}';
         })
       .catch(err =&gt; {
         console.log(err);
